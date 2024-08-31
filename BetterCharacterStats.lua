@@ -14,18 +14,6 @@ BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_DEFENSES",
 }
 
-BCS.MELEEHIT = {
-	["ROGUE"] = {
-		5, -- pvp
-		8, -- yellow cap
-		24.6, -- white cap
-	},
-}
-
-BCS.SPELLHIT = {
-	-- soon(tm)
-}
-
 BCS.PaperDollFrame = PaperDollFrame
 
 BCS.Debug = false
@@ -756,22 +744,9 @@ function BCS:SetRating(statFrame, ratingType)
 
 	label:SetText(L.MELEE_HIT_RATING_COLON)
 
-	local colorPos = "|cff20ff20"
-	local colorNeg = "|cffff2020"
-
 	if ratingType == "MELEE" then
 		local rating = BCS:GetHitRating()
-		if BCS.MELEEHIT[BCS.playerClass] then
-			if rating < BCS.MELEEHIT[BCS.playerClass][1] then
-				rating = colorNeg .. rating .. "%|r"
-			elseif rating >= BCS.MELEEHIT[BCS.playerClass][2] then
-				rating = colorPos .. rating .. "%|r"
-			else
-				rating = rating .. "%"
-			end
-		else
-			rating = rating .. "%"
-		end
+		rating = rating .. "%"
 		text:SetText(rating)
 
 		frame.tooltip = (L.MELEE_HIT_TOOLTIP)
@@ -779,17 +754,7 @@ function BCS:SetRating(statFrame, ratingType)
 
 	elseif ratingType == "RANGED" then
 		local rating = BCS:GetRangedHitRating()
-		if BCS.MELEEHIT[BCS.playerClass] then
-			if rating < BCS.MELEEHIT[BCS.playerClass][1] then
-				rating = colorNeg .. rating .. "%|r"
-			elseif rating >= BCS.MELEEHIT[BCS.playerClass][2] then
-				rating = colorPos .. rating .. "%|r"
-			else
-				rating = rating .. "%"
-			end
-		else
-			rating = rating .. "%"
-		end
+		rating = rating .. "%"
 		text:SetText(rating)
 
 		frame.tooltip = (L.MELEE_HIT_TOOLTIP)
