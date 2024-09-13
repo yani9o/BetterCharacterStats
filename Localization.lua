@@ -99,7 +99,7 @@ BCS["L"] = {
 	["Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration."] = "Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration.",
 	["Critical strike chance with spells and melee attacks increased by (%d+)%%."] = "Critical strike chance with spells and melee attacks increased by (%d+)%%.",
 
-
+	--defense
 	["DEFENSE_TOOLTIP"] = [[|cffffffffDefense Skill|r]],
 	["DEFENSE_TOOLTIP_SUB"] = [[Highier defense makes you harder to hit and makes monsters less likely to land a crushing blow.]],
 
@@ -118,7 +118,7 @@ BCS["L"] = {
 	["TOTAL_AVOIDANCE_TOOLTIP"] = [[|cffffffffAvoidance|r]],
 	["TOTAL_AVOIDANCE_TOOLTIP_SUB"] = [[Your combined chance to dodge, parry and block enemy physical attacks.]],
 
-
+	--physical
 	["MELEE_HIT_TOOLTIP"] = [[|cffffffffHit|r]],
 	["MELEE_HIT_TOOLTIP_SUB"] = [[Increases chance to hit with melee attacks and ranged weapons.]],
 
@@ -126,13 +126,12 @@ BCS["L"] = {
 	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks or ranged weapons.]],
 
 	["MELEE_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffMelee Weapon Skill|r]],
-	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.
-	A glancing blow deals reduced damage and can not crit.]],
+	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
 
 	["RANGED_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffRanged Weapon Skill|r]],
 	["RANGED_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss with a ranged weapon.]],
 
-
+	--spells
 	["SPELL_HIT_TOOLTIP"] = [[|cffffffffSpell Hit|r]],
 	["SPELL_HIT_SECONDARY_TOOLTIP"] = [[|cffffffffSpell Hit%d%% (%d%%|cff20ff20+%d%% %s|r|cffffffff)|rIncreases chance to land a spell.]],
 	["SPELL_HIT_TOOLTIP_SUB"] = [[Increases chance to land a harmful spell.]],
@@ -160,31 +159,9 @@ BCS["L"] = {
 	MP5 Regen: |cff20ff20%d|r
 	MP5 Regen (2s): |cff20ff20%d|r]],
 
-	-- unused
-	["ROGUE_MELEE_HIT_TOOLTIP"] = [[
-	+5% hit to always hit enemy players.
-	+8% hit to always hit with your special abilities against a raid boss.
-	+24.6% hit to always hit a raid boss.]],
-
-	["DODGE_CHANCE_TOOLTIP"] = [[|cffffffffDodge Chance|r
-	Boss level creatures have a
-	highier chance to dodge your attacks.]],
-	["GLANCE_TOOLTIP"] = [[|cffffffffGlancing Blow Damage|r
-	A glancing blow deals reduced damage 
-	and can not crit.]],
-	["CRIT_CAP_TOOLTIP"] = [[|cffffffffCrit Cap|r
-	Highiest possible crit chance you can achieve 
-	for white hits, while attacking boss from behind.]],
-	["EFFECTIVE_CRIT_TOOLTIP"] = [[|cffffffffEffective Crit Chance|r
-	You have less crit vs bosses.]],
-	["MELEE_HIT_VS_BOSS_TOOLTIP"] = [[|cffffffffSpecial Miss|r
-	Special ability miss chance: |cffffffff%.1f%%|r]],
-	------
-	
 	PLAYERSTAT_BASE_STATS = "Base Stats",
 	PLAYERSTAT_DEFENSES = "Defenses",
 	PLAYERSTAT_MELEE_COMBAT = "Melee",
-	PLAYERSTAT_MELEE_BOSS = "Melee vs Boss",
 	PLAYERSTAT_RANGED_COMBAT = "Ranged",
 	PLAYERSTAT_SPELL_COMBAT = "Spell",
 	PLAYERSTAT_SPELL_SCHOOLS = "Schools",
@@ -208,14 +185,4 @@ BCS["L"] = {
 	SPELL_SCHOOL_HOLY = "Holy",
 	SPELL_SCHOOL_NATURE = "Nature",
 	SPELL_SCHOOL_SHADOW = "Shadow",
-
-	-- unused
-	MISS_CHANCE_COLON = "Miss:",
-	DODGE_CHANCE_COLON = "Dodge:",
-	GLANCE_REDUCTION_COLON = "Glance:",
-	CRIT_CAP_COLON = "Cap:",
-	BOSS_CRIT_COLON = "E.Crit:",
-
-
-
 }

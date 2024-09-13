@@ -7,7 +7,6 @@ L = BCS.L
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
 	"PLAYERSTAT_MELEE_COMBAT",
-	--"PLAYERSTAT_MELEE_BOSS",
 	"PLAYERSTAT_RANGED_COMBAT",
 	"PLAYERSTAT_SPELL_COMBAT",
 	"PLAYERSTAT_SPELL_SCHOOLS",
@@ -235,7 +234,7 @@ function BCS:SetArmor(statFrame)
 		GameTooltip:Hide()
 	end)
 end
-
+--Weapon Skill code taken from https://github.com/pepopo978/BetterCharacterStats
 function BCS:GetSlotItemId(slot)
 	local _, _, id = string.find(GetInventoryItemLink("player", GetInventorySlotInfo(slot)) or "", "item:(%d+):%d+:%d+:%d+");
 	if id then
@@ -368,57 +367,6 @@ function BCS:GetRangedWeaponSkill()
 	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("RangedSlot")
 
 	return BCS:GetWeaponSkillForWeaponType(itemType)
-end
-
-function BCS:GetMissChanceRaw(wepSkill)
-	local diff = wepSkill - 315
-	local miss = 5
-
-	if diff < -10 then
-		miss = miss - diff * 0.2;
-	else
-		miss = miss - diff * 0.1;
-	end
-
-	local hitChance = BCS:GetHitRating()
-	-- if skill diff < -10 then subtract one from +hit, if there is any +hit
-	if (diff < -10) and (hitChance > 0) then
-		hitChance = hitChance - 1
-	end
-	miss = miss - hitChance
-
-	return miss
-end
-
-function BCS:GetMissChance(wepSkill)
-	return max(0, min(BCS:GetMissChanceRaw(wepSkill),60))
-end
-
-function BCS:GetDualWieldMissChance(wepSkill)
-	return max(0,min(BCS:GetMissChanceRaw(wepSkill)+19,60))
-end
-
-function BCS:GetGlanceChance(wepSkill)
-	return 10 + 15 * 2;
-end
-
-function BCS:GetGlanceReduction(wepSkill)
-	local diff = 315 - wepSkill;
-    local low = math.max(math.min(1.3 - 0.05 * diff, 0.91), 0.01);
-    local high = math.max(math.min(1.2 - 0.03 * diff, 0.99), 0.2);
-    return 100 * ((high - low) / 2 + low);
-end
-
-function BCS:GetDodgeChance(wepSkill)
-	return math.max(5 + (315 - wepSkill) * 0.1, 0);
-end
-
-function BCS:GetDualWieldCritCap(wepSkill)
-	return 100 - self:GetDualWieldMissChance(wepSkill) - self:GetGlanceChance(wepSkill) - self:GetDodgeChance(wepSkill);
-end
-
-function BCS:GetCritCap(wepSkill)
-	return 100 - self:GetMissChance(wepSkill) - self:GetGlanceChance(wepSkill) - self:GetDodgeChance(wepSkill);
 end
 
 function BCS:SetDamage(statFrame)
@@ -625,8 +573,6 @@ function BCS:SetAttackSpeed(statFrame)
 	local value = getglobal(statFrame:GetName() .. "StatText")
 	label:SetText(TEXT(SPEED) .. ":")
 	value:SetText(text)
-	--statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
-	--statFrame.tooltip = format(CR_HASTE_RATING_TOOLTIP, GetCombatRating(CR_HASTE_MELEE), GetCombatRatingBonus(CR_HASTE_MELEE));
 	statFrame:SetScript("OnEnter", CharacterDamageFrame_OnEnter)
 	statFrame:SetScript("OnLeave", function()
 		GameTooltip:Hide()
@@ -762,17 +708,6 @@ function BCS:SetRating(statFrame, ratingType)
 
 	elseif ratingType == "SPELL" then
 		local spell_hit, spell_hit_fire, spell_hit_frost, spell_hit_arcane, spell_hit_shadow = BCS:GetSpellHitRating()
-		--[[if BCS.SPELLHIT[BCS.playerClass] then
-			if spell_hit < BCS.SPELLHIT[BCS.playerClass][1] then
-				spell_hit = colorNeg .. spell_hit .. "%|r"
-			elseif spell_hit >= BCS.SPELLHIT[BCS.playerClass][2] then
-				spell_hit = colorPos .. spell_hit .. "%|r"
-			else
-				spell_hit = spell_hit .. "%"
-			end
-		else
-			spell_hit = spell_hit .. "%"
-		end]]
 
 		if spell_hit_fire > 0 or spell_hit_frost > 0 or spell_hit_arcane > 0 or spell_hit_shadow > 0 then
 			-- got spell hit from talents
@@ -884,127 +819,6 @@ function BCS:SetRangedWeaponSkill(statFrame)
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
 		GameTooltip:SetText(this.tooltip)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-end
-
-function BCS:SetMissChance(statFrame)
-	local frame = statFrame
-	local text = getglobal(statFrame:GetName() .. "StatText")
-	local label = getglobal(statFrame:GetName() .. "Label")
-	label:SetText(L.MISS_CHANCE_COLON)
-
-	local mh_miss = BCS:GetMissChance(BCS:GetMHWeaponSkill())
-
-	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%.1f%%|%.1f%%",
-				BCS:GetDualWieldMissChance(BCS:GetMHWeaponSkill()),
-				BCS:GetDualWieldMissChance(BCS:GetOHWeaponSkill())))
-	else
-		text:SetText(format("%.1f%%", mh_miss))
-	end
-
-	frame.tooltip = format(L.MELEE_HIT_VS_BOSS_TOOLTIP, mh_miss)
-
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-end
-
-function BCS:SetGlanceReduction(statFrame)
-	local text = getglobal(statFrame:GetName() .. "StatText")
-	local label = getglobal(statFrame:GetName() .. "Label")
-	label:SetText(L.GLANCE_REDUCTION_COLON)
-
-	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%d%% |%d%%",
-				BCS:GetGlanceReduction(BCS:GetMHWeaponSkill()),
-				BCS:GetGlanceReduction(BCS:GetOHWeaponSkill())))
-	else
-		text:SetText(format("%d%%", BCS:GetGlanceReduction(BCS:GetMHWeaponSkill())))
-	end
-	statFrame.tooltip = L.GLANCE_TOOLTIP
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-end
-
-function BCS:SetDodgeChance(statFrame)
-	local text = getglobal(statFrame:GetName() .. "StatText")
-	local label = getglobal(statFrame:GetName() .. "Label")
-	label:SetText(L.DODGE_CHANCE_COLON)
-	
-	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%.1f%% |%.1f%%",
-				BCS:GetDodgeChance(BCS:GetMHWeaponSkill()),
-				BCS:GetDodgeChance(BCS:GetOHWeaponSkill())))
-	else
-		text:SetText(format("%.1f%%", BCS:GetDodgeChance(BCS:GetMHWeaponSkill())))
-	end
-	statFrame.tooltip = L.DODGE_CHANCE_TOOLTIP
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-end
-
-function BCS:SetCritCap(statFrame)
-	local text = getglobal(statFrame:GetName() .. "StatText")
-	local label = getglobal(statFrame:GetName() .. "Label")
-	label:SetText(L.CRIT_CAP_COLON)
-	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%.1f%%|%.1f%%",
-				BCS:GetDualWieldCritCap(BCS:GetMHWeaponSkill()),
-				BCS:GetDualWieldCritCap(BCS:GetOHWeaponSkill())))
-	else
-		text:SetText(format("%.1f%%", BCS:GetCritCap(BCS:GetMHWeaponSkill())))
-	end
-	statFrame.tooltip = L.CRIT_CAP_TOOLTIP
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-end
-
-function BCS:SetBossCrit(statFrame)
-	local text = getglobal(statFrame:GetName() .. "StatText")
-	local label = getglobal(statFrame:GetName() .. "Label")
-	label:SetText(L.BOSS_CRIT_COLON)
-
-	local critChance = BCS:GetCritChance() - 3 -- 3 % crit reduction vs lvl 63
-	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%.1f%%|%.1f%%",
-				math.min(critChance, BCS:GetDualWieldCritCap(BCS:GetMHWeaponSkill())),
-				math.min(critChance, BCS:GetDualWieldCritCap(BCS:GetOHWeaponSkill()))
-		))
-	else
-		text:SetText(format("%.1f%%", math.min(critChance, BCS:GetCritCap(BCS:GetMHWeaponSkill()))))
-	end
-	statFrame.tooltip = L.EFFECTIVE_CRIT_TOOLTIP
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
 		GameTooltip:Show()
 	end)
 	statFrame:SetScript("OnLeave", function()
@@ -1481,13 +1295,6 @@ function BCS:UpdatePaperdollStats(prefix, index)
 		BCS:SetAttackPower(stat4)
 		BCS:SetRating(stat5, "MELEE")
 		BCS:SetMeleeCritChance(stat6)
-	elseif (index == "PLAYERSTAT_MELEE_BOSS") then
-		BCS:SetWeaponSkill(stat1)
-		BCS:SetMissChance(stat2)
-		BCS:SetDodgeChance(stat3)
-		BCS:SetGlanceReduction(stat4)
-		BCS:SetCritCap(stat5)
-		BCS:SetBossCrit(stat6)
 	elseif (index == "PLAYERSTAT_RANGED_COMBAT") then
 		BCS:SetRangedWeaponSkill(stat1)
 		BCS:SetRangedDamage(stat2)

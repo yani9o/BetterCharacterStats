@@ -881,7 +881,7 @@ function BCS:GetSpellPower(school)
 			spellPower = spellPower + tonumber(spellPowerFromAura)
 			damagePower = damagePower + tonumber(spellPowerFromAura)
 		end
-
+		--turtle wow spell power food 
 		_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell Damage increased by (%d+)")
 		if spellPowerFromAura then
 			spellPower = spellPower + tonumber(spellPowerFromAura)
