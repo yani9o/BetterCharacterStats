@@ -318,6 +318,10 @@ function BCS:GetWeaponSkillForWeaponType(weaponType)
 		return BCS:GetWeaponSkill("Maces")
 	elseif weaponType == "Two-Handed Maces" then
 		return BCS:GetWeaponSkill("Two-Handed Maces")
+	elseif weaponType == "Staves" then
+		return BCS:GetWeaponSkill("Staves")
+	elseif weaponType == "Polearms" then
+		return BCS:GetWeaponSkill("Polearms")
 	elseif weaponType == "Fist Weapons" then
 		return BCS:GetWeaponSkill("Unarmed")
 	elseif weaponType == "Bows" then
@@ -332,7 +336,7 @@ function BCS:GetWeaponSkillForWeaponType(weaponType)
 		return BCS:GetWeaponSkill("Wands")
 	end
 
-	return 0
+	return BCS:GetWeaponSkill("Unarmed")
 end
 
 function BCS:GetItemInfoForSlot(slot)
