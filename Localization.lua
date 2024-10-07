@@ -10,11 +10,12 @@ BCS["L"] = {
 	["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = "^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%.",
 	["^Set: Increases healing done by spells and effects by up to (%d+)%."] = "^Set: Increases healing done by spells and effects by up to (%d+)%.",
 	["^Set: Allows (%d+)%% of your Mana regeneration to continue while casting."] = "^Set: Allows (%d+)%% of your Mana regeneration to continue while casting.",
+	["^Set: Improves your chance to get a critical strike by (%d)%%."] = "^Set: Improves your chance to get a critical strike by (%d)%%.",
 
 	["Equip: Improves your chance to hit by (%d)%%."] = "Equip: Improves your chance to hit by (%d)%%.",
 	["Equip: Improves your chance to get a critical strike with spells by (%d)%%."] = "Equip: Improves your chance to get a critical strike with spells by (%d)%%.",
 	["Equip: Improves your chance to hit with spells by (%d)%%."] = "Equip: Improves your chance to hit with spells by (%d)%%.",
-
+	["Equip: Improves your chance to get a critical strike by (%d)%%."] = "Equip: Improves your chance to get a critical strike by (%d)%%.",
 	["Increases your chance to hit with melee weapons by (%d)%%."] = "Increases your chance to hit with melee weapons by (%d)%%.",
 	["Increases your critical strike chance with ranged weapons by (%d)%%."] = "Increases your critical strike chance with ranged weapons by (%d)%%.",
 	["Increases hit chance by (%d)%% and increases the chance movement impairing effects will be resisted by an additional %d+%%."] = "Increases hit chance by (%d)%% and increases the chance movement impairing effects will be resisted by an additional %d+%%.",
@@ -53,6 +54,7 @@ BCS["L"] = {
 	["^%+(%d+) mana every 5 sec."] = "^%+(%d+) mana every 5 sec.",
 	["Restores (%d+) mana every 1 sec."] = "Restores (%d+) mana every 1 sec.",
 	["(%d+)%% of your Mana regeneration continuing while casting."] = "(%d+)%% of your Mana regeneration continuing while casting.",
+	["(%d+)%% of your mana regeneration to continue while casting."] = "(%d+)%% of your mana regeneration to continue while casting.",
 
 	-- Mana Oils
 	["^Brilliant Mana Oil %((%d+) min%"] = "^Brilliant Mana Oil %((%d+) min%",
@@ -87,13 +89,13 @@ BCS["L"] = {
 	["Mana Regeneration increased by (%d+) every 5 seconds."] = "Mana Regeneration increased by (%d+) every 5 seconds.",
 	["Improves your chance to hit by (%d+)%%."] = "Improves your chance to hit by (%d+)%%.",
 	["Chance for a critical hit with a spell increased by (%d+)%%."] = "Chance for a critical hit with a spell increased by (%d+)%%.",
-	["While active, target's critical hit chance with spells and attacks increases by 10%%."] = "While active, target's critical hit chance with spells and attacks increases by 10%%.",
+	["While active, target's critical hit chance with spells and attacks increases by 10%%."] = "While active, target's critical hit chance with spells and attacks increases by 10%%.",--??
 	["Increases attack power by %d+ and chance to hit by (%d+)%%."] = "Increases attack power by %d+ and chance to hit by (%d+)%%.",
 	["Holy spell critical hit chance increased by (%d+)%%."] = "Holy spell critical hit chance increased by (%d+)%%.",
 	["Destruction spell critical hit chance increased by (%d+)%%."] = "Destruction spell critical hit chance increased by (%d+)%%.",
 	["Arcane spell critical hit chance increased by (%d+)%%.\r\nArcane spell critical hit damage increased by (%d+)%%."] = "Arcane spell critical hit chance increased by (%d+)%%.\r\nArcane spell critical hit damage increased by (%d+)%%.",
 	["Spell hit chance increased by (%d+)%%."] = "Spell hit chance increased by (%d+)%%.",
-
+	["Agility increased by 25, Critical hit chance increases by (%d)%%."] = "Agility increased by 25, Critical hit chance increases by (%d)%%.",
 	["Increases chance for a melee, ranged, or spell critical by (%d+)%% and all attributes by %d+."] = "Increases chance for a melee, ranged, or spell critical by (%d+)%% and all attributes by %d+.",
 	["Melee critical-hit chance reduced by (%d+)%%.\r\nSpell critical-hit chance reduced by (%d+)%%."] = "Melee critical-hit chance reduced by (%d+)%%.\r\nSpell critical-hit chance reduced by (%d+)%%.",
 	["Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration."] = "Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration.",
@@ -118,18 +120,20 @@ BCS["L"] = {
 	["TOTAL_AVOIDANCE_TOOLTIP"] = [[|cffffffffAvoidance|r]],
 	["TOTAL_AVOIDANCE_TOOLTIP_SUB"] = [[Your combined chance to dodge, parry and block enemy physical attacks.]],
 
-	--physical
-	["MELEE_HIT_TOOLTIP"] = [[|cffffffffHit|r]],
-	["MELEE_HIT_TOOLTIP_SUB"] = [[Increases chance to hit with melee attacks and ranged weapons.]],
-
-	["MELEE_CRIT_TOOLTIP"] = [[|cffffffffCrit|r]],
-	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks or ranged weapons.]],
-
+	--melee
+	["MELEE_HIT_TOOLTIP"] = [[|cffffffffMelee Hit|r]],
+	["MELEE_HIT_TOOLTIP_SUB"] = [[Increases chance to hit with melee attacks.]],
+	["MELEE_CRIT_TOOLTIP"] = [[|cffffffffMelee Crit|r]],
+	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks.]],
 	["MELEE_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffMelee Weapon Skill|r]],
 	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
-
+	--ranged
 	["RANGED_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffRanged Weapon Skill|r]],
 	["RANGED_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss with a ranged weapon.]],
+	["RANGED_CRIT_TOOLTIP"] = [[|cffffffffRanged Crit|r]],
+	["RANGED_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with ranged weapons.]],
+	["RANGED_HIT_TOOLTIP"] = [[|cffffffffRanged Hit|r]],
+	["RANGED_HIT_TOOLTIP_SUB"] = [[Increases chance to hit with ranged weapons.]],
 
 	--spells
 	["SPELL_HIT_TOOLTIP"] = [[|cffffffffSpell Hit|r]],
@@ -151,13 +155,13 @@ BCS["L"] = {
 	["SPELL_HEALING_POWER_SECONDARY_TOOLTIP"] = [[|cffffffffHealing Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
 	["SPELL_HEALING_POWER_TOOLTIP_SUB"] = [[Increases healing done by spells and effects.]],
 
-	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana regen: %d |cffBF40BF(%d)|r]],
-	["SPELL_MANA_REGEN_TOOLTIP_SUB"] = [[Mana regen when not casting and |cffBF40BF(while casting)|r.
+	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana regen: %d |cffffffff(%d)|r]],
+	["SPELL_MANA_REGEN_TOOLTIP_SUB"] = [[Mana regen when not casting and (while casting).
 	Mana regenerates every 2 seconds and the amount is dependent on your total spirit and MP5.
-	Spirit Regen: |cff7DF9FF%d|r
-	Regen while casting: |cffBF40BF%d%%|r
-	MP5 Regen: |cff20ff20%d|r
-	MP5 Regen (2s): |cff20ff20%d|r]],
+	Spirit Regen: |cffffffff%d|r
+	Regen while casting: |cffffffff%d%%|r
+	MP5 Regen: |cffffffff%d|r
+	MP5 Regen (2s): |cffffffff%d|r]],
 
 	PLAYERSTAT_BASE_STATS = "Base Stats",
 	PLAYERSTAT_DEFENSES = "Defenses",

@@ -75,7 +75,7 @@ function BCS:GetHitRating(hitOnly)
 	local hit = 0;
 	local MAX_INVENTORY_SLOTS = 19;
 	hit_debuff = 0;
-	
+	--scan gear
 	for slot=0, MAX_INVENTORY_SLOTS do
 		local hasItem = GetInventoryItemLink('player', slot)
 		if hasItem then
@@ -173,7 +173,7 @@ function BCS:GetHitRating(hitOnly)
 			return hit
 		end
 	end
-	
+	--scan talents
 	for tab=1, MAX_TABS do
 		local MAX_TALENTS = GetNumTalents(tab)
 		
@@ -336,7 +336,7 @@ function BCS:GetSpellHitRating()
 					if value and rank > 0 then
 						hit_fire = hit_fire + tonumber(value)
 						hit_frost = hit_frost + tonumber(value)
-						line = MAX_LINES
+						break
 					end
 					
 					-- Arcane Focus
@@ -344,7 +344,7 @@ function BCS:GetSpellHitRating()
 					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
 					if value and rank > 0 then
 						hit_arcane = hit_arcane + tonumber(value)
-						line = MAX_LINES
+						break
 					end
 					
 					-- Priest
@@ -353,7 +353,7 @@ function BCS:GetSpellHitRating()
 					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
 					if value and rank > 0 then
 						hit_shadow = hit_shadow + tonumber(value)
-						line = MAX_LINES
+						break
 					end
 					
 					-- Druid
@@ -362,7 +362,7 @@ function BCS:GetSpellHitRating()
 					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
 					if value and rank > 0 then
 						hit = hit + tonumber(value)
-						line = MAX_LINES
+						break
 					end
 					
 					-- Paladin & Shaman
@@ -371,7 +371,7 @@ function BCS:GetSpellHitRating()
 					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
 					if value and rank > 0 then
 						hit = hit + tonumber(value)
-						line = MAX_LINES
+						break
 					end
 				end	
 			end
@@ -392,58 +392,7 @@ local Cache_GetCritChance_SpellID, Cache_GetCritChance_BookType, Cache_GetCritCh
 local Cache_GetCritChance_Tab, Cache_GetCritChance_Talent
 function BCS:GetCritChance()
 	local crit = 0
-	local _, class = UnitClass('player')
-	
-	if class == 'HUNTER' then
-	
-		local MAX_TABS = GetNumTalentTabs()
-		-- speedup
-		if Cache_GetCritChance_Tab and Cache_GetCritChance_Talent then
-			BCS_Tooltip:SetTalent(Cache_GetCritChance_Tab, Cache_GetCritChance_Talent)
-			local MAX_LINES = BCS_Tooltip:NumLines()
-			
-			for line=1, MAX_LINES do
-				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
-				if left:GetText() then
-					local _,_, value = strfind(left:GetText(), L["Increases your critical strike chance with all attacks by (%d)%%."])
-					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(Cache_GetCritChance_Tab, Cache_GetCritChance_Talent)
-					if value and rank > 0 then
-						crit = crit + tonumber(value)
-						line = MAX_LINES
-					end
-				end
-			end
-		else
-			for tab=1, MAX_TABS do
-				local MAX_TALENTS = GetNumTalents(tab)
-				for talent=1, MAX_TALENTS do
-					BCS_Tooltip:SetTalent(tab, talent);
-					local MAX_LINES = BCS_Tooltip:NumLines()
-					
-					for line=1, MAX_LINES do
-						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
-						if left:GetText() then
-							local _,_, value = strfind(left:GetText(), L["Increases your critical strike chance with all attacks by (%d)%%."])
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
-							if value and rank > 0 then
-								crit = crit + tonumber(value)
-								
-								Cache_GetCritChance_Tab = tab
-								Cache_GetCritChance_Talent = talent
-								
-								line = MAX_LINES
-								talent = MAX_TALENTS
-								tab = MAX_TABS
-							end
-						end	
-					end
-					
-				end
-			end
-		end
-		
-	end
-	
+
 	-- speedup
 	if Cache_GetCritChance_SpellID and Cache_GetCritChance_BookType and Cache_GetCritChance_Line then
 	
@@ -458,7 +407,7 @@ function BCS:GetCritChance()
 		
 		return crit
 	end
-	
+	--scan spellbook
 	local MAX_TABS = GetNumSpellTabs()
 	
 	for tab=1, MAX_TABS do
@@ -495,11 +444,26 @@ function BCS:GetCritChance()
 	return crit
 end
 
-local Cache_GetRangedCritChance_Tab, Cache_GetRangedCritChance_Talent, Cache_GetRangedCritChance_Line
+--local Cache_GetRangedCritChance_Tab, Cache_GetRangedCritChance_Talent, Cache_GetRangedCritChance_Line
 function BCS:GetRangedCritChance()
-	local crit = BCS:GetCritChance()
-	
-	if Cache_GetRangedCritChance_Tab and Cache_GetRangedCritChance_Talent and Cache_GetRangedCritChance_Line then
+	-- values from vmangos core
+	local crit = 0
+	local _, class = UnitClass("player")
+	local _, agility = UnitStat("player", 2)
+	local level = UnitLevel("player")
+	local vallvl1 = 0
+	local vallvl60 = 0
+	local classrate = 0
+	if class == "MAGE" then vallvl1 = 12.9 vallvl60 = 20
+	elseif class == "ROGUE" then vallvl1 = 2.2 vallvl60 = 29
+	elseif class == "HUNTER" then vallvl1 = 3.5 vallvl60 = 53
+	elseif class == "PRIEST" then vallvl1 = 11 vallvl60 = 20
+	elseif class == "WARLOCK" then vallvl1 = 8.4 vallvl60 = 20
+	elseif class == "WARRIOR" then vallvl1 = 3.9 vallvl60 = 20
+	else return crit end
+	classrate = vallvl1 * (60 - level) / 59 + vallvl60 * (level - 1) / 59
+	crit = agility / classrate
+	--[[if Cache_GetRangedCritChance_Tab and Cache_GetRangedCritChance_Talent and Cache_GetRangedCritChance_Line then
 		BCS_Tooltip:SetTalent(Cache_GetRangedCritChance_Tab, Cache_GetRangedCritChance_Talent)
 		local left = getglobal(BCS_Prefix .. "TextLeft" .. Cache_GetRangedCritChance_Line)
 		
@@ -509,11 +473,15 @@ function BCS:GetRangedCritChance()
 			if value and rank > 0 then
 				crit = crit + tonumber(value)
 			end
+			_,_, value = strfind(left(GetText()), L["Increases your critical strike chance with all attacks by (%d)%%."])
+			if value and rank > 0 then
+				crit = crit + tonumber(value)
+			end
 		end
-	
+		
 		return crit
-	end
-	
+	end]]
+	--scan talents
 	local MAX_TABS = GetNumTalentTabs()
 	
 	for tab=1, MAX_TABS do
@@ -530,17 +498,73 @@ function BCS:GetRangedCritChance()
 					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
 					if value and rank > 0 then
 						crit = crit + tonumber(value)
-						
-						line = MAX_LINES
-						talent = MAX_TALENTS
-						tab = MAX_TABS
+						break
+					end
+					_,_, value = strfind(left:GetText(), L["Increases your critical strike chance with all attacks by (%d)%%."])
+					if value and rank > 0 then
+						crit = crit + tonumber(value)
+						break
 					end
 				end
 			end
 			
 		end
 	end
-	
+	--scan gear
+	local Crit_Set_Bonus = {}
+	local MAX_INVENTORY_SLOTS = 19
+	for slot=0, MAX_INVENTORY_SLOTS do
+		local hasItem = GetInventoryItemLink('player', slot)
+		if hasItem then
+			local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
+			BCS_Tooltip:SetHyperlink(eqItemLink)
+			local SET_NAME
+			local MAX_LINES = BCS_Tooltip:NumLines()
+			
+			for line=1, MAX_LINES do
+				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+				
+				if left:GetText() then
+					local _,_, value = strfind(left:GetText(), L["Equip: Improves your chance to get a critical strike by (%d)%%."])
+					if value then
+						crit = crit + tonumber(value)
+					end
+					
+					_,_, value = strfind(left:GetText(), "(.+) %(%d/%d%)")
+					if value then
+						SET_NAME = value
+					end
+					_, _, value = strfind(left:GetText(), L["^Set: Improves your chance to get a critical strike by (%d)%%."])
+					if value and SET_NAME and not tContains(Crit_Set_Bonus, SET_NAME) then
+						tinsert(Crit_Set_Bonus, SET_NAME)
+						crit = crit + tonumber(value)
+					end
+				end
+			end
+		
+		end
+	end
+	--buffs
+	--ony head
+	local critFromAura = BCS:GetPlayerAura(L["Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration."])
+	if critFromAura then
+		crit = crit + 5
+	end
+	--mongoose
+	_, _, critFromAura = BCS:GetPlayerAura(L["Agility increased by 25, Critical hit chance increases by (%d)%%."])
+	if critFromAura then
+		crit = crit + tonumber(critFromAura)
+	end
+	--songflower
+	_, _, critFromAura = BCS:GetPlayerAura(L["Increases chance for a melee, ranged, or spell critical by (%d+)%% and all attributes by %d+."])
+	if critFromAura then
+		crit = crit + tonumber(critFromAura)
+	end
+	if class == "MAGE" then crit = crit + 3.2
+	elseif class == "PRIEST" then crit = crit + 3
+	elseif class == "WARLOCK" then crit = crit + 2
+	end
+
 	return crit
 end
 
@@ -582,6 +606,7 @@ function BCS:GetSpellCritChance()
 		spellCrit = intelect / 29.5
 	end
 	--]]
+	--scan gear
 	local MAX_INVENTORY_SLOTS = 19
 	
 	for slot=0, MAX_INVENTORY_SLOTS do
@@ -639,7 +664,7 @@ function BCS:GetSpellCritChance()
 	if critFromAura then
 		spellCrit = spellCrit + tonumber(critFromAura)
 	end
-	_, _, critFromAura = BCS:GetPlayerAura(L["While active, target's critical hit chance with spells and attacks increases by 10%%."])
+	_, _, critFromAura = BCS:GetPlayerAura(L["While active, target's critical hit chance with spells and attacks increases by 10%%."])--SoD spell? 23964
 	if critFromAura then
 		spellCrit = spellCrit + 10
 	end
@@ -669,7 +694,7 @@ function BCS:GetSpellPower(school)
 		if not L["Equip: Increases damage done by "..school.." spells and effects by up to (%d+)."] then return -1 end
 		local spellPower = 0;
 		local MAX_INVENTORY_SLOTS = 19
-		
+		--scan gear
 		for slot=0, MAX_INVENTORY_SLOTS do
 			local hasItem = BCS_Tooltip:SetInventoryItem("player", slot)
 			
@@ -852,9 +877,7 @@ function BCS:GetSpellPower(school)
 							spellPower = spellPower + floor(((tonumber(value) / 100) * effectiveStat))
 							
 							-- nothing more is currenlty supported, break out of the loops
-							line = MAX_LINES
-							talent = MAX_TALENTS
-							tab = MAX_TABS
+							break
 						end
 					end	
 				end
@@ -929,7 +952,7 @@ function BCS:GetHealingPower()
 	local healPower = 0;
 	local healPower_Set_Bonus = {}
 	local MAX_INVENTORY_SLOTS = 19
-	
+	--scan gear
 	for slot=0, MAX_INVENTORY_SLOTS do
 		local hasItem = GetInventoryItemLink('player', slot)
 		if hasItem then
@@ -986,6 +1009,13 @@ function BCS:GetHealingPower()
 	if healPowerFromAura then
 		healPower = healPower + tonumber(healPowerFromAura)
 	end
+	--Tree of Life (unfortunately only from self)
+	local found = BCS:GetPlayerAura("Tree of Life Form") and BCS:GetPlayerAura("Tree of Life Aura")
+	local _, spirit = UnitStat("player", 5)
+	local treebonus = nil
+	if found then
+		treebonus = spirit * 0.2
+	end
     --Sweet Surprise
     _, _, healPowerFromAura = BCS:GetPlayerAura(L["Increases healing done by magical spells by up to (%d+) for 3600 sec."])
 	if healPowerFromAura then
@@ -1016,7 +1046,7 @@ function BCS:GetHealingPower()
 		healPower = healPower + tonumber(healPowerFromAura)
 	end
 	
-	return healPower
+	return healPower, treebonus
 end
 
 local function GetRegenMPPerSpirit()
@@ -1051,7 +1081,7 @@ function BCS:GetManaRegen()
 	local mp5 = 0
 	local mp5_Set_Bonus = {}
 	local MAX_INVENTORY_SLOTS = 19
-	
+	--scan gear
 	for slot=0, MAX_INVENTORY_SLOTS do
 		local hasItem = GetInventoryItemLink('player', slot)
 		if hasItem then
@@ -1114,31 +1144,16 @@ function BCS:GetManaRegen()
 		end
 	end
 	
-	-- scan talents
-	local MAX_TABS = GetNumTalentTabs()
-	
-	for tab=1, MAX_TABS do
-		local MAX_TALENTS = GetNumTalents(tab)
-		
-		for talent=1, MAX_TALENTS do
-			BCS_Tooltip:SetTalent(tab, talent)
-			local MAX_LINES = BCS_Tooltip:NumLines()
-			
-			for line=1, MAX_LINES do
-				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
-				if left:GetText() then
-					-- Priest (Meditation) / Druid (Reflection)
-					local _,_, value = strfind(left:GetText(), L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
-					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
-					if value and rank > 0 then
-						casting = casting + tonumber(value)
-					end
-				end	
+	-- improved Shadowform
+	for i = 1, MAX_SKILLLINE_TABS do
+		local name, texture, offset, numSpells = GetSpellTabInfo(i);
+		for s = offset + 1, offset + numSpells do
+		local spell, rank = GetSpellName(s, BOOKTYPE_SPELL);
+			if spell == "Improved Shadowform" and BCS:GetPlayerAura("Shadowform") then
+				casting = casting + 15
 			end
-			
 		end
 	end
-		
 	-- buffs
 	-- Warchief's Blessing
 	local _, _, mp5FromAura = BCS:GetPlayerAura(L["Increases hitpoints by 300. 15%% haste to melee attacks. (%d+) mana regen every 5 seconds."])
@@ -1170,18 +1185,55 @@ function BCS:GetManaRegen()
 	if mp5FromAura then
 		mp5 = mp5 + tonumber(mp5FromAura)*5 -- had to multiply by 5 the mp5FromAura because the item is a sec per tick
 	end
-	--Aura of the blue dragon
-	 _, _, castingFromAura = BCS:GetPlayerAura(L["(%d+)%% of your Mana regeneration continuing while casting."])
-	if mp5FromAura then
-		casting = casting + tonumber(castingFromAura)
-	end
 	--Power of the Guardian
-	 _, _, castingFromAura = BCS:GetPlayerAura("Restores (%d+) mana per 5 seconds.")
+	 _, _, mp5FromAura = BCS:GetPlayerAura("Restores (%d+) mana per 5 seconds.")
 	if mp5FromAura then
 		mp5 = mp5 + tonumber(mp5FromAura)
+	end
+	--Aura of the blue dragon
+	local _, _, castingFromAura = BCS:GetPlayerAura(L["(%d+)%% of your Mana regeneration continuing while casting."])
+	if castingFromAura then
+		casting = casting + tonumber(castingFromAura)
+	end
+	--Mage Armor
+	_, _, castingFromAura = BCS:GetPlayerAura(L["(%d+)%% of your mana regeneration to continue while casting."])
+	if castingFromAura then
+		casting = casting + tonumber(castingFromAura)
+	end
+	
+	-- scan talents
+	local MAX_TABS = GetNumTalentTabs()
+	local brilliance = nil
+	for tab=1, MAX_TABS do
+		local MAX_TALENTS = GetNumTalents(tab)
+		
+		for talent=1, MAX_TALENTS do
+			BCS_Tooltip:SetTalent(tab, talent)
+			local MAX_LINES = BCS_Tooltip:NumLines()
+			
+			for line=1, MAX_LINES do
+				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+				if left:GetText() then
+					-- Priest (Meditation) / Druid (Reflection) / Mage (Arcane Meditation)
+					local _,_, value = strfind(left:GetText(), L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
+					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+					if value and rank > 0 then
+						casting = casting + tonumber(value)
+						break
+					end
+					-- Brilliance Aura (unfortunately only from self)
+					local haveTalent = strfind(left:GetText(), "Brilliance Aura")
+					if haveTalent and rank > 0 and BCS:GetPlayerAura("Brilliance Aura") then
+						brilliance = (base + (mp5 * 0.4)) * 0.15
+					end
+				end
+			end
+			
+		end
 	end
 	if casting > 100 then
 		casting = 100
 	end
-	return base, casting, mp5
+	
+	return base, casting, mp5, brilliance
 end

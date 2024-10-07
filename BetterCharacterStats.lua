@@ -75,7 +75,7 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("UNIT_INVENTORY_CHANGED") -- fires when equipment changes
 	self.Frame:RegisterEvent("CHARACTER_POINTS_CHANGED") -- fires when learning talent
 	self.Frame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
-
+	self.Frame:RegisterEvent("CHAT_MSG_SKILL") --gaining weapon skill
 	local _, classFileName = UnitClass("Player")
 	self.playerClass = strupper(classFileName)
 end
@@ -94,8 +94,9 @@ function BCS:OnEvent()
 	end]]
 
 	if
-	event == "PLAYER_AURAS_CHANGED" or
-			event == "CHARACTER_POINTS_CHANGED"
+		event == "PLAYER_AURAS_CHANGED" 
+			or event == "CHARACTER_POINTS_CHANGED"
+			or event == "CHAT_MSG_SKILL"
 	then
 		if BCS.PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
@@ -691,7 +692,7 @@ function BCS:SetRating(statFrame, ratingType)
 	local frame = statFrame
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-
+	local _,class = UnitClass("player")
 	label:SetText(L.MELEE_HIT_RATING_COLON)
 
 	if ratingType == "MELEE" then
@@ -705,10 +706,19 @@ function BCS:SetRating(statFrame, ratingType)
 	elseif ratingType == "RANGED" then
 		local rating = BCS:GetRangedHitRating()
 		rating = rating .. "%"
+			-- If no ranged attack then set to n/a
+		if not (GetInventoryItemLink("player",18)) or
+				((class == "PALADIN")
+				or(class == "DRUID")
+				or(class == "SHAMAN"))
+		then
+			text:SetText(NOT_APPLICABLE)
+			return
+		end
 		text:SetText(rating)
 
-		frame.tooltip = (L.MELEE_HIT_TOOLTIP)
-		frame.tooltipSubtext = format(L.MELEE_HIT_TOOLTIP_SUB)
+		frame.tooltip = (L.RANGED_HIT_TOOLTIP)
+		frame.tooltipSubtext = format(L.RANGED_HIT_TOOLTIP_SUB)
 
 	elseif ratingType == "SPELL" then
 		local spell_hit, spell_hit_fire, spell_hit_frost, spell_hit_arcane, spell_hit_shadow = BCS:GetSpellHitRating()
@@ -853,12 +863,31 @@ end
 function BCS:SetRangedCritChance(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-
+	local crit = BCS:GetRangedCritChance()
+	local skill = BCS:GetRangedWeaponSkill()
+	local _, class = UnitClass("player")
+	local level = UnitLevel("player")
+	-- apply skill difference modifier
+	local skillDiff = skill - (level*5)
+	if (skill >= (level*5)) then
+		crit = crit + (skillDiff * 0.04)
+	else
+		crit = crit + (skillDiff * 0.2)
+	end
+	if crit < 0 then crit = 0 end
 	label:SetText(L.RANGED_CRIT_COLON)
-	text:SetText(format("%.2f%%", BCS:GetRangedCritChance()))
-
-	statFrame.tooltip = (L.MELEE_CRIT_TOOLTIP)
-	statFrame.tooltipSubtext = (L.MELEE_CRIT_TOOLTIP_SUB)
+	text:SetText(format("%.2f%%", crit))
+	-- If no ranged attack then set to n/a
+	if not (GetInventoryItemLink("player",18))
+			or((class == "PALADIN")
+			or(class == "DRUID")
+			or(class == "SHAMAN"))
+	then
+		text:SetText(NOT_APPLICABLE)
+		return
+	end
+	statFrame.tooltip = (L.RANGED_CRIT_TOOLTIP)
+	statFrame.tooltipSubtext = (L.RANGED_CRIT_TOOLTIP_SUB)
 	statFrame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
 		GameTooltip:SetText(this.tooltip)
@@ -876,14 +905,16 @@ function BCS:SetHealing(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 
 	local power, _, _, dmg = BCS:GetSpellPower()
-	local heal = BCS:GetHealingPower()
+	local heal, treebonus = BCS:GetHealingPower()
 	power = power - dmg 
+	local total = power + heal
+	if treebonus then total = total + treebonus end
 	label:SetText(L.HEAL_POWER_COLON)
-	text:SetText(power + heal)
+	text:SetText(format("%.f",total))
 	if heal ~= 0 then
-		frame.tooltip = format(L.SPELL_HEALING_POWER_SECONDARY_TOOLTIP, (power + heal), power, heal)
+		frame.tooltip = format(L.SPELL_HEALING_POWER_SECONDARY_TOOLTIP, (total), power, heal)
 	else
-		frame.tooltip = format(L.SPELL_HEALING_POWER_TOOLTIP, (power + heal))
+		frame.tooltip = format(L.SPELL_HEALING_POWER_TOOLTIP, (total))
 	end
 	frame.tooltipSubtext = format(L.SPELL_HEALING_POWER_TOOLTIP_SUB)
 	frame:SetScript("OnEnter", function()
@@ -902,9 +933,10 @@ function BCS:SetManaRegen(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
 
-	local base, casting, mp5 = BCS:GetManaRegen()
+	local base, casting, mp5, brilliance = BCS:GetManaRegen()
 	local mp2 = mp5 * 0.4
 	local totalRegen = base + mp2
+	if brilliance then totalRegen = totalRegen + brilliance end
 	local totalRegenWhileCasting = (casting / 100) * base + mp2
 	local _,class = UnitClass("player")
 	label:SetText(L.MANA_REGEN_COLON)
@@ -914,7 +946,7 @@ function BCS:SetManaRegen(statFrame)
 		text:SetText(NOT_APPLICABLE)
 		frame.tooltip = nil
 	else
-		text:SetText(format("%d |cffBF40BF(%d)|r", totalRegen, totalRegenWhileCasting))
+		text:SetText(format("%.0f (%.0f)", totalRegen, totalRegenWhileCasting))
 		frame.tooltip = format(L.SPELL_MANA_REGEN_TOOLTIP, totalRegen, totalRegenWhileCasting)
 		frame.tooltipSubtext = format(L.SPELL_MANA_REGEN_TOOLTIP_SUB, base, casting, mp5, mp2)
 		frame:SetScript("OnEnter", function()
@@ -1208,7 +1240,11 @@ function BCS:SetRangedAttackPower(statFrame)
 		frame.tooltip = nil
 		return
 	end
-
+	if ( HasWandEquipped() ) then
+		text:SetText("--");
+		frame.tooltip = nil;
+		return;
+	end
 	local base, posBuff, negBuff = UnitRangedAttackPower("player")
 	PaperDollFormatStat(RANGED_ATTACK_POWER, base, posBuff, negBuff, frame, text)
 	frame.tooltipSubtext = format(RANGED_ATTACK_POWER_TOOLTIP, base / ATTACK_POWER_MAGIC_NUMBER)
@@ -1385,7 +1421,7 @@ function PlayerStatFrameRightDropDown_OnLoad()
 	UIDropDownMenu_SetWidth(99, this)
 	UIDropDownMenu_JustifyText("LEFT")
 end
-
+--[[
 --pfUI.api.strsplit
 function hcstrsplit(delimiter, subject)
 	if not subject then
@@ -1457,4 +1493,4 @@ bcsupdater:SetScript("OnEvent", function()
 			SendAddonMessage("bcs", "VERSION:" .. localversion, chan)
 		end
 	end
-end)
+end)]]
