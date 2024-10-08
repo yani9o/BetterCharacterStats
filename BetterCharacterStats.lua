@@ -3,7 +3,9 @@ BCSConfig = BCSConfig or {}
 
 local L, IndexLeft, IndexRight
 L = BCS.L
-
+--aura bonuses from other players;
+--[1] - Tree of Life; [2] - Brilliance
+local aura = { .0, .0 }
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
 	"PLAYERSTAT_MELEE_COMBAT",
@@ -76,6 +78,7 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("CHARACTER_POINTS_CHANGED") -- fires when learning talent
 	self.Frame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
 	self.Frame:RegisterEvent("CHAT_MSG_SKILL") --gaining weapon skill
+	self.Frame:RegisterEvent("CHAT_MSG_ADDON")
 	local _, classFileName = UnitClass("Player")
 	self.playerClass = strupper(classFileName)
 end
@@ -92,12 +95,47 @@ function BCS:OnEvent()
 		}
 		tinsert(BCS.DebugStack, t)
 	end]]
-
-	if
-		event == "PLAYER_AURAS_CHANGED" 
-			or event == "CHARACTER_POINTS_CHANGED"
-			or event == "CHAT_MSG_SKILL"
-	then
+	if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
+		local type, player, amount = hcstrsplit(",", arg2)
+		if type and player and amount then
+			if player ~= UnitName("player") then
+				amount = tonumber(amount)
+				if type =="TREE" then
+					--BCS:Print("got tree response amount="..amount)
+					if amount >= aura[1] then
+						aura[1] = amount
+						if BCS.PaperDollFrame:IsVisible() then
+							BCS:UpdateStats()
+						else
+							BCS.needUpdate = true
+						end
+					end
+				elseif type == "BRILLIANCE" then
+					--BCS:Print("got mage response amount="..amount)
+					if amount >= aura[2] then
+						aura[2] = amount
+						if BCS.PaperDollFrame:IsVisible() then
+							BCS:UpdateStats()
+						else
+							BCS.needUpdate = true
+						end
+					end
+				end
+			end
+		end
+	elseif event == "PLAYER_AURAS_CHANGED" then
+		if not BCS:GetPlayerAura("Tree of Life Aura") then
+			aura[1] = 0
+		end
+		if not BCS:GetPlayerAura("Brilliance Aura") then
+			aura[2] = 0
+		end
+		if BCS.PaperDollFrame:IsVisible() then
+			BCS:UpdateStats()
+		else
+			BCS.needUpdate = true
+		end
+	elseif event == "CHARACTER_POINTS_CHANGED" or event == "CHAT_MSG_SKILL" then
 		if BCS.PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
@@ -117,7 +155,41 @@ function BCS:OnEvent()
 		UIDropDownMenu_SetSelectedValue(PlayerStatFrameRightDropDown, IndexRight)
 	end
 end
-
+--sending messages
+local sender = CreateFrame("Frame", "BCSsender")
+sender:RegisterEvent("PLAYER_AURAS_CHANGED")
+sender:RegisterEvent("CHAT_MSG_ADDON")
+sender:SetScript("OnEvent", function()
+	if not (UnitInParty("player") or UnitInRaid("player")) then return end
+	if event then
+		local player = UnitName("player")
+		if event == "PLAYER_AURAS_CHANGED" then
+			if BCS:GetPlayerAura("Tree of Life Aura") then
+				ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player, "PARTY")
+				--BCS:Print("sent tree request")
+			end
+			if BCS:GetPlayerAura("Brilliance Aura") then
+				ChatThrottleLib:SendAddonMessage("BULK","bcs", "BRILLIANCE"..","..player, "PARTY")
+				--BCS:Print("sent mage request")
+			end
+		end
+		if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
+			local type, name, amount = hcstrsplit(",", arg2)
+			if name ~= player then
+				local _, treebonus = BCS:GetHealingPower()
+				local _, _, _, brilliance = BCS:GetManaRegen()
+				if not amount and type == "TREE" and treebonus then
+					ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player..","..treebonus, "PARTY")
+					--BCS:Print("sent tree response, amount="..treebonus)
+				end
+				if not amount and type == "BRILLIANCE" and brilliance then
+					ChatThrottleLib:SendAddonMessage("BULK","bcs", "BRILLIANCE"..","..player..","..brilliance, "PARTY")
+					--BCS:Print("sent mage response, amount="..brilliance)
+				end
+			end
+		end
+	end
+end)
 function BCS:OnShow()
 	if BCS.needUpdate then
 		BCS.needUpdate = nil
@@ -638,7 +710,7 @@ function BCS:SetSpellPower(statFrame, school)
 	local label = getglobal(statFrame:GetName() .. "Label")
 
 	local colorPos = "|cff20ff20"
-	local colorNeg = "|cffff2020"
+	--local colorNeg = "|cffff2020"
 
 	if school then
 		label:SetText(L["SPELL_SCHOOL_" .. strupper(school)])
@@ -654,15 +726,6 @@ function BCS:SetSpellPower(statFrame, school)
 
 		frame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP , school)
 		frame.tooltipSubtext = format(L.SPELL_SCHOOL_TOOLTIP_SUB, strlower(school))
-		frame:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-			GameTooltip:SetText(this.tooltip)
-			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-			GameTooltip:Show()
-		end)
-		frame:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
 	else
 		local power, secondaryPower, secondaryName = BCS:GetSpellPower()
 
@@ -676,16 +739,16 @@ function BCS:SetSpellPower(statFrame, school)
 			frame.tooltip = format(L.SPELL_POWER_TOOLTIP, power)
 			frame.tooltipSubtext = format(L.SPELL_POWER_TOOLTIP_SUB)
 		end
-		frame:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-			GameTooltip:SetText(this.tooltip)
-			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-			GameTooltip:Show()
-		end)
-		frame:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
 	end
+	frame:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+		GameTooltip:SetText(this.tooltip)
+		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+		GameTooltip:Show()
+	end)
+	frame:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 end
 
 function BCS:SetRating(statFrame, ratingType)
@@ -908,7 +971,11 @@ function BCS:SetHealing(statFrame)
 	local heal, treebonus = BCS:GetHealingPower()
 	power = power - dmg 
 	local total = power + heal
-	if treebonus then total = total + treebonus end
+	if treebonus and aura[1] <= treebonus then
+		total = total + treebonus
+	elseif (not treebonus and aura[1] > 0) or (treebonus and aura[1] > treebonus) then
+		total = total + aura[1]
+	end
 	label:SetText(L.HEAL_POWER_COLON)
 	text:SetText(format("%.f",total))
 	if heal ~= 0 then
@@ -936,7 +1003,11 @@ function BCS:SetManaRegen(statFrame)
 	local base, casting, mp5, brilliance = BCS:GetManaRegen()
 	local mp2 = mp5 * 0.4
 	local totalRegen = base + mp2
-	if brilliance then totalRegen = totalRegen + brilliance end
+	if brilliance and aura[2] <= brilliance then
+		totalRegen = totalRegen + brilliance
+	elseif (not brilliance and aura[2] > 0) or (brilliance and aura[2] > brilliance) then
+		totalRegen = totalRegen + aura[2]
+	end
 	local totalRegenWhileCasting = (casting / 100) * base + mp2
 	local _,class = UnitClass("player")
 	label:SetText(L.MANA_REGEN_COLON)
@@ -1421,7 +1492,7 @@ function PlayerStatFrameRightDropDown_OnLoad()
 	UIDropDownMenu_SetWidth(99, this)
 	UIDropDownMenu_JustifyText("LEFT")
 end
---[[
+
 --pfUI.api.strsplit
 function hcstrsplit(delimiter, subject)
 	if not subject then
@@ -1434,7 +1505,7 @@ function hcstrsplit(delimiter, subject)
 	end)
 	return unpack(fields)
 end
-
+--[[
 --Update announcing code taken from pfUI
 local major, minor, fix = hcstrsplit(".", tostring(GetAddOnMetadata("BetterCharacterStats", "Version")))
 

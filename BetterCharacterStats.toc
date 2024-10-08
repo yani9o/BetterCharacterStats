@@ -5,3 +5,4 @@
 ## SavedVariablesPerCharacter: BCSConfig bcsupdateavailable
 
 BetterCharacterStats.xml
+ChatThrottleLib\ChatThrottleLib.lua

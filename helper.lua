@@ -1009,7 +1009,7 @@ function BCS:GetHealingPower()
 	if healPowerFromAura then
 		healPower = healPower + tonumber(healPowerFromAura)
 	end
-	--Tree of Life (unfortunately only from self)
+	--Tree of Life (own)
 	local found = BCS:GetPlayerAura("Tree of Life Form") and BCS:GetPlayerAura("Tree of Life Aura")
 	local _, spirit = UnitStat("player", 5)
 	local treebonus = nil
@@ -1221,7 +1221,7 @@ function BCS:GetManaRegen()
 						casting = casting + tonumber(value)
 						break
 					end
-					-- Brilliance Aura (unfortunately only from self)
+					-- Brilliance Aura (own)
 					local haveTalent = strfind(left:GetText(), "Brilliance Aura")
 					if haveTalent and rank > 0 and BCS:GetPlayerAura("Brilliance Aura") then
 						brilliance = (base + (mp5 * 0.4)) * 0.15
