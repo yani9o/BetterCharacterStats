@@ -755,7 +755,6 @@ function BCS:SetRating(statFrame, ratingType)
 	local frame = statFrame
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local _,class = UnitClass("player")
 	label:SetText(L.MELEE_HIT_RATING_COLON)
 
 	if ratingType == "MELEE" then
@@ -767,17 +766,13 @@ function BCS:SetRating(statFrame, ratingType)
 		frame.tooltipSubtext = format(L.MELEE_HIT_TOOLTIP_SUB)
 
 	elseif ratingType == "RANGED" then
-		local rating = BCS:GetRangedHitRating()
-		rating = rating .. "%"
-			-- If no ranged attack then set to n/a
-		if not (GetInventoryItemLink("player",18)) or
-				((class == "PALADIN")
-				or(class == "DRUID")
-				or(class == "SHAMAN"))
-		then
+		-- If no ranged attack then set to n/a
+		if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
 			text:SetText(NOT_APPLICABLE)
 			return
 		end
+		local rating = BCS:GetRangedHitRating()
+		rating = rating .. "%"
 		text:SetText(rating)
 
 		frame.tooltip = (L.RANGED_HIT_TOOLTIP)
@@ -878,14 +873,9 @@ end
 function BCS:SetRangedWeaponSkill(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local _,class = UnitClass("player")
 	label:SetText(L.WEAPON_SKILL_COLON)
 	-- If no ranged attack then set to n/a
-	if not (GetInventoryItemLink("player",18)) or
-			((class == "PALADIN")
-			or(class == "DRUID")
-			or(class == "SHAMAN"))
-	then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
 		text:SetText(NOT_APPLICABLE)
 		return
 	end
@@ -926,9 +916,14 @@ end
 function BCS:SetRangedCritChance(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
+	label:SetText(L.RANGED_CRIT_COLON)
+	-- If no ranged attack then set to n/a
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+		text:SetText(NOT_APPLICABLE)
+		return
+	end
 	local crit = BCS:GetRangedCritChance()
 	local skill = BCS:GetRangedWeaponSkill()
-	local _, class = UnitClass("player")
 	local level = UnitLevel("player")
 	-- apply skill difference modifier
 	local skillDiff = skill - (level*5)
@@ -938,17 +933,7 @@ function BCS:SetRangedCritChance(statFrame)
 		crit = crit + (skillDiff * 0.2)
 	end
 	if crit < 0 then crit = 0 end
-	label:SetText(L.RANGED_CRIT_COLON)
 	text:SetText(format("%.2f%%", crit))
-	-- If no ranged attack then set to n/a
-	if not (GetInventoryItemLink("player",18))
-			or((class == "PALADIN")
-			or(class == "DRUID")
-			or(class == "SHAMAN"))
-	then
-		text:SetText(NOT_APPLICABLE)
-		return
-	end
 	statFrame.tooltip = (L.RANGED_CRIT_TOOLTIP)
 	statFrame.tooltipSubtext = (L.RANGED_CRIT_TOOLTIP_SUB)
 	statFrame:SetScript("OnEnter", function()
@@ -999,7 +984,13 @@ function BCS:SetManaRegen(statFrame)
 	local frame = statFrame
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-
+	label:SetText(L.MANA_REGEN_COLON)
+	-- if not a mana user and not a druid set to N/A
+	local _,class = UnitClass("player")
+	if (UnitPowerType("player") ~= 0 and not(class=="DRUID"))then
+		text:SetText(NOT_APPLICABLE)
+		frame.tooltip = nil
+	else
 	local base, casting, mp5, brilliance = BCS:GetManaRegen()
 	local mp2 = mp5 * 0.4
 	local totalRegen = base + mp2
@@ -1009,14 +1000,7 @@ function BCS:SetManaRegen(statFrame)
 		totalRegen = totalRegen + aura[2]
 	end
 	local totalRegenWhileCasting = (casting / 100) * base + mp2
-	local _,class = UnitClass("player")
-	label:SetText(L.MANA_REGEN_COLON)
-
-	-- if not a mana user or druid set to N/A
-	if (UnitPowerType("player") ~= 0 and not(class=="DRUID"))then
-		text:SetText(NOT_APPLICABLE)
-		frame.tooltip = nil
-	else
+	
 		text:SetText(format("%.0f (%.0f)", totalRegen, totalRegenWhileCasting))
 		frame.tooltip = format(L.SPELL_MANA_REGEN_TOOLTIP, totalRegen, totalRegenWhileCasting)
 		frame.tooltipSubtext = format(L.SPELL_MANA_REGEN_TOOLTIP_SUB, base, casting, mp5, mp2)
@@ -1149,24 +1133,17 @@ function BCS:SetRangedDamage(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	local damageText = getglobal(statFrame:GetName() .. "StatText")
 	local damageFrame = statFrame
-	local _,class = UnitClass("player")
 	label:SetText(TEXT(DAMAGE_COLON))
-
-	damageFrame:SetScript("OnEnter", CharacterRangedDamageFrame_OnEnter)
-	damageFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-
 	-- If no ranged attack then set to n/a
-	if not (GetInventoryItemLink("player",18)) or
-			((class == "PALADIN")
-			or(class == "DRUID")
-			or(class == "SHAMAN"))
-	then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
 		damageText:SetText(NOT_APPLICABLE)
 		damageFrame.damage = nil
 		return
 	end
+	damageFrame:SetScript("OnEnter", CharacterRangedDamageFrame_OnEnter)
+	damageFrame:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 
 	local rangedAttackSpeed, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage("player")
 	local displayMin = max(floor(minDamage), 1)
@@ -1223,22 +1200,17 @@ function BCS:SetRangedAttackSpeed(startFrame)
 	local label = getglobal(startFrame:GetName() .. "Label")
 	local damageText = getglobal(startFrame:GetName() .. "StatText")
 	local damageFrame = startFrame
-	local _,class = UnitClass("player")
 	label:SetText(TEXT(SPEED) .. ":")
-	damageFrame:SetScript("OnEnter", CharacterRangedDamageFrame_OnEnter)
-	damageFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
 	-- If no ranged attack then set to n/a
-	if not (GetInventoryItemLink("player",18)) or
-			((class == "PALADIN")
-			or(class == "DRUID")
-			or(class == "SHAMAN"))
-	then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
 		damageText:SetText(NOT_APPLICABLE)
 		damageFrame.damage = nil
 		return
 	end
+	damageFrame:SetScript("OnEnter", CharacterRangedDamageFrame_OnEnter)
+	damageFrame:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 
 	local rangedAttackSpeed, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage("player")
 	local displayMin = max(floor(minDamage), 1)
@@ -1298,15 +1270,9 @@ function BCS:SetRangedAttackPower(statFrame)
 	local frame = statFrame
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local _,class = UnitClass("player")
 	label:SetText(TEXT(ATTACK_POWER_COLON))
-
 	-- If no ranged attack then set to n/a
-	if not (GetInventoryItemLink("player",18)) or
-			((class == "PALADIN")
-			or(class == "DRUID")
-			or(class == "SHAMAN"))
-	then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
 		text:SetText(NOT_APPLICABLE)
 		frame.tooltip = nil
 		return
