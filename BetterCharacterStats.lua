@@ -79,10 +79,8 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
 	self.Frame:RegisterEvent("CHAT_MSG_SKILL") --gaining weapon skill
 	self.Frame:RegisterEvent("CHAT_MSG_ADDON")
-	local _, classFileName = UnitClass("Player")
-	self.playerClass = strupper(classFileName)
 end
-
+-- Scan stuff depending on event, but make sure to scan everything when addon is loaded
 function BCS:OnEvent()
 	--[[if BCS.Debug then
 		local t = {
@@ -96,6 +94,7 @@ function BCS:OnEvent()
 		tinsert(BCS.DebugStack, t)
 	end]]
 	if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
+		BCS.needScanAuras = true
 		local type, player, amount = hcstrsplit(",", arg2)
 		if type and player and amount then
 			if player ~= UnitName("player") then
@@ -124,6 +123,7 @@ function BCS:OnEvent()
 			end
 		end
 	elseif event == "PLAYER_AURAS_CHANGED" then
+		BCS.needScanAuras = true
 		if not BCS:GetPlayerAura("Tree of Life Aura") then
 			aura[1] = 0
 		end
@@ -135,19 +135,35 @@ function BCS:OnEvent()
 		else
 			BCS.needUpdate = true
 		end
-	elseif event == "CHARACTER_POINTS_CHANGED" or event == "CHAT_MSG_SKILL" then
+	elseif event == "CHARACTER_POINTS_CHANGED" then
+		BCS.needScanTalents = true
+		if BCS.PaperDollFrame:IsVisible() then
+			BCS:UpdateStats()
+		else
+			BCS.needUpdate = true
+		end
+	elseif event == "CHAT_MSG_SKILL" then
+		BCS.needScanSkills = true
 		if BCS.PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
 			BCS.needUpdate = true
 		end
 	elseif event == "UNIT_INVENTORY_CHANGED" and arg1 == "player" then
+		BCS.needScanGear = true
+		BCS.needScanSkills = true
 		if BCS.PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
 			BCS.needUpdate = true
 		end
 	elseif event == "ADDON_LOADED" and arg1 == "BetterCharacterStats" then
+		BCSFrame:UnregisterEvent("ADDON_LOADED")
+		BCS.needScanGear = true
+		BCS.needScanTalents = true
+		BCS.needScanAuras = true
+		BCS.needScanSkills = true
+
 		IndexLeft = BCSConfig["DropdownLeft"] or BCS.PLAYERSTAT_DROPDOWN_OPTIONS[1]
 		IndexRight = BCSConfig["DropdownRight"] or BCS.PLAYERSTAT_DROPDOWN_OPTIONS[2]
 
@@ -190,6 +206,7 @@ sender:SetScript("OnEvent", function()
 		end
 	end
 end)
+
 function BCS:OnShow()
 	if BCS.needUpdate then
 		BCS.needUpdate = nil
@@ -209,7 +226,10 @@ function BCS:UpdateStats()
 
 	BCS:UpdatePaperdollStats("PlayerStatFrameLeft", IndexLeft)
 	BCS:UpdatePaperdollStats("PlayerStatFrameRight", IndexRight)
-
+	BCS.needScanGear = false
+	BCS.needScanTalents = false
+	BCS.needScanAuras = false
+	BCS.needScanSkills = false
 	--[[local timeUsed = debugprofilestop()-beginTime
 	table.insert(avgV, timeUsed)
 	avg = 0
@@ -306,144 +326,6 @@ function BCS:SetArmor(statFrame)
 	frame:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
-end
---Weapon Skill code taken from https://github.com/pepopo978/BetterCharacterStats
-function BCS:GetSlotItemId(slot)
-	local _, _, id = string.find(GetInventoryItemLink("player", GetInventorySlotInfo(slot)) or "", "item:(%d+):%d+:%d+:%d+");
-	if id then
-		return tonumber(id)
-	else
-		return 0
-	end
-end
-
-function BCS:GetGlovesItemId()
-	return BCS:GetSlotItemId("HandsSlot")
-end
-
-function BCS:GetHeadItemId()
-	return BCS:GetSlotItemId("HeadSlot")
-end
-
-function BCS:GetNeckItemId()
-	return BCS:GetSlotItemId("NeckSlot")
-end
-
-function BCS:GetWaistItemId()
-	return BCS:GetSlotItemId("WaistSlot")
-end
-
-function BCS:GetShoulderItemId()
-	return BCS:GetSlotItemId("ShoulderSlot")
-end
-
-function BCS:GetChestItemId()
-	return BCS:GetSlotItemId("ChestSlot")
-end
-
-function BCS:GetLegsItemId()
-	return BCS:GetSlotItemId("LegsSlot")
-end
-
-function BCS:GetFeetItemId()
-	return BCS:GetSlotItemId("FeetSlot")
-end
-
-function BCS:GetMainHandItemId()
-	return BCS:GetSlotItemId("MainHandSlot")
-end
-
-function BCS:GetOffHandItemId()
-	return BCS:GetSlotItemId("SecondaryHandSlot")
-end
-
-function BCS:GetWeaponSkill(skillName)
-	-- loop through skills
-	local skillIndex = 1
-	while true do
-		local name, isHeader, isExpanded, skillRank, numTempPoints, skillModifier,
-		skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType,
-		skillDescription = GetSkillLineInfo(skillIndex)
-		if not name then
-			return 0
-		end
-
-		if name == skillName then
-			return skillRank + skillModifier
-		end
-
-		skillIndex = skillIndex + 1
-	end
-end
-
-function BCS:GetWeaponSkillForWeaponType(weaponType)
-	if weaponType == "Daggers" then
-		return BCS:GetWeaponSkill("Daggers")
-	elseif weaponType == "One-Handed Swords" then
-		return BCS:GetWeaponSkill("Swords")
-	elseif weaponType == "Two-Handed Swords" then
-		return BCS:GetWeaponSkill("Two-Handed Swords")
-	elseif weaponType == "One-Handed Axes" then
-		return BCS:GetWeaponSkill("Axes")
-	elseif weaponType == "Two-Handed Axes" then
-		return BCS:GetWeaponSkill("Two-Handed Axes")
-	elseif weaponType == "One-Handed Maces" then
-		return BCS:GetWeaponSkill("Maces")
-	elseif weaponType == "Two-Handed Maces" then
-		return BCS:GetWeaponSkill("Two-Handed Maces")
-	elseif weaponType == "Staves" then
-		return BCS:GetWeaponSkill("Staves")
-	elseif weaponType == "Polearms" then
-		return BCS:GetWeaponSkill("Polearms")
-	elseif weaponType == "Fist Weapons" then
-		return BCS:GetWeaponSkill("Unarmed")
-	elseif weaponType == "Bows" then
-		return BCS:GetWeaponSkill("Bows")
-	elseif weaponType == "Crossbows" then
-		return BCS:GetWeaponSkill("Crossbows")
-	elseif weaponType == "Guns" then
-		return BCS:GetWeaponSkill("Guns")
-	elseif weaponType == "Thrown" then
-		return BCS:GetWeaponSkill("Thrown")
-	elseif weaponType == "Wands" then
-		return BCS:GetWeaponSkill("Wands")
-	end
-
-	return BCS:GetWeaponSkill("Unarmed")
-end
-
-function BCS:GetItemInfoForSlot(slot)
-	local _, _, id = string.find(GetInventoryItemLink("player", GetInventorySlotInfo(slot)) or "", "(item:%d+:%d+:%d+:%d+)");
-	if not id then
-		return
-	end
-
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(id);
-
-	return itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice;
-end
-
-function BCS:GetMHWeaponSkill()
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("MainHandSlot")
-
-	return BCS:GetWeaponSkillForWeaponType(itemType)
-end
-
-function BCS:GetOHWeaponSkill()
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("SecondaryHandSlot")
-
-	return BCS:GetWeaponSkillForWeaponType(itemType)
-end
-
-function BCS:GetRangedWeaponSkill()
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("RangedSlot")
-
-	return BCS:GetWeaponSkillForWeaponType(itemType)
 end
 
 function BCS:SetDamage(statFrame)
@@ -730,7 +612,11 @@ function BCS:SetSpellPower(statFrame, school)
 		local power, secondaryPower, secondaryName = BCS:GetSpellPower()
 
 		label:SetText(L.SPELL_POWER_COLON)
-		text:SetText(power + secondaryPower)
+		if secondaryPower > 0 then
+			text:SetText(colorPos..power + secondaryPower)
+		else
+			text:SetText(power + secondaryPower)
+		end
 
 		if secondaryPower ~= 0 then
 			frame.tooltip = format(L.SPELL_POWER_SECONDARY_TOOLTIP, (power + secondaryPower), power, secondaryPower, secondaryName)
@@ -1082,9 +968,17 @@ function BCS:SetTotalAvoidance(statFrame)
 	local frame = statFrame
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
+	-- apply skill modifier
+	local base, mod = UnitDefense("player")
+	local skillDiff = base + mod - UnitLevel("player") * 5
+	local missChance = 5 + skillDiff * 0.04
 
+	local total = missChance + (GetBlockChance() + GetParryChance() + GetDodgeChance())
+	if total > 100 then total = 100 end
+	if total < 0 then total = 0 end
+	
 	label:SetText(L.TOTAL_COLON)
-	text:SetText(format("%.2f%%", (GetBlockChance() + GetParryChance() + GetDodgeChance())))
+	text:SetText(format("%.2f%%", total))
 
 	frame.tooltip = format(L.TOTAL_AVOIDANCE_TOOLTIP)
 	frame.tooltipSubtext = format(L.TOTAL_AVOIDANCE_TOOLTIP_SUB)
@@ -1404,17 +1298,33 @@ function BCS:UpdatePaperdollStats(prefix, index)
 end
 
 local function PlayerStatFrameLeftDropDown_OnClick()
+	BCS.needScanGear = true
+	BCS.needScanTalents = true
+	BCS.needScanAuras = true
+	BCS.needScanSkills = true
 	UIDropDownMenu_SetSelectedValue(getglobal(this.owner), this.value)
 	IndexLeft = this.value
 	BCSConfig["DropdownLeft"] = IndexLeft
 	BCS:UpdatePaperdollStats("PlayerStatFrameLeft", this.value)
+	BCS.needScanGear = false
+	BCS.needScanTalents = false
+	BCS.needScanAuras = false
+	BCS.needScanSkills = false
 end
 
 local function PlayerStatFrameRightDropDown_OnClick()
+	BCS.needScanGear = true
+	BCS.needScanTalents = true
+	BCS.needScanAuras = true
+	BCS.needScanSkills = true
 	UIDropDownMenu_SetSelectedValue(getglobal(this.owner), this.value)
 	IndexRight = this.value
 	BCSConfig["DropdownRight"] = IndexRight
 	BCS:UpdatePaperdollStats("PlayerStatFrameRight", this.value)
+	BCS.needScanGear = false
+	BCS.needScanTalents = false
+	BCS.needScanAuras = false
+	BCS.needScanSkills = false
 end
 
 local function PlayerStatFrameLeftDropDown_Initialize()
