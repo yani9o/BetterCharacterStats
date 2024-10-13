@@ -779,7 +779,7 @@ function BCS:SetWeaponSkill(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	label:SetText(L.WEAPON_SKILL_COLON)
 	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%d |%d", BCS:GetMHWeaponSkill(), BCS:GetOHWeaponSkill()))
+		text:SetText(format("%d | %d", BCS:GetMHWeaponSkill(), BCS:GetOHWeaponSkill()))
 	else
 		text:SetText(format("%d", BCS:GetMHWeaponSkill()))
 	end
