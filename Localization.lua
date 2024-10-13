@@ -89,7 +89,7 @@ BCS["L"] = {
 	["Mana Regeneration increased by (%d+) every 5 seconds."] = "Mana Regeneration increased by (%d+) every 5 seconds.",
 	["Improves your chance to hit by (%d+)%%."] = "Improves your chance to hit by (%d+)%%.",
 	["Chance for a critical hit with a spell increased by (%d+)%%."] = "Chance for a critical hit with a spell increased by (%d+)%%.",
-	["While active, target's critical hit chance with spells and attacks increases by 10%%."] = "While active, target's critical hit chance with spells and attacks increases by 10%%.",--??
+	["While active, target's critical hit chance with spells and attacks increases by 10%%."] = "While active, target's critical hit chance with spells and attacks increases by 10%%.", --??
 	["Increases attack power by %d+ and chance to hit by (%d+)%%."] = "Increases attack power by %d+ and chance to hit by (%d+)%%.",
 	["Holy spell critical hit chance increased by (%d+)%%."] = "Holy spell critical hit chance increased by (%d+)%%.",
 	["Destruction spell critical hit chance increased by (%d+)%%."] = "Destruction spell critical hit chance increased by (%d+)%%.",
@@ -127,6 +127,19 @@ BCS["L"] = {
 	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks.]],
 	["MELEE_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffMelee Weapon Skill|r]],
 	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
+
+	--boss
+	["MELEE_MISS_VS_BOSS_TOOLTIP"] = [[|cffffffffChance To Miss Boss(lvl 63)|r]],
+	["MELEE_MISS_VS_BOSS_TOOLTIP_SUB"] = [[Unavoidable miss chance due to mob being higher level than you.]],
+	["MELEE_DODGE_VS_BOSS_TOOLTIP"] = [[|cffffffffChance Boss(lvl 63) Dodges|r]],
+	["MELEE_DODGE_VS_BOSS_TOOLTIP_SUB"] = [[The formula is 5%% dodge chance + (your weapon skill - 315) * 0.1%%.]],
+	["MELEE_GLANCE_VS_BOSS_TOOLTIP"] = [[|cffffffffPercent Glancing Damage vs Boss(lvl 63)|r]],
+	["MELEE_GLANCE_VS_BOSS_TOOLTIP_SUB"] = [[Against lvl 63 Boss you have a 40%% chance to do a glancing blow that does reduced damage.  The amount of damage reduced is based on your weapon skill.]],
+	["MELEE_CRIT_CAP_VS_BOSS_TOOLTIP"] = [[|cffffffffCritical Chance Cap|r]],
+	["MELEE_CRIT_CAP_VS_BOSS_TOOLTIP_SUB"] = [[A critical hit can only happen if an attack is not already a miss, dodged, or glancing.  This means your crit cap is (100%% - miss chance%% - dodge chance%% - glance chance%%).  Any crit chance you have over your crit cap is wasted.]],
+	["MELEE_EFF_CRIT_VS_BOSS_TOOLTIP"] = [[|cffffffffEffective Critical Chance|r]],
+	["MELEE_EFF_CRIT_VS_BOSS_TOOLTIP_SUB"] = [[If you are under your crit cap, this will match your normal crit chance.	If you are over your crit cap, this will be your crit cap.]],
+
 	--ranged
 	["RANGED_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffRanged Weapon Skill|r]],
 	["RANGED_WEAPON_SKILL_TOOLTIP_SUB"] = [[Highier weapon skill reduces your chance to miss with a ranged weapon.]],
@@ -166,10 +179,16 @@ BCS["L"] = {
 	PLAYERSTAT_BASE_STATS = "Base Stats",
 	PLAYERSTAT_DEFENSES = "Defenses",
 	PLAYERSTAT_MELEE_COMBAT = "Melee",
+	PLAYERSTAT_MELEE_BOSS = "Melee vs Boss",
 	PLAYERSTAT_RANGED_COMBAT = "Ranged",
 	PLAYERSTAT_SPELL_COMBAT = "Spell",
 	PLAYERSTAT_SPELL_SCHOOLS = "Schools",
-	WEAPON_SKILL_COLON = "Skill:",
+	WEAPON_SKILL_COLON = "Wep Skill:",
+	MISS_CHANCE_COLON = "Miss %:",
+	DODGE_CHANCE_COLON = "Dodge %:",
+	GLANCE_REDUCTION_COLON = "Glance Dmg:",
+	CRIT_CAP_COLON = "Crit Cap:",
+	BOSS_CRIT_COLON = "Eff. Crit:",
 	MELEE_HIT_RATING_COLON = "Hit Rating:",
 	RANGED_HIT_RATING_COLON = "Hit Rating:",
 	SPELL_HIT_RATING_COLON = "Hit Rating:",

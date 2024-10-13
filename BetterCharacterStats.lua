@@ -9,6 +9,7 @@ local aura = { .0, .0 }
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
 	"PLAYERSTAT_MELEE_COMBAT",
+	"PLAYERSTAT_MELEE_BOSS",
 	"PLAYERSTAT_RANGED_COMBAT",
 	"PLAYERSTAT_SPELL_COMBAT",
 	"PLAYERSTAT_SPELL_SCHOOLS",
@@ -99,7 +100,7 @@ function BCS:OnEvent()
 		if type and player and amount then
 			if player ~= UnitName("player") then
 				amount = tonumber(amount)
-				if type =="TREE" then
+				if type == "TREE" then
 					--BCS:Print("got tree response amount="..amount)
 					if amount >= aura[1] then
 						aura[1] = amount
@@ -176,16 +177,18 @@ local sender = CreateFrame("Frame", "BCSsender")
 sender:RegisterEvent("PLAYER_AURAS_CHANGED")
 sender:RegisterEvent("CHAT_MSG_ADDON")
 sender:SetScript("OnEvent", function()
-	if not (UnitInParty("player") or UnitInRaid("player")) then return end
+	if not (UnitInParty("player") or UnitInRaid("player")) then
+		return
+	end
 	if event then
 		local player = UnitName("player")
 		if event == "PLAYER_AURAS_CHANGED" then
 			if BCS:GetPlayerAura("Tree of Life Aura") then
-				ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player, "PARTY")
+				ChatThrottleLib:SendAddonMessage("BULK", "bcs", "TREE" .. "," .. player, "PARTY")
 				--BCS:Print("sent tree request")
 			end
 			if BCS:GetPlayerAura("Brilliance Aura") then
-				ChatThrottleLib:SendAddonMessage("BULK","bcs", "BRILLIANCE"..","..player, "PARTY")
+				ChatThrottleLib:SendAddonMessage("BULK", "bcs", "BRILLIANCE" .. "," .. player, "PARTY")
 				--BCS:Print("sent mage request")
 			end
 		end
@@ -195,11 +198,11 @@ sender:SetScript("OnEvent", function()
 				local _, treebonus = BCS:GetHealingPower()
 				local _, _, _, brilliance = BCS:GetManaRegen()
 				if not amount and type == "TREE" and treebonus then
-					ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player..","..treebonus, "PARTY")
+					ChatThrottleLib:SendAddonMessage("BULK", "bcs", "TREE" .. "," .. player .. "," .. treebonus, "PARTY")
 					--BCS:Print("sent tree response, amount="..treebonus)
 				end
 				if not amount and type == "BRILLIANCE" and brilliance then
-					ChatThrottleLib:SendAddonMessage("BULK","bcs", "BRILLIANCE"..","..player..","..brilliance, "PARTY")
+					ChatThrottleLib:SendAddonMessage("BULK", "bcs", "BRILLIANCE" .. "," .. player .. "," .. brilliance, "PARTY")
 					--BCS:Print("sent mage response, amount="..brilliance)
 				end
 			end
@@ -240,6 +243,22 @@ function BCS:UpdateStats()
 	avg = avg / getn(avgV)
 
 	BCS:Print(format("Average: %d (%d results), Exact: %d", avg, getn(avgV), timeUsed))]]
+end
+
+function BCS:AddTooltip(frame)
+	if frame.tooltip then
+		frame:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+			GameTooltip:SetText(this.tooltip)
+			if this.tooltipSubtext then
+				GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+			end
+			GameTooltip:Show()
+		end)
+		frame:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+	end
 end
 
 function BCS:SetStat(statFrame, statIndex)
@@ -317,15 +336,72 @@ function BCS:SetArmor(statFrame)
 
 	frame.tooltipSubtext = format(ARMOR_TOOLTIP, playerLevel, armorReduction)
 
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
+end
+
+function BCS:GetMissChanceRaw(wepSkill)
+	local diff = wepSkill - 315
+	local miss = 5
+
+	if diff < -10 then
+		miss = miss - diff * 0.2;
+	else
+		miss = miss - diff * 0.1;
+	end
+
+	local hitChance = BCS:GetHitRating()
+	-- if skill diff < -10 then subtract one from +hit, if there is any +hit
+	if (diff < -10) and (hitChance > 0) then
+		hitChance = hitChance - 1
+	end
+	miss = miss - hitChance
+
+	return miss
+end
+
+function BCS:GetMissChance(wepSkill)
+	return max(0, min(BCS:GetMissChanceRaw(wepSkill), 60))
+end
+
+function BCS:GetDualWieldMissChance(wepSkill)
+	return max(0, min(BCS:GetMissChanceRaw(wepSkill) + 19, 60))
+end
+
+function BCS:GetGlanceChance(wepSkill)
+	return 10 + 15 * 2;
+end
+
+function BCS:GetGlanceReduction(wepSkill)
+	local diff = 315 - wepSkill;
+	local low = math.max(math.min(1.3 - 0.05 * diff, 0.91), 0.01);
+	local high = math.max(math.min(1.2 - 0.03 * diff, 0.99), 0.2);
+	return 100 * ((high - low) / 2 + low);
+end
+
+function BCS:GetDodgeChance(wepSkill)
+	return math.max(5 + (315 - wepSkill) * 0.1, 0);
+end
+
+function BCS:GetDualWieldCritCap(wepSkill)
+	local cap = 100 - self:GetDualWieldMissChance(wepSkill) - self:GetGlanceChance(wepSkill) - self:GetDodgeChance(wepSkill);
+	if (cap > 100) then
+		cap = 100;
+	end
+	if (cap < 0) then
+		cap = 0;
+	end
+	return cap;
+end
+
+function BCS:GetCritCap(wepSkill)
+	local cap = 100 - self:GetMissChance(wepSkill) - self:GetGlanceChance(wepSkill) - self:GetDodgeChance(wepSkill);
+	if (cap > 100) then
+		cap = 100;
+	end
+	if (cap < 0) then
+		cap = 0;
+	end
+	return cap;
 end
 
 function BCS:SetDamage(statFrame)
@@ -429,7 +505,7 @@ function BCS:SetDamage(statFrame)
 end
 
 function BCS:SetAttackSpeed(statFrame)
-	
+
 	local damageText = getglobal(statFrame:GetName() .. "StatText")
 	local damageFrame = statFrame
 	local speed, offhandSpeed = UnitAttackSpeed("player")
@@ -572,18 +648,8 @@ function BCS:SetAttackPower(statFrame)
 	end
 	label:SetText(TEXT(ATTACK_POWER_COLON))
 	PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, frame, text)
-	frame.tooltipSubtext= format(MELEE_ATTACK_POWER_TOOLTIP, max((base + posBuff + negBuff), 0) / ATTACK_POWER_MAGIC_NUMBER)
-	if frame.tooltip then
-		frame:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-			GameTooltip:SetText(this.tooltip)
-			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-			GameTooltip:Show()
-		end)
-		frame:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
-	end
+	frame.tooltipSubtext = format(MELEE_ATTACK_POWER_TOOLTIP, max((base + posBuff + negBuff), 0) / ATTACK_POWER_MAGIC_NUMBER)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetSpellPower(statFrame, school)
@@ -606,14 +672,14 @@ function BCS:SetSpellPower(statFrame, school)
 
 		text:SetText(output)
 
-		frame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP , school)
+		frame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP, school)
 		frame.tooltipSubtext = format(L.SPELL_SCHOOL_TOOLTIP_SUB, strlower(school))
 	else
 		local power, secondaryPower, secondaryName = BCS:GetSpellPower()
 
 		label:SetText(L.SPELL_POWER_COLON)
 		if secondaryPower > 0 then
-			text:SetText(colorPos..power + secondaryPower)
+			text:SetText(colorPos .. power + secondaryPower)
 		else
 			text:SetText(power + secondaryPower)
 		end
@@ -626,15 +692,7 @@ function BCS:SetSpellPower(statFrame, school)
 			frame.tooltipSubtext = format(L.SPELL_POWER_TOOLTIP_SUB)
 		end
 	end
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetRating(statFrame, ratingType)
@@ -653,7 +711,7 @@ function BCS:SetRating(statFrame, ratingType)
 
 	elseif ratingType == "RANGED" then
 		-- If no ranged attack then set to n/a
-		if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+		if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player", 18)) then
 			text:SetText(NOT_APPLICABLE)
 			return
 		end
@@ -700,18 +758,7 @@ function BCS:SetRating(statFrame, ratingType)
 		frame.tooltipSubtext = format(L.SPELL_HIT_TOOLTIP_SUB)
 	end
 
-	if frame.tooltip then
-		frame:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-			GameTooltip:SetText(this.tooltip)
-			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-			GameTooltip:Show()
-		end)
-		frame:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
-	end
-
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetMeleeCritChance(statFrame)
@@ -723,15 +770,8 @@ function BCS:SetMeleeCritChance(statFrame)
 
 	statFrame.tooltip = (L.MELEE_CRIT_TOOLTIP)
 	statFrame.tooltipSubtext = (L.MELEE_CRIT_TOOLTIP_SUB)
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+
+	BCS:AddTooltip(statFrame)
 end
 
 function BCS:SetWeaponSkill(statFrame)
@@ -742,18 +782,10 @@ function BCS:SetWeaponSkill(statFrame)
 		text:SetText(format("%d |%d", BCS:GetMHWeaponSkill(), BCS:GetOHWeaponSkill()))
 	else
 		text:SetText(format("%d", BCS:GetMHWeaponSkill()))
-	end	
+	end
 	statFrame.tooltip = format(L.MELEE_WEAPON_SKILL_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.MELEE_WEAPON_SKILL_TOOLTIP_SUB)
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(statFrame)
 end
 
 function BCS:SetRangedWeaponSkill(statFrame)
@@ -761,22 +793,108 @@ function BCS:SetRangedWeaponSkill(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	label:SetText(L.WEAPON_SKILL_COLON)
 	-- If no ranged attack then set to n/a
-	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player", 18)) then
 		text:SetText(NOT_APPLICABLE)
 		return
 	end
- 	text:SetText(format("%d", BCS:GetRangedWeaponSkill()))
+	text:SetText(format("%d", BCS:GetRangedWeaponSkill()))
 	statFrame.tooltip = format(L.RANGED_WEAPON_SKILL_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.RANGED_WEAPON_SKILL_TOOLTIP_SUB)
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(statFrame)
+end
+
+function BCS:SetBossMissChance(statFrame)
+	local frame = statFrame
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	label:SetText(L.MISS_CHANCE_COLON)
+
+	local mh_miss = BCS:GetMissChance(BCS:GetMHWeaponSkill())
+
+	if OffhandHasWeapon() == 1 then
+		text:SetText(format("%.1f%% | %.1f%%",
+				BCS:GetDualWieldMissChance(BCS:GetMHWeaponSkill()),
+				BCS:GetDualWieldMissChance(BCS:GetOHWeaponSkill())))
+	else
+		text:SetText(format("%.1f%%", mh_miss))
+	end
+
+	statFrame.tooltip = format(L.MELEE_MISS_VS_BOSS_TOOLTIP)
+	statFrame.tooltipSubtext = format(L.MELEE_MISS_VS_BOSS_TOOLTIP_SUB)
+	BCS:AddTooltip(statFrame)
+end
+
+function BCS:SetBossGlanceReduction(statFrame)
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	label:SetText(L.GLANCE_REDUCTION_COLON)
+
+	if OffhandHasWeapon() == 1 then
+		text:SetText(format("%d%% | %d%%",
+				BCS:GetGlanceReduction(BCS:GetMHWeaponSkill()),
+				BCS:GetGlanceReduction(BCS:GetOHWeaponSkill())))
+	else
+		text:SetText(format("%d%%", BCS:GetGlanceReduction(BCS:GetMHWeaponSkill())))
+	end
+
+	statFrame.tooltip = format(L.MELEE_GLANCE_VS_BOSS_TOOLTIP)
+	statFrame.tooltipSubtext = format(L.MELEE_GLANCE_VS_BOSS_TOOLTIP_SUB)
+	BCS:AddTooltip(statFrame)
+end
+
+function BCS:SetBossDodgeChance(statFrame)
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	label:SetText(L.DODGE_CHANCE_COLON)
+	if OffhandHasWeapon() == 1 then
+		text:SetText(format("%.1f%% | %.1f%%",
+				BCS:GetDodgeChance(BCS:GetMHWeaponSkill()),
+				BCS:GetDodgeChance(BCS:GetOHWeaponSkill())))
+	else
+		text:SetText(format("%.1f%%", BCS:GetDodgeChance(BCS:GetMHWeaponSkill())))
+	end
+
+	statFrame.tooltip = format(L.MELEE_DODGE_VS_BOSS_TOOLTIP)
+	statFrame.tooltipSubtext = format(L.MELEE_DODGE_VS_BOSS_TOOLTIP_SUB)
+	BCS:AddTooltip(statFrame)
+end
+
+function BCS:SetBossCritCap(statFrame)
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	label:SetText(L.CRIT_CAP_COLON)
+
+	if OffhandHasWeapon() == 1 then
+		text:SetText(format("%.1f%% | %.1f%%",
+				BCS:GetDualWieldCritCap(BCS:GetMHWeaponSkill()),
+				BCS:GetDualWieldCritCap(BCS:GetOHWeaponSkill())))
+	else
+		text:SetText(format("%.1f%%", BCS:GetCritCap(BCS:GetMHWeaponSkill())))
+	end
+
+	statFrame.tooltip = format(L.MELEE_CRIT_CAP_VS_BOSS_TOOLTIP)
+	statFrame.tooltipSubtext = format(L.MELEE_CRIT_CAP_VS_BOSS_TOOLTIP_SUB)
+	BCS:AddTooltip(statFrame)
+end
+
+function BCS:SetEffectiveBossCrit(statFrame)
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	label:SetText(L.BOSS_CRIT_COLON)
+
+	local critChance = BCS:GetCritChance() - 3 -- 3 % crit reduction vs lvl 63
+	if OffhandHasWeapon() == 1 then
+		text:SetText(format("%.1f%% | %.1f%%",
+				math.min(critChance, BCS:GetDualWieldCritCap(BCS:GetMHWeaponSkill())),
+				math.min(critChance, BCS:GetDualWieldCritCap(BCS:GetOHWeaponSkill()))
+		))
+	else
+		text:SetText(format("%.1f%%", math.min(critChance, BCS:GetCritCap(BCS:GetMHWeaponSkill()))))
+	end
+
+	statFrame.tooltip = format(L.MELEE_EFF_CRIT_VS_BOSS_TOOLTIP)
+	statFrame.tooltipSubtext = format(L.MELEE_EFF_CRIT_VS_BOSS_TOOLTIP_SUB)
+	BCS:AddTooltip(statFrame)
 end
 
 function BCS:SetSpellCritChance(statFrame)
@@ -788,15 +906,7 @@ function BCS:SetSpellCritChance(statFrame)
 	text:SetText(format("%.2f%%", BCS:GetSpellCritChance()))
 	frame.tooltip = format(L.SPELL_CRIT_TOOLTIP)
 	frame.tooltipSubtext = format(L.SPELL_CRIT_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetRangedCritChance(statFrame)
@@ -804,7 +914,7 @@ function BCS:SetRangedCritChance(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	label:SetText(L.RANGED_CRIT_COLON)
 	-- If no ranged attack then set to n/a
-	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player", 18)) then
 		text:SetText(NOT_APPLICABLE)
 		return
 	end
@@ -812,25 +922,19 @@ function BCS:SetRangedCritChance(statFrame)
 	local skill = BCS:GetRangedWeaponSkill()
 	local level = UnitLevel("player")
 	-- apply skill difference modifier
-	local skillDiff = skill - (level*5)
-	if (skill >= (level*5)) then
+	local skillDiff = skill - (level * 5)
+	if (skill >= (level * 5)) then
 		crit = crit + (skillDiff * 0.04)
 	else
 		crit = crit + (skillDiff * 0.2)
 	end
-	if crit < 0 then crit = 0 end
+	if crit < 0 then
+		crit = 0
+	end
 	text:SetText(format("%.2f%%", crit))
 	statFrame.tooltip = (L.RANGED_CRIT_TOOLTIP)
 	statFrame.tooltipSubtext = (L.RANGED_CRIT_TOOLTIP_SUB)
-	statFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	statFrame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(statFrame)
 end
 
 function BCS:SetHealing(statFrame)
@@ -840,7 +944,7 @@ function BCS:SetHealing(statFrame)
 
 	local power, _, _, dmg = BCS:GetSpellPower()
 	local heal, treebonus = BCS:GetHealingPower()
-	power = power - dmg 
+	power = power - dmg
 	local total = power + heal
 	if treebonus and aura[1] <= treebonus then
 		total = total + treebonus
@@ -848,22 +952,14 @@ function BCS:SetHealing(statFrame)
 		total = total + aura[1]
 	end
 	label:SetText(L.HEAL_POWER_COLON)
-	text:SetText(format("%.f",total))
+	text:SetText(format("%.f", total))
 	if heal ~= 0 then
 		frame.tooltip = format(L.SPELL_HEALING_POWER_SECONDARY_TOOLTIP, (total), power, heal)
 	else
 		frame.tooltip = format(L.SPELL_HEALING_POWER_TOOLTIP, (total))
 	end
 	frame.tooltipSubtext = format(L.SPELL_HEALING_POWER_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetManaRegen(statFrame)
@@ -872,33 +968,25 @@ function BCS:SetManaRegen(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	label:SetText(L.MANA_REGEN_COLON)
 	-- if not a mana user and not a druid set to N/A
-	local _,class = UnitClass("player")
-	if (UnitPowerType("player") ~= 0 and not(class=="DRUID"))then
+	local _, class = UnitClass("player")
+	if (UnitPowerType("player") ~= 0 and not (class == "DRUID")) then
 		text:SetText(NOT_APPLICABLE)
 		frame.tooltip = nil
 	else
-	local base, casting, mp5, brilliance = BCS:GetManaRegen()
-	local mp2 = mp5 * 0.4
-	local totalRegen = base + mp2
-	if brilliance and aura[2] <= brilliance then
-		totalRegen = totalRegen + brilliance
-	elseif (not brilliance and aura[2] > 0) or (brilliance and aura[2] > brilliance) then
-		totalRegen = totalRegen + aura[2]
-	end
-	local totalRegenWhileCasting = (casting / 100) * base + mp2
-	
+		local base, casting, mp5, brilliance = BCS:GetManaRegen()
+		local mp2 = mp5 * 0.4
+		local totalRegen = base + mp2
+		if brilliance and aura[2] <= brilliance then
+			totalRegen = totalRegen + brilliance
+		elseif (not brilliance and aura[2] > 0) or (brilliance and aura[2] > brilliance) then
+			totalRegen = totalRegen + aura[2]
+		end
+		local totalRegenWhileCasting = (casting / 100) * base + mp2
+
 		text:SetText(format("%.0f (%.0f)", totalRegen, totalRegenWhileCasting))
 		frame.tooltip = format(L.SPELL_MANA_REGEN_TOOLTIP, totalRegen, totalRegenWhileCasting)
 		frame.tooltipSubtext = format(L.SPELL_MANA_REGEN_TOOLTIP_SUB, base, casting, mp5, mp2)
-		frame:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-			GameTooltip:SetText(this.tooltip)
-			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-			GameTooltip:Show()
-		end)
-		frame:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
+		BCS:AddTooltip(frame)
 	end
 end
 
@@ -912,15 +1000,7 @@ function BCS:SetDodge(statFrame)
 
 	frame.tooltip = format(L.PLAYER_DODGE_TOOLTIP)
 	frame.tooltipSubtext = format(L.PLAYER_DODGE_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetParry(statFrame)
@@ -933,15 +1013,7 @@ function BCS:SetParry(statFrame)
 
 	frame.tooltip = format(L.PLAYER_PARRY_TOOLTIP)
 	frame.tooltipSubtext = format(L.PLAYER_PARRY_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetBlock(statFrame)
@@ -954,15 +1026,7 @@ function BCS:SetBlock(statFrame)
 
 	frame.tooltip = format(L.PLAYER_BLOCK_TOOLTIP)
 	frame.tooltipSubtext = format(L.PLAYER_BLOCK_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 function BCS:SetTotalAvoidance(statFrame)
 	local frame = statFrame
@@ -974,23 +1038,19 @@ function BCS:SetTotalAvoidance(statFrame)
 	local missChance = 5 + skillDiff * 0.04
 
 	local total = missChance + (GetBlockChance() + GetParryChance() + GetDodgeChance())
-	if total > 100 then total = 100 end
-	if total < 0 then total = 0 end
-	
+	if total > 100 then
+		total = 100
+	end
+	if total < 0 then
+		total = 0
+	end
+
 	label:SetText(L.TOTAL_COLON)
 	text:SetText(format("%.2f%%", total))
 
 	frame.tooltip = format(L.TOTAL_AVOIDANCE_TOOLTIP)
 	frame.tooltipSubtext = format(L.TOTAL_AVOIDANCE_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetDefense(statFrame)
@@ -1001,7 +1061,7 @@ function BCS:SetDefense(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 
 	label:SetText(TEXT(DEFENSE_COLON))
-	
+
 	local posBuff = 0
 	local negBuff = 0
 	if (modifier > 0) then
@@ -1012,15 +1072,7 @@ function BCS:SetDefense(statFrame)
 	PaperDollFormatStat(DEFENSE_COLON, base, posBuff, negBuff, frame, text)
 	frame.tooltip = format(L.DEFENSE_TOOLTIP)
 	frame.tooltipSubtext = format(L.DEFENSE_TOOLTIP_SUB)
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
-		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:SetRangedDamage(statFrame)
@@ -1029,7 +1081,7 @@ function BCS:SetRangedDamage(statFrame)
 	local damageFrame = statFrame
 	label:SetText(TEXT(DAMAGE_COLON))
 	-- If no ranged attack then set to n/a
-	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player", 18)) then
 		damageText:SetText(NOT_APPLICABLE)
 		damageFrame.damage = nil
 		return
@@ -1096,7 +1148,7 @@ function BCS:SetRangedAttackSpeed(startFrame)
 	local damageFrame = startFrame
 	label:SetText(TEXT(SPEED) .. ":")
 	-- If no ranged attack then set to n/a
-	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player", 18)) then
 		damageText:SetText(NOT_APPLICABLE)
 		damageFrame.damage = nil
 		return
@@ -1166,15 +1218,15 @@ function BCS:SetRangedAttackPower(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	label:SetText(TEXT(ATTACK_POWER_COLON))
 	-- If no ranged attack then set to n/a
-	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player",18)) then
+	if UnitHasRelicSlot("player") or not (GetInventoryItemLink("player", 18)) then
 		text:SetText(NOT_APPLICABLE)
 		frame.tooltip = nil
 		return
 	end
-	if ( HasWandEquipped() ) then
+	if (HasWandEquipped()) then
 		text:SetText("--");
 		frame.tooltip = nil;
-		return;
+		return ;
 	end
 	local base, posBuff, negBuff = UnitRangedAttackPower("player")
 	PaperDollFormatStat(RANGED_ATTACK_POWER, base, posBuff, negBuff, frame, text)
@@ -1209,19 +1261,8 @@ function BCS:SetRangedAttackPower(statFrame)
 	end
 	label:SetText(TEXT(ATTACK_POWER_COLON))
 	PaperDollFormatStat(RANGED_ATTACK_POWER, base, posBuff, negBuff, frame, text)
-	frame.tooltipSubtext= format(RANGED_ATTACK_POWER_TOOLTIP, max((base + posBuff + negBuff), 0) / ATTACK_POWER_MAGIC_NUMBER)
-	if frame.tooltip then
-		frame:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-			GameTooltip:SetText(this.tooltip)
-			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-			GameTooltip:Show()
-		end)
-		frame:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
-	end
-
+	frame.tooltipSubtext = format(RANGED_ATTACK_POWER_TOOLTIP, max((base + posBuff + negBuff), 0) / ATTACK_POWER_MAGIC_NUMBER)
+	BCS:AddTooltip(frame)
 end
 
 function BCS:UpdatePaperdollStats(prefix, index)
@@ -1266,6 +1307,13 @@ function BCS:UpdatePaperdollStats(prefix, index)
 		BCS:SetAttackPower(stat4)
 		BCS:SetRating(stat5, "MELEE")
 		BCS:SetMeleeCritChance(stat6)
+	elseif (index == "PLAYERSTAT_MELEE_BOSS") then
+		BCS:SetWeaponSkill(stat1)
+		BCS:SetBossMissChance(stat2)
+		BCS:SetBossDodgeChance(stat3)
+		BCS:SetBossGlanceReduction(stat4)
+		BCS:SetBossCritCap(stat5)
+		BCS:SetEffectiveBossCrit(stat6)
 	elseif (index == "PLAYERSTAT_RANGED_COMBAT") then
 		BCS:SetRangedWeaponSkill(stat1)
 		BCS:SetRangedDamage(stat2)

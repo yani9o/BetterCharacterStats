@@ -43,6 +43,10 @@
 			<OnLeave>
 				--GameTooltip:Hide();
 			</OnLeave>
+            <OnLoad>
+                getglobal(this:GetName() .. "Label"):SetFont("Interface\\AddOns\\BetterCharacterStats\\Fonts\\Myriad-Pro.ttf", 11);
+                getglobal(this:GetName() .. "StatText"):SetFont("Interface\\AddOns\\BetterCharacterStats\\Fonts\\Myriad-Pro.ttf", 11);
+            </OnLoad>
 		</Scripts>
     </Frame>
 	
