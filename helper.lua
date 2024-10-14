@@ -351,9 +351,16 @@ function BCS:GetSpellHitRating()
 						end
 						-- Paladin & Shaman
 						-- Precision & Nature's Guidance
-						_,_, value = strfind(left:GetText(), "Increases your chance to hit with melee weapons and spells by (%d+)%%.")
+						_,_, value = strfind(left:GetText(), "Increases your chance to hit with melee attacks and spells by (%d+)%%.")
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
+							break
+						end
+						-- Warlock
+						-- Suppression
+						_,_, value = strfind(left:GetText(), L["Reduces the chance for enemies to resist your Affliction spells by (%d+)%%."])
+						if value and rank > 0 then
+							BCScache["talents"].spell_hit_shadow = BCScache["talents"].spell_hit_shadow + tonumber(value)
 							break
 						end
 					end
@@ -832,7 +839,7 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].mage_fireblast = 0
 			BCScache["talents"].mage_scorch = 0
 			BCScache["talents"].mage_flamestrike = 0
-			BCScache["talents"].mage_frozen = 0
+			BCScache["talents"].mage_shatter = 0
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
 				for talent=1, GetNumTalents(tab) do
@@ -872,7 +879,7 @@ function BCS:GetSpellCritFromClass(class)
 							-- Shatter
 							_,_, value = strfind(left:GetText(), L["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."])
 							if value and rank > 0 then
-								BCScache["talents"].mage_frozen = BCScache["talents"].mage_frozen + tonumber(value)
+								BCScache["talents"].mage_shatter = BCScache["talents"].mage_shatter + tonumber(value)
 								break
 							end
 						end
@@ -894,7 +901,7 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].mage_fireblast,
 			BCScache["talents"].mage_scorch,
 			BCScache["talents"].mage_flamestrike,
-			BCScache["talents"].mage_frozen
+			BCScache["talents"].mage_shatter
 	elseif class == "PRIEST" then
 		if BCS.needScanTalents then
 			BCScache["talents"].priest_healing_spells = 0
@@ -969,10 +976,12 @@ function BCS:GetSpellCritFromClass(class)
 			end
 		end
 		local healingSpells, smite, holyFire, prayer
+
 		healingSpells = BCScache["talents"].priest_healing_spells + BCScache["gear"].priest_healing_spells
 		smite = BCScache["talents"].priest_smite + BCScache["gear"].priest_smite
 		holyFire = BCScache["talents"].priest_holy_fire + BCScache["gear"].priest_holy_fire
 		prayer = BCScache["talents"].priest_prayer + BCScache["gear"].priest_prayer
+
 		return healingSpells, prayer, BCScache["talents"].priest_offensive_spells, smite, holyFire, 0
 	elseif class == "SHAMAN" then
 		if BCS.needScanTalents then
