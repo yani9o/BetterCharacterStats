@@ -606,7 +606,11 @@ function BCS:SetSpellPower(statFrame, school)
 
 		text:SetText(output)
 
-		frame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP , school)
+		if fromSchool > 0 then
+			frame.tooltip = format(L.SPELL_SCHOOL_SECONDARY_TOOLTIP , school, base + fromSchool, base, fromSchool)
+		else
+			frame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP , school, base)
+		end
 		frame.tooltipSubtext = format(L.SPELL_SCHOOL_TOOLTIP_SUB, strlower(school))
 	else
 		local power, secondaryPower, secondaryName = BCS:GetSpellPower()

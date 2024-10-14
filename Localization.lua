@@ -173,7 +173,8 @@ BCS["L"] = {
 	["SPELL_POWER_SECONDARY_TOOLTIP"] = [[|cffffffffSpell Power %d (%d|cff20ff20+%d %s|r|cffffffff)|r]],
 	["SPELL_POWER_SECONDARY_TOOLTIP_SUB"] = [[Increases damage done by spells and effects.]],
 
-	["SPELL_SCHOOL_TOOLTIP"] = [[|cffffffff%s Spell Power|r]],
+	["SPELL_SCHOOL_TOOLTIP"] = [[|cffffffff%s Spell Power %s|r]],
+	["SPELL_SCHOOL_SECONDARY_TOOLTIP"] = [[|cffffffff%s Spell Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
 	["SPELL_SCHOOL_TOOLTIP_SUB"] = [[Increases damage done by %s spells and effects.]],
 
 	["SPELL_HEALING_POWER_TOOLTIP"] = [[|cffffffffHealing Power %d|r]],
