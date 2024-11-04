@@ -976,10 +976,33 @@ function BCS:GetHealingPower()
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
 	end
+	-- talents
+	local talentbonus = nil
+	if BCS.needScanTalents then
+		BCScache["talents"].healing = 0
+		for tab=1, GetNumTalentTabs() do
+			for talent=1, GetNumTalents(tab) do
+				BCS_Tooltip:SetTalent(tab, talent)
+				for line=1, BCS_Tooltip:NumLines() do
+					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+					if left:GetText() then
+						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						-- Paladin Ironclad Talent
+						local _,_, value = strfind(left:GetText(), "Increases your healing power by (%d)%% of your Armor.")
+						if value and rank > 0 then
+							local stat, armor = UnitArmor("player")
+							BCScache["talents"].healing = BCScache["talents"].healing + ((tonumber(value)/100) * armor)
+							break
+						end
+					end
+				end
+			end
+		end
+	end
 
-	healPower = BCScache["gear"].healing + BCScache["auras"].healing
+	healPower = BCScache["gear"].healing + BCScache["auras"].healing + BCScache["talents"].healing
 
-	return healPower, treebonus
+	return healPower, treebonus, talentbonus
 end
 
 local function GetRegenMPPerSpirit()
