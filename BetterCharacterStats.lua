@@ -340,22 +340,26 @@ function BCS:SetArmor(statFrame)
 end
 
 function BCS:GetMissChanceRaw(wepSkill)
+	local _,ver = pcall(GetBuildInfo)
 	local diff = wepSkill - 315
 	local miss = 5
 
-	if diff < -10 then
-		miss = miss - diff * 0.2;
+	if ver == "1.17.2" then
+		miss = miss - (diff * 0.2) - BCS:GetHitRating()
 	else
-		miss = miss - diff * 0.1;
-	end
+		if diff < -10 then
+			miss = miss - diff * 0.2;
+		else
+			miss = miss - diff * 0.1;
+		end
 
-	local hitChance = BCS:GetHitRating()
-	-- if skill diff < -10 then subtract one from +hit, if there is any +hit
-	if (diff < -10) and (hitChance > 0) then
-		hitChance = hitChance - 1
+		local hitChance = BCS:GetHitRating()
+		-- if skill diff < -10 then subtract one from +hit, if there is any +hit
+		if (diff < -10) and (hitChance > 0) then
+			hitChance = hitChance - 1
+		end
+		miss = miss - hitChance
 	end
-	miss = miss - hitChance
-
 	return miss
 end
 
@@ -372,10 +376,15 @@ function BCS:GetGlanceChance(wepSkill)
 end
 
 function BCS:GetGlanceReduction(wepSkill)
-	local diff = 315 - wepSkill;
-	local low = math.max(math.min(1.3 - 0.05 * diff, 0.91), 0.01);
-	local high = math.max(math.min(1.2 - 0.03 * diff, 0.99), 0.2);
-	return 100 * ((high - low) / 2 + low);
+	local _,ver = pcall(GetBuildInfo)
+	if ver == "1.17.2" then
+		return 65 + (wepSkill - 300) * 2
+	else
+		local diff = 315 - wepSkill;
+		local low = math.max(math.min(1.3 - 0.05 * diff, 0.91), 0.01);
+		local high = math.max(math.min(1.2 - 0.03 * diff, 0.99), 0.2);
+		return 100 * ((high - low) / 2 + low);
+	end
 end
 
 function BCS:GetDodgeChance(wepSkill)
