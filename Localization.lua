@@ -41,7 +41,7 @@ BCS["L"] = {
 	["^Healing %+(%d+) and %d+ mana per 5 sec."] = "^Healing %+(%d+) and %d+ mana per 5 sec.",
 
 	["Equip: Restores (%d+) mana per 5 sec."] = "Equip: Restores (%d+) mana per 5 sec.",
-	["+(%d)%% Hit"] = "+(%d)%% Hit",
+	["+(%d)%% Ranged Hit"] = "+(%d)%% Ranged Hit",
 
 	-- Random Bonuses // https://wow.gamepedia.com/index.php?title=SuffixId&oldid=204406
 	["^%+(%d+) Damage and Healing Spells"] = "^%+(%d+) Damage and Healing Spells",
@@ -106,8 +106,9 @@ BCS["L"] = {
 	["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."] = "Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%.",
 	["Increases the critical effect chance of your Regrowth spell by (%d+)%%."] = "Increases the critical effect chance of your Regrowth spell by (%d+)%%.",
 	-- paladin
-	["Increases the critical effect chance of your Holy spells by (%d+)%%."] = "Increases the critical effect chance of your Holy spells by (%d+)%%.", -- same for priest
-	["When activated, gives your next Flash of Light, Holy Light or Holy Shock spell a (%d+)%% critical effect chance."] = "When activated, gives your next Flash of Light, Holy Light or Holy Shock spell a (%d+)%% critical effect chance.",
+	["Increases your healing power by (%d+)%% of your Armor."] = "Increases your healing power by (%d+)%% of your Armor.",
+	["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."] = "Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%.",
+	["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."] = "Improves your chance to get a critical strike with Holy Shock by (%d+)%%.",
 	-- shaman
 	["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%.",
 	["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."] = "Increases the critical effect chance of your healing and lightning spells by (%d+)%%.",
@@ -124,7 +125,9 @@ BCS["L"] = {
 	["Increases your spell damage and critical srike chance by (%d+)%%."] = "Increases your spell damage and critical srike chance by (%d+)%%.",
 	["Increases critical strike chance from Fire damage spells by (%d+)%%."] = "Increases critical strike chance from Fire damage spells by (%d+)%%.",
 	-- priest
-	["Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%."] = "Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%.",
+	["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%.",
+	["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."] = "Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%.",
+	["Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%"] = "Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%",
 	["^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%."] = "^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%.",
 	["^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%."] = "^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%.",
 	--defense

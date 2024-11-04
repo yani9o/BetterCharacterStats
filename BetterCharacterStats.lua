@@ -665,7 +665,7 @@ function BCS:SetHitRating(statFrame, ratingType)
 		frame.tooltip = (L.RANGED_HIT_TOOLTIP)
 		frame.tooltipSubtext = format(L.RANGED_HIT_TOOLTIP_SUB)
 	elseif ratingType == "SPELL" then
-		local spell_hit, spell_hit_fire, spell_hit_frost, spell_hit_arcane, spell_hit_shadow = BCS:GetSpellHitRating()
+		local spell_hit, spell_hit_fire, spell_hit_frost, spell_hit_arcane, spell_hit_shadow, spell_hit_holy = BCS:GetSpellHitRating()
 		frame.tooltip = format(L.SPELL_HIT_TOOLTIP)
 		text:SetText(spell_hit .. "%")
 		frame.tooltipSubtext = format(L.SPELL_HIT_TOOLTIP_SUB)
@@ -689,6 +689,9 @@ function BCS:SetHitRating(statFrame, ratingType)
 					else
 						GameTooltip:AddLine(format(L.SPELL_SCHOOL_SHADOW.." spells: %.f%%", spell_hit + spell_hit_shadow))
 					end
+				end
+				if spell_hit_holy > 0 then
+					GameTooltip:AddLine(format(L.SPELL_SCHOOL_HOLY.." and Discipline spells: %.f%%", spell_hit + spell_hit_holy))
 				end
 				GameTooltip:Show()
 			end)
@@ -820,13 +823,11 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format("Regrowth: %.2f%%", total2)) end
 		elseif class == "PALADIN" then
 			if spell1 > 0 then
-				GameTooltip:AddLine(format("Holy spells: %.2f%%", total1)) end
+				GameTooltip:AddLine(format("Holy Light: %.2f%%", total1)) end
 			if spell2 > 0 then
-				GameTooltip:AddLine(format("Holy Light: %.2f%%", total2)) end
+				GameTooltip:AddLine(format("Flash of Light: %.2f%%", total2)) end
 			if spell3 > 0 then
-				GameTooltip:AddLine(format("Flash of Light: %.2f%%", total3)) end
-			if spell4 > 0 then
-				GameTooltip:AddLine(format("Holy Shock: %.2f%%", total4)) end
+				GameTooltip:AddLine(format("Holy Shock: %.2f%%", total3)) end
 		elseif class == "WARLOCK" then
 			if spell2 > 0 and spell2 ~= spell1 then
 				GameTooltip:AddLine(format("Searing Pain: %.2f%%", total2)) end
