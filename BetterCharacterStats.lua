@@ -923,7 +923,7 @@ function BCS:SetHealing(statFrame)
 		total = total + aura[1]
 	end
 	label:SetText(L.HEAL_POWER_COLON)
-	text:SetText(format("%.f",total))
+	text:SetText(format("%d",total))
 	if heal ~= 0 then
 		frame.tooltip = format(L.SPELL_HEALING_POWER_SECONDARY_TOOLTIP, (total), power, heal)
 	else
@@ -962,7 +962,7 @@ function BCS:SetManaRegen(statFrame)
 	end
 	local totalRegenWhileCasting = (casting / 100) * base + mp2
 	
-		text:SetText(format("%.0f (%.0f)", totalRegen, totalRegenWhileCasting))
+		text:SetText(format("%d (%d)", totalRegen, totalRegenWhileCasting))
 		frame.tooltip = format(L.SPELL_MANA_REGEN_TOOLTIP, totalRegen, totalRegenWhileCasting)
 		frame.tooltipSubtext = format(L.SPELL_MANA_REGEN_TOOLTIP_SUB, base, casting, mp5, mp2)
 		frame:SetScript("OnEnter", function()

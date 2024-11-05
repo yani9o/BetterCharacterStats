@@ -1409,8 +1409,6 @@ function BCS:GetHealingPower()
 						-- Ironclad
 						local _,_, value = strfind(left:GetText(), L["Increases your healing power by (%d+)%% of your Armor."])
 						if value and rank > 0 then
-							local _, effectiveArmor = UnitArmor("player")
-							BCScache["talents"].healing = BCScache["talents"].healing + floor(((tonumber(value) / 100) * effectiveArmor))
 							ironClad = tonumber(value)
 							break
 						end
@@ -1472,11 +1470,6 @@ function BCS:GetHealingPower()
 				end
 			end
 		end
-		if ironClad ~= nil then
-			BCScache["talents"].healing = 0
-			local _, effectiveArmor = UnitArmor("player")
-			BCScache["talents"].healing = floor(((ironClad / 100) * effectiveArmor))
-		end
 	end
 	-- buffs
 	local treebonus = nil
@@ -1522,7 +1515,11 @@ function BCS:GetHealingPower()
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
 	end
-
+	if ironClad ~= nil then
+		BCScache["talents"].healing = 0
+		local _, effectiveArmor = UnitArmor("player")
+		BCScache["talents"].healing = floor(((ironClad / 100) * effectiveArmor))
+	end
 	healPower = BCScache["gear"].healing + BCScache["auras"].healing + BCScache["talents"].healing
 
 	return healPower, treebonus
