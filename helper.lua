@@ -658,7 +658,7 @@ function BCS:GetSpellCritChance()
 				end
 			end
 		end
-		_, _, critFromAura = BCS:GetPlayerAura("Inner Focus")
+		critFromAura = BCS:GetPlayerAura("Inner Focus")
 		if critFromAura then
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + 25
 		end
@@ -1120,6 +1120,7 @@ function BCS:GetSpellCritFromClass(class)
 	end
 end
 
+local impInnerFire = nil
 function BCS:GetSpellPower(school)
 	if school then
 		local spellPower = 0;
@@ -1300,6 +1301,7 @@ function BCS:GetSpellPower(school)
 		end
 
 		if BCS.needScanTalents then
+			impInnerFire = nil
 			BCScache["talents"].damage_and_healing = 0
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
@@ -1315,6 +1317,12 @@ function BCS:GetSpellPower(school)
 							if value and rank > 0 then
 								local stat, spirit = UnitStat("player", 5)
 								BCScache["talents"].damage_and_healing = BCScache["talents"].damage_and_healing + floor(((tonumber(value) / 100) * spirit))
+								break
+							end
+							-- Improved Inner Fire
+							_,_, value = strfind(left:GetText(), "Increases the effects of your Inner Fire spell by (%d+)%%.")
+							if value and rank > 0 then
+								impInnerFire = tonumber(value)
 								break
 							end
 						end
@@ -1354,6 +1362,16 @@ function BCS:GetSpellPower(school)
 			if spellPowerFromAura then
 				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
+			end
+			--Inner Fire
+			_, _, spellPowerFromAura = BCS:GetPlayerAura("Increased damage done by magical spells and effects by (%d+).")
+			if spellPowerFromAura then
+				spellPowerFromAura = tonumber(spellPowerFromAura)
+				if impInnerFire then
+					spellPowerFromAura = floor((spellPowerFromAura * (impInnerFire/100)) + (spellPowerFromAura))
+				end
+				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + spellPowerFromAura
+				BCScache["auras"].only_damage = BCScache["auras"].only_damage + spellPowerFromAura
 			end
 		end
 		local secondaryPower = 0
@@ -1397,6 +1415,7 @@ function BCS:GetHealingPower()
 	local healPower_Set_Bonus = {}
 	--talents
 	if BCS.needScanTalents then
+		ironClad = nil
 		BCScache["talents"].healing = 0
 		for tab=1, GetNumTalentTabs() do
 			for talent=1, GetNumTalents(tab) do
@@ -1517,8 +1536,10 @@ function BCS:GetHealingPower()
 	end
 	if ironClad ~= nil then
 		BCScache["talents"].healing = 0
-		local _, effectiveArmor = UnitArmor("player")
-		BCScache["talents"].healing = floor(((ironClad / 100) * effectiveArmor))
+		local base = UnitArmor("player")
+		local _, agility = UnitStat("player", 2)
+		local armorFromGear = base - (agility * 2)
+		BCScache["talents"].healing = floor(((ironClad / 100) * armorFromGear))
 	end
 	healPower = BCScache["gear"].healing + BCScache["auras"].healing + BCScache["talents"].healing
 
@@ -1549,11 +1570,37 @@ local function GetRegenMPPerSpirit()
 	return addvalue
 end
 
+local waterShield = nil
 function BCS:GetManaRegen()
 	local base = GetRegenMPPerSpirit()
 	local casting = 0
 	local mp5 = 0
 	local mp5_Set_Bonus = {}
+
+	-- scan talents
+	if BCS.needScanTalents then
+		waterShield = nil
+		BCScache["talents"].casting = 0
+		for tab=1, GetNumTalentTabs() do
+			for talent=1, GetNumTalents(tab) do
+				BCS_Tooltip:SetTalent(tab, talent)
+				for line=1, BCS_Tooltip:NumLines() do
+					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+					if left:GetText() then
+						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						-- Priest (Meditation) / Druid (Reflection) / Mage (Arcane Meditation) / Shaman (Improved Water Shield)
+						local _,_, value = strfind(left:GetText(), L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
+						if value and rank > 0 then
+							BCScache["talents"].casting = BCScache["talents"].casting + tonumber(value)
+							waterShield = rank
+							break
+						end
+					end
+				end
+			end
+		end
+	end
+
 	if BCS.needScanGear then
 		BCScache["gear"].mp5 = 0
 		BCScache["gear"].casting = 0
@@ -1678,44 +1725,25 @@ function BCS:GetManaRegen()
 		if castingFromAura then
 			BCScache["auras"].casting = BCScache["auras"].casting + tonumber(castingFromAura)
 		end
-	end
-
-	mp5 = BCScache["auras"].mp5 + BCScache["gear"].mp5
-
-	-- scan talents
-	local brilliance = nil
-	if BCS.needScanTalents then
-		BCScache["talents"].casting = 0
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
-				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
-					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
-					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
-						-- Priest (Meditation) / Druid (Reflection) / Mage (Arcane Meditation) / Shaman (Improved Water Shield)
-						local _,_, value = strfind(left:GetText(), L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
-						if value and rank > 0 then
-							BCScache["talents"].casting = BCScache["talents"].casting + tonumber(value)
-							break
-						end
-						-- Brilliance Aura (own)
-						if strfind(left:GetText(), "Brilliance Aura") and rank > 0 and BCS:GetPlayerAura("Brilliance Aura") then
-							brilliance = (base + (mp5 * 0.4)) * 0.15
-						end
-					end
+		--Improved Water Shield
+		if waterShield ~= nil then
+			for i = 1, 32 do
+				local icon, stacks = UnitBuff("player", i)
+				if icon and stacks and icon == "Interface\\Icons\\Ability_Shaman_WaterShield" then
+					BCScache["auras"].casting = BCScache["auras"].casting + (tonumber(stacks) * waterShield)
 				end
 			end
 		end
 	end
 
 	casting = BCScache["auras"].casting + BCScache["talents"].casting + BCScache["gear"].casting
+	mp5 = BCScache["auras"].mp5 + BCScache["gear"].mp5
 
 	if casting > 100 then
 		casting = 100
 	end
 
-	return base, casting, mp5, brilliance
+	return base, casting, mp5
 end
 
 --Weapon Skill code adapted from https://github.com/pepopo978/BetterCharacterStats
