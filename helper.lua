@@ -1301,6 +1301,7 @@ function BCS:GetSpellPower(school)
 		end
 
 		if BCS.needScanTalents then
+			impInnerFire = nil
 			BCScache["talents"].damage_and_healing = 0
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
@@ -1323,8 +1324,6 @@ function BCS:GetSpellPower(school)
 							if value and rank > 0 then
 								impInnerFire = tonumber(value)
 								break
-							else
-								impInnerFire = nil
 							end
 						end
 					end
@@ -1416,6 +1415,7 @@ function BCS:GetHealingPower()
 	local healPower_Set_Bonus = {}
 	--talents
 	if BCS.needScanTalents then
+		ironClad = nil
 		BCScache["talents"].healing = 0
 		for tab=1, GetNumTalentTabs() do
 			for talent=1, GetNumTalents(tab) do
@@ -1430,8 +1430,6 @@ function BCS:GetHealingPower()
 						if value and rank > 0 then
 							ironClad = tonumber(value)
 							break
-						else
-							ironClad = nil
 						end
 					end
 				end
@@ -1581,6 +1579,7 @@ function BCS:GetManaRegen()
 
 	-- scan talents
 	if BCS.needScanTalents then
+		waterShield = nil
 		BCScache["talents"].casting = 0
 		for tab=1, GetNumTalentTabs() do
 			for talent=1, GetNumTalents(tab) do
@@ -1595,8 +1594,6 @@ function BCS:GetManaRegen()
 							BCScache["talents"].casting = BCScache["talents"].casting + tonumber(value)
 							waterShield = rank
 							break
-						else
-							waterShield = nil
 						end
 					end
 				end
