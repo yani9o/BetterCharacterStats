@@ -658,7 +658,7 @@ function BCS:GetSpellCritChance()
 				end
 			end
 		end
-		_, _, critFromAura = BCS:GetPlayerAura("Inner Focus")
+		critFromAura = BCS:GetPlayerAura("Inner Focus")
 		if critFromAura then
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + 25
 		end
