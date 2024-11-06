@@ -3,9 +3,10 @@ BCSConfig = BCSConfig or {}
 
 local L, IndexLeft, IndexRight
 L = BCS.L
---aura bonuses from other players;
---[1] - Tree of Life; [2] - Brilliance
-local aura = { .0, .0 }
+
+-- Tree of Life aura bonus from other players, your own is calculated in GetHealingPower()
+local aura = .0
+
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
 	"PLAYERSTAT_MELEE_COMBAT",
@@ -101,18 +102,8 @@ function BCS:OnEvent()
 				amount = tonumber(amount)
 				if type =="TREE" then
 					--BCS:Print("got tree response amount="..amount)
-					if amount >= aura[1] then
-						aura[1] = amount
-						if BCS.PaperDollFrame:IsVisible() then
-							BCS:UpdateStats()
-						else
-							BCS.needUpdate = true
-						end
-					end
-				elseif type == "BRILLIANCE" then
-					--BCS:Print("got mage response amount="..amount)
-					if amount >= aura[2] then
-						aura[2] = amount
+					if amount >= aura then
+						aura = amount
 						if BCS.PaperDollFrame:IsVisible() then
 							BCS:UpdateStats()
 						else
@@ -125,10 +116,7 @@ function BCS:OnEvent()
 	elseif event == "PLAYER_AURAS_CHANGED" then
 		BCS.needScanAuras = true
 		if not BCS:GetPlayerAura("Tree of Life Aura") then
-			aura[1] = 0
-		end
-		if not BCS:GetPlayerAura("Brilliance Aura") then
-			aura[2] = 0
+			aura = 0
 		end
 		if BCS.PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
@@ -184,23 +172,14 @@ sender:SetScript("OnEvent", function()
 				ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player, "PARTY")
 				--BCS:Print("sent tree request")
 			end
-			if BCS:GetPlayerAura("Brilliance Aura") then
-				ChatThrottleLib:SendAddonMessage("BULK","bcs", "BRILLIANCE"..","..player, "PARTY")
-				--BCS:Print("sent mage request")
-			end
 		end
 		if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
 			local type, name, amount = hcstrsplit(",", arg2)
 			if name ~= player then
 				local _, treebonus = BCS:GetHealingPower()
-				local _, _, _, brilliance = BCS:GetManaRegen()
 				if not amount and type == "TREE" and treebonus then
 					ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player..","..treebonus, "PARTY")
 					--BCS:Print("sent tree response, amount="..treebonus)
-				end
-				if not amount and type == "BRILLIANCE" and brilliance then
-					ChatThrottleLib:SendAddonMessage("BULK","bcs", "BRILLIANCE"..","..player..","..brilliance, "PARTY")
-					--BCS:Print("sent mage response, amount="..brilliance)
 				end
 			end
 		end
@@ -917,10 +896,10 @@ function BCS:SetHealing(statFrame)
 	local heal, treebonus = BCS:GetHealingPower()
 	power = power - dmg 
 	local total = power + heal
-	if treebonus and aura[1] <= treebonus then
+	if treebonus and aura <= treebonus then
 		total = total + treebonus
-	elseif (not treebonus and aura[1] > 0) or (treebonus and aura[1] > treebonus) then
-		total = total + aura[1]
+	elseif (not treebonus and aura > 0) or (treebonus and aura > treebonus) then
+		total = total + aura
 	end
 	label:SetText(L.HEAL_POWER_COLON)
 	text:SetText(format("%d",total))
@@ -952,14 +931,9 @@ function BCS:SetManaRegen(statFrame)
 		text:SetText(NOT_APPLICABLE)
 		frame.tooltip = nil
 	else
-	local base, casting, mp5, brilliance = BCS:GetManaRegen()
+	local base, casting, mp5 = BCS:GetManaRegen()
 	local mp2 = mp5 * 0.4
 	local totalRegen = base + mp2
-	if brilliance and aura[2] <= brilliance then
-		totalRegen = totalRegen + brilliance
-	elseif (not brilliance and aura[2] > 0) or (brilliance and aura[2] > brilliance) then
-		totalRegen = totalRegen + aura[2]
-	end
 	local totalRegenWhileCasting = (casting / 100) * base + mp2
 	
 		text:SetText(format("%d (%d)", totalRegen, totalRegenWhileCasting))
