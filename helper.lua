@@ -492,6 +492,10 @@ function BCS:GetRangedCritChance()
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
+						_,_, value = strfind(left:GetText(), "Equip: Improves your chance to get a critical strike with missile weapons by (%d)%%.")
+						if value then
+							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
+						end
 
 						_,_, value = strfind(left:GetText(), "(.+) %(%d/%d%)")
 						if value then
@@ -1142,17 +1146,13 @@ function BCS:GetSpellPower(school)
 							if value then
 								spellPower = spellPower + tonumber(value)
 							end
-							if L[school.." Damage %+(%d+)"] then
-								_,_, value = strfind(left:GetText(), L[school.." Damage %+(%d+)"])
-								if value then
-									spellPower = spellPower + tonumber(value)
-								end
+							_,_, value = strfind(left:GetText(), school.." Damage %+(%d+)")
+							if value then
+								spellPower = spellPower + tonumber(value)
 							end
-							if L["^%+(%d+) "..school.." Spell Damage"] then
-								_,_, value = strfind(left:GetText(), L["^%+(%d+) "..school.." Spell Damage"])
-								if value then
-									spellPower = spellPower + tonumber(value)
-								end
+							_,_, value = strfind(left:GetText(), "^%+(%d+) "..school.." Spell Damage")
+							if value then
+								spellPower = spellPower + tonumber(value)
 							end
 						end
 					end
@@ -1270,7 +1270,11 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
 							end
-							
+							_,_, value = strfind(left:GetText(), "Nature Damage %+(%d+)")
+							if value then
+								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
+							end
+
 							_,_, value = strfind(left:GetText(), L["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
@@ -1837,4 +1841,73 @@ function BCS:GetRangedWeaponSkill()
 	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("RangedSlot")
 	BCScache["skills"].ranged = BCS:GetWeaponSkillForWeaponType(itemType)
 	return BCScache["skills"].ranged
+end
+
+--https://us.forums.blizzard.com/en/wow/t/block-value-formula/283718/18
+function BCS:GetBlockValue()
+	local blockValue = 0
+	local _, strength = UnitStat("player", 1)
+	local mod = 0
+	-- scan gear
+	for slot=1, 19 do
+		if BCS_Tooltip:SetInventoryItem('player', slot) then
+			local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then BCS_Tooltip:ClearLines() BCS_Tooltip:SetHyperlink(eqItemLink) end
+			for line=1, BCS_Tooltip:NumLines() do
+				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+				if left:GetText() then
+					local _,_, value = strfind(left:GetText(), "(%d+) Block")
+					if value then
+						blockValue = blockValue + tonumber(value)
+					end
+					_,_, value = strfind(left:GetText(), "Equip: Increases the block value of your shield by (%d+).")
+					if value then
+						blockValue = blockValue + tonumber(value)
+					end
+					_,_, value = strfind(left:GetText(), "Block Value %+(%d+)")
+					if value then
+						blockValue = blockValue + tonumber(value)
+					end
+				end
+			end
+		end
+	end
+	-- scan talents
+	for tab=1, GetNumTalentTabs() do
+		for talent=1, GetNumTalents(tab) do
+			BCS_Tooltip:SetTalent(tab, talent)
+			for line=1, BCS_Tooltip:NumLines() do
+				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+				if left:GetText() then
+					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+					--warrior/paladin
+					local _,_, value = strfind(left:GetText(), "amount of damage absorbed by your shield by (%d+)%%")
+					if value and rank > 0 then
+						mod = mod + tonumber(value)
+						break
+					end
+					--shaman
+					_,_, value = strfind(left:GetText(), "increases the amount blocked by (%d+)%%")
+					if value and rank > 0 then
+						mod = mod + tonumber(value)
+						break
+					end
+				end
+			end
+		end
+	end
+	-- buffs
+	--Glyph of Deflection
+	local _, _, value = BCS:GetPlayerAura("Block value increased by (%d+).")
+	if value then
+		blockValue = blockValue + tonumber(value)
+	end
+
+	mod = mod/100
+	blockValue = blockValue + (strength/20 - 1)
+	blockValue = floor(blockValue + blockValue * mod)
+
+	if blockValue < 0 then blockValue = 0 end
+
+	return blockValue
 end

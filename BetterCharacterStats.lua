@@ -997,9 +997,10 @@ function BCS:SetBlock(statFrame)
 	local frame = statFrame
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
+	local blockChance = GetBlockChance()
 
 	label:SetText(L.BLOCK_COLON)
-	text:SetText(format("%.2f%%", GetBlockChance()))
+	text:SetText(format("%.2f%%", blockChance ))
 
 	frame.tooltip = format(L.PLAYER_BLOCK_TOOLTIP)
 	frame.tooltipSubtext = format(L.PLAYER_BLOCK_TOOLTIP_SUB)
@@ -1007,6 +1008,9 @@ function BCS:SetBlock(statFrame)
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
 		GameTooltip:SetText(this.tooltip)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+		if blockChance > 0 then
+			GameTooltip:AddLine("Block Value: "..BCS:GetBlockValue())
+		end
 		GameTooltip:Show()
 	end)
 	frame:SetScript("OnLeave", function()
