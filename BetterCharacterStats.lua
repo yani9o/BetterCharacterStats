@@ -866,12 +866,12 @@ function BCS:SetRangedCritChance(statFrame)
 	local skill = BCS:GetRangedWeaponSkill()
 	local level = UnitLevel("player")
 	-- apply skill difference modifier
-	local skillDiff = skill - (level*5)
+	--[[local skillDiff = skill - (level*5)
 	if (skill >= (level*5)) then
 		crit = crit + (skillDiff * 0.04)
 	else
 		crit = crit + (skillDiff * 0.2)
-	end
+	end]]
 	if crit < 0 then crit = 0 end
 	text:SetText(format("%.2f%%", crit))
 	statFrame.tooltip = (L.RANGED_CRIT_TOOLTIP)
