@@ -1219,7 +1219,7 @@ function BCS:GetSpellPower(school)
 							_,_, value = strfind(left:GetText(), L["Spell Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+								--BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
 							end
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Spell Damage and Healing"])
 							if value then
