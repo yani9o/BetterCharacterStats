@@ -1187,8 +1187,8 @@ function BCS:GetSpellPower(school)
 
 		return spellPower
 	else
-		local spellPower = 0
-		local damagePower = 0
+		local damageAndHealing = 0
+		local damageOnly = 0
 		local SpellPower_Set_Bonus = {}
 		if BCS.needScanGear then
 			BCScache["gear"].damage_and_healing = 0
@@ -1208,23 +1208,32 @@ function BCS:GetSpellPower(school)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
+							-- generic bonus on most gear
 							local _,_, value = strfind(left:GetText(), L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							_,_, value = strfind(left:GetText(), "Equip: Increases your spell damage by up to (%d+)")
+							-- Atiesh (druid/priest)
+							_,_, value = strfind(left:GetText(), "Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+.")
+							if value then
+								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+							end
+							-- Arcanum of Focus (Head/Legs enchant)
+							_,_, value = strfind(left:GetText(), "Healing and Spell Damage %+(%d+)")
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							_,_, value = strfind(left:GetText(), L["Spell Damage %+(%d+)"])
-							if value then
-								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-								--BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
-							end
+							-- Zandalar Signet of Mojo (Shoulder enchant)
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Spell Damage and Healing"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
+							-- Power of the Scourge (Shoulder enchant)
+							_,_, value = strfind(left:GetText(), "Spell Damage %+(%d+) and %+%d+%% Spell Critical Strike")
+							if value then
+								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
+							end
+							-- Enchanted Armor Kit (Leatherworking)
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Damage and Healing Spells"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
@@ -1321,25 +1330,21 @@ function BCS:GetSpellPower(school)
 					if left:GetText() then
 						local found = strfind(left:GetText(), "Brilliant Wizard Oil")
 						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
 							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 36
 							break
 						end
 						found = strfind(left:GetText(), "Lesser Wizard Oil")
 						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
 							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 16
 							break
 						end
 						found = strfind(left:GetText(), "Minor Wizard Oil")
 						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
 							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 8
 							break
 						end
 						found = strfind(left:GetText(), "Wizard Oil")
 						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
 							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 24
 							break
 						end
@@ -1384,30 +1389,23 @@ function BCS:GetSpellPower(school)
 			-- buffs
 			local _, _, spellPowerFromAura = BCS:GetPlayerAura(L["Magical damage dealt is increased by up to (%d+)."])
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
 			if spellPowerFromAura then
 				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 			end
-			
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Magical damage dealt by spells and abilities is increased by up to (%d+)")
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell damage is increased by up to (%d+)")
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			--turtle wow spell power food 
+			-- Danonzo's Tel'Abim Delight
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell Damage increased by (%d+)")
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
 			--Inner Fire
@@ -1417,7 +1415,6 @@ function BCS:GetSpellPower(school)
 				if impInnerFire then
 					spellPowerFromAura = floor((spellPowerFromAura * (impInnerFire/100)) + (spellPowerFromAura))
 				end
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + spellPowerFromAura
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + spellPowerFromAura
 			end
 		end
@@ -1449,14 +1446,15 @@ function BCS:GetSpellPower(school)
 			secondaryPowerName = L.SPELL_SCHOOL_SHADOW
 		end
 
-		spellPower = BCScache["gear"].damage_and_healing + BCScache["talents"].damage_and_healing + BCScache["auras"].damage_and_healing
-		damagePower = BCScache["auras"].only_damage + BCScache["gear"].only_damage
+		damageAndHealing = BCScache["gear"].damage_and_healing + BCScache["talents"].damage_and_healing + BCScache["auras"].damage_and_healing
+		damageOnly = BCScache["auras"].only_damage + BCScache["gear"].only_damage
 
-		return spellPower, secondaryPower, secondaryPowerName, damagePower
+		return damageAndHealing, secondaryPower, secondaryPowerName, damageOnly
 	end
 end
 
 local ironClad = nil
+--this is stuff that gives ONLY healing, we count stuff that gives both damage and healing in GetSpellPower
 function BCS:GetHealingPower()
 	local healPower = 0;
 	local healPower_Set_Bonus = {}
@@ -1503,23 +1501,29 @@ function BCS:GetHealingPower()
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
+						-- Enchant Weapon/Gloves/Bracers - Healing Power
 						_,_, value = strfind(left:GetText(), L["Healing Spells %+(%d+)"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
+						-- Resilience of the Scourge (Shoulder enchant)
 						_,_, value = strfind(left:GetText(), L["^Healing %+(%d+) and %d+ mana per 5 sec."])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
+						-- Zandalar Signet of Serenity (Shoulder enchant)
 						_,_, value = strfind(left:GetText(), L["^%+(%d+) Healing Spells"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
-						-- Jewelcrafting
+						-- Beautiful Diamond Gemstone (Jewelcrafting)
 						_,_, value = strfind(left:GetText(), "Healing %+(%d+)")
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
+						-- Enchanted Armor Kit (Leatherwotking) 
+						-- Arcanum of Focus (Head/Legs enchant)
+						-- already included in GetSpellPower
 
 						_,_, value = strfind(left:GetText(), "(.+) %(%d/%d%)")
 						if value then
@@ -1581,10 +1585,14 @@ function BCS:GetHealingPower()
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		_, _, healPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
+
+		-- ?
+		-- already included in GetSpellPower
+		--[[_, _, healPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
-		end
+		end]]
+
 		--Dreamshard Elixir
 		_, _, healPowerFromAura = BCS:GetPlayerAura("Healing done is increased by up to (%d+)")
 		if healPowerFromAura then
@@ -1787,6 +1795,11 @@ function BCS:GetManaRegen()
 		end
 		--Mage Armor
 		_, _, castingFromAura = BCS:GetPlayerAura(L["(%d+)%% of your mana regeneration to continue while casting."])
+		if castingFromAura then
+			BCScache["auras"].casting = BCScache["auras"].casting + tonumber(castingFromAura)
+		end
+		--Sylvan Blessing
+		_, _, castingFromAura = BCS:GetPlayerAura("Allows (%d+)%% of mana regeneration while casting.")
 		if castingFromAura then
 			BCScache["auras"].casting = BCScache["auras"].casting + tonumber(castingFromAura)
 		end

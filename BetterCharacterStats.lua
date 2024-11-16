@@ -592,20 +592,21 @@ function BCS:SetSpellPower(statFrame, school)
 		end
 		frame.tooltipSubtext = format(L.SPELL_SCHOOL_TOOLTIP_SUB, strlower(school))
 	else
-		local power, secondaryPower, secondaryName = BCS:GetSpellPower()
+		local damageAndHealing, secondaryPower, secondaryName, damageOnly = BCS:GetSpellPower()
+		local total = damageAndHealing + damageOnly
 
 		label:SetText(L.SPELL_POWER_COLON)
 		if secondaryPower > 0 then
-			text:SetText(colorPos..power + secondaryPower)
+			text:SetText(colorPos..total + secondaryPower)
 		else
-			text:SetText(power + secondaryPower)
+			text:SetText(total + secondaryPower)
 		end
 
 		if secondaryPower ~= 0 then
-			frame.tooltip = format(L.SPELL_POWER_SECONDARY_TOOLTIP, (power + secondaryPower), power, secondaryPower, secondaryName)
+			frame.tooltip = format(L.SPELL_POWER_SECONDARY_TOOLTIP, (total + secondaryPower), total, secondaryPower, secondaryName)
 			frame.tooltipSubtext = format(L.SPELL_POWER_SECONDARY_TOOLTIP_SUB)
 		else
-			frame.tooltip = format(L.SPELL_POWER_TOOLTIP, power)
+			frame.tooltip = format(L.SPELL_POWER_TOOLTIP, total)
 			frame.tooltipSubtext = format(L.SPELL_POWER_TOOLTIP_SUB)
 		end
 	end
@@ -892,22 +893,25 @@ function BCS:SetHealing(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
 
-	local power, _, _, dmg = BCS:GetSpellPower()
-	local heal, treebonus = BCS:GetHealingPower()
-	power = power - dmg 
-	local total = power + heal
+	local damageAndHealing = BCS:GetSpellPower()
+	local healingOnly, treebonus = BCS:GetHealingPower()
+	local total = damageAndHealing + healingOnly
+
 	if treebonus and aura <= treebonus then
 		total = total + treebonus
 	elseif (not treebonus and aura > 0) or (treebonus and aura > treebonus) then
 		total = total + aura
 	end
+
 	label:SetText(L.HEAL_POWER_COLON)
 	text:SetText(format("%d",total))
-	if heal ~= 0 then
-		frame.tooltip = format(L.SPELL_HEALING_POWER_SECONDARY_TOOLTIP, (total), power, heal)
+
+	if healingOnly ~= 0 then
+		frame.tooltip = format(L.SPELL_HEALING_POWER_SECONDARY_TOOLTIP, (total), damageAndHealing, healingOnly)
 	else
 		frame.tooltip = format(L.SPELL_HEALING_POWER_TOOLTIP, (total))
 	end
+	
 	frame.tooltipSubtext = format(L.SPELL_HEALING_POWER_TOOLTIP_SUB)
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
