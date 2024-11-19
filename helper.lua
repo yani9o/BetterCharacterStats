@@ -1961,7 +1961,14 @@ function BCS:GetBlockValue()
 						break
 					end
 					--shaman
+					--shield specialization
 					_,_, value = strfind(left:GetText(), "increases the amount blocked by (%d+)%%")
+					if value and rank > 0 then
+						mod = mod + tonumber(value)
+						break
+					end
+					--enhancing totems
+					_,_, value = strfind(left:GetText(), "increases block amount by (%d+)%%")
 					if value and rank > 0 then
 						mod = mod + tonumber(value)
 						break
