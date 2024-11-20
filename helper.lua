@@ -1201,9 +1201,10 @@ function BCS:GetSpellPower(school)
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
 							-- Spell Power enchant
+							-- apparently gives healing too
 							_,_, value = strfind(left:GetText(), "Spell Damage %+(%d+)")
 							if value then
-								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
 							-- Atiesh (druid/priest)
 							_,_, value = strfind(left:GetText(), "Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+.")
@@ -1320,24 +1321,25 @@ function BCS:GetSpellPower(school)
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
+						-- apparently gives healing too
 						local found = strfind(left:GetText(), "Brilliant Wizard Oil")
 						if found then
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 36
+							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
 							break
 						end
 						found = strfind(left:GetText(), "Lesser Wizard Oil")
 						if found then
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 16
+							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
 							break
 						end
 						found = strfind(left:GetText(), "Minor Wizard Oil")
 						if found then
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 8
+							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
 							break
 						end
 						found = strfind(left:GetText(), "Wizard Oil")
 						if found then
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 24
+							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
 							break
 						end
 					end
@@ -1387,10 +1389,12 @@ function BCS:GetSpellPower(school)
 			if spellPowerFromAura then
 				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 			end
+			-- Dreamtonic/Arcane Elixir
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Magical damage dealt by spells and abilities is increased by up to (%d+)")
 			if spellPowerFromAura then
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
+			-- Dreamshard Elixir
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell damage is increased by up to (%d+)")
 			if spellPowerFromAura then
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
