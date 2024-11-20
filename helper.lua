@@ -996,11 +996,9 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].mage_shatter
 	elseif class == "PRIEST" then
 		if BCS.needScanTalents then
-			BCScache["talents"].priest_healing_spells = 0
+			BCScache["talents"].priest_holy_spells = 0
+			BCScache["talents"].priest_discipline_spells = 0
 			BCScache["talents"].priest_offensive_spells = 0
-			BCScache["talents"].priest_smite = 0
-			BCScache["talents"].priest_holy_fire = 0
-			BCScache["talents"].priest_prayer = 0
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
 				for talent=1, GetNumTalents(tab) do
@@ -1012,17 +1010,14 @@ function BCS:GetSpellCritFromClass(class)
 							-- Divinity
 							local _,_, value = strfind(left:GetText(), L["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."])
 							if value and rank > 0 then
-								BCScache["talents"].priest_healing_spells = BCScache["talents"].priest_healing_spells + tonumber(value)
-								BCScache["talents"].priest_smite = BCScache["talents"].priest_smite + tonumber(value)
-								BCScache["talents"].priest_holy_fire = BCScache["talents"].priest_holy_fire + tonumber(value)
+								BCScache["talents"].priest_holy_spells = BCScache["talents"].priest_holy_spells + tonumber(value)
+								BCScache["talents"].priest_discipline_spells = BCScache["talents"].priest_discipline_spells + tonumber(value)
 								break
 							end
 							-- Force of Will
-							_,_, value = strfind(left:GetText(), L["Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%"])
+							_,_, value = strfind(left:GetText(), "Increases your spell damage and the critical strike chance of your offensive spells by (%d+)%%")
 							if value and rank > 0 then
 								BCScache["talents"].priest_offensive_spells = BCScache["talents"].priest_offensive_spells + tonumber(value)
-								BCScache["talents"].priest_smite = BCScache["talents"].priest_smite + tonumber(value)
-								BCScache["talents"].priest_holy_fire = BCScache["talents"].priest_holy_fire + tonumber(value)
 								break
 							end
 						end
@@ -1032,10 +1027,8 @@ function BCS:GetSpellCritFromClass(class)
 		end
 		-- scan gear 
 		if BCS.needScanGear then
-			-- t1 set gives + 2 crit to holy and 25 to prayer of healing
-			BCScache["gear"].priest_healing_spells = 0
-			BCScache["gear"].priest_smite = 0
-			BCScache["gear"].priest_holy_fire = 0
+			-- t1 set gives + 2% crit to holy and 25% to prayer of healing
+			BCScache["gear"].priest_holy_spells = 0
 			BCScache["gear"].priest_prayer = 0
 			local Crit_Set_Bonus = {}
 			for slot=1, 19 do
@@ -1053,9 +1046,7 @@ function BCS:GetSpellCritFromClass(class)
 							_, _, value = strfind(left:GetText(), L["^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%."])
 							if value and SET_NAME and not tContains(Crit_Set_Bonus, SET_NAME) then
 								tinsert(Crit_Set_Bonus, SET_NAME)
-								BCScache["gear"].priest_healing_spells = BCScache["gear"].priest_healing_spells + tonumber(value)
-								BCScache["gear"].priest_smite = BCScache["gear"].priest_smite + tonumber(value)
-								BCScache["gear"].priest_holy_fire = BCScache["gear"].priest_holy_fire + tonumber(value)
+								BCScache["gear"].priest_holy_spells = BCScache["gear"].priest_holy_spells + tonumber(value)
 							end
 							_, _, value = strfind(left:GetText(), L["^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%."])
 							if value and SET_NAME and not tContains(Crit_Set_Bonus, SET_NAME) then
@@ -1067,14 +1058,10 @@ function BCS:GetSpellCritFromClass(class)
 				end
 			end
 		end
-		local healingSpells, smite, holyFire, prayer
 
-		healingSpells = BCScache["talents"].priest_healing_spells + BCScache["gear"].priest_healing_spells
-		smite = BCScache["talents"].priest_smite + BCScache["gear"].priest_smite
-		holyFire = BCScache["talents"].priest_holy_fire + BCScache["gear"].priest_holy_fire
-		prayer = BCScache["talents"].priest_prayer + BCScache["gear"].priest_prayer
+		local holySpells = BCScache["talents"].priest_holy_spells + BCScache["gear"].priest_holy_spells
 
-		return healingSpells, prayer, BCScache["talents"].priest_offensive_spells, smite, holyFire, 0
+		return holySpells, BCScache["talents"].priest_discipline_spells, BCScache["talents"].priest_offensive_spells, BCScache["gear"].priest_prayer, 0, 0
 	elseif class == "SHAMAN" then
 		if BCS.needScanTalents then
 			BCScache["talents"].shaman_lightning_bolt = 0

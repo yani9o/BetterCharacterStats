@@ -783,10 +783,10 @@ function BCS:SetSpellCritChance(statFrame)
 	text:SetText(format("%.2f%%", generic))
 	if class == "WARLOCK" and spell1 > 0 then -- warlock spells that can crit are all destruction so just add this to generic
 		text:SetText(format("%.2f%%", generic + spell1))
-	elseif class == "PRIEST" and spell3 > 0 and spell1 > 0 then -- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
-		if spell1 < spell3 then 
-			text:SetText(format("%.2f%%", generic + spell1))
-		elseif spell1 >= spell3 then
+	elseif class == "PRIEST" and spell3 > 0 and spell2 > 0 then -- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
+		if spell2 < spell3 then 
+			text:SetText(format("%.2f%%", generic + spell2))
+		elseif spell2 >= spell3 then
 			text:SetText(format("%.2f%%", generic + spell3))
 		end
 	end
@@ -796,56 +796,88 @@ function BCS:SetSpellCritChance(statFrame)
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
 		GameTooltip:SetText(this.tooltip)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+
 		if class == "DRUID" then
 			if spell1 > 0 then
-				GameTooltip:AddLine(format("Moonfire: %.2f%%", total1)) end
+				GameTooltip:AddLine(format("Moonfire: %.2f%%", total1))
+			end
 			if spell2 > 0 then
-				GameTooltip:AddLine(format("Regrowth: %.2f%%", total2)) end
+				GameTooltip:AddLine(format("Regrowth: %.2f%%", total2))
+			end
+
 		elseif class == "PALADIN" then
 			if spell1 > 0 then
-				GameTooltip:AddLine(format("Holy Light: %.2f%%", total1)) end
+				GameTooltip:AddLine(format("Holy Light: %.2f%%", total1))
+			end
 			if spell2 > 0 then
-				GameTooltip:AddLine(format("Flash of Light: %.2f%%", total2)) end
+				GameTooltip:AddLine(format("Flash of Light: %.2f%%", total2))
+			end
 			if spell3 > 0 then
-				GameTooltip:AddLine(format("Holy Shock: %.2f%%", total3)) end
+				GameTooltip:AddLine(format("Holy Shock: %.2f%%", total3))
+			end
+
 		elseif class == "WARLOCK" then
 			if spell2 > 0 and spell2 ~= spell1 then
-				GameTooltip:AddLine(format("Searing Pain: %.2f%%", total2)) end
-		elseif class == "PRIEST" then -- dont show specific spells if they have same chance as offensive/healing spells
+				GameTooltip:AddLine(format("Searing Pain: %.2f%%", total2))
+			end
+
+		elseif class == "PRIEST" then -- all healing spells are holy, change tooltip if player have both talents
 			if spell1 > 0 then
-				GameTooltip:AddLine(format("Healing spells: %.2f%%", total1)) end
-			if spell2 > 0 and spell2 ~= spell1 then
-				GameTooltip:AddLine(format("Prayer of Healing: %.2f%%", total2)) end
+				if spell3 > 0 then
+					GameTooltip:AddLine(format("Healing spells: %.2f%%", total1))
+				end
+				GameTooltip:AddLine(format("Holy spells: %.2f%%", total1 + spell3))
+			end
+			if spell2 > 0 then
+				GameTooltip:AddLine(format("Discipline spells: %.2f%%", total2 + spell3))
+			end
 			if spell3 > 0 then
-				GameTooltip:AddLine(format("Offensive spells: %.2f%%", total3)) end
-			if spell4 > 0 and spell4 ~= spell3 then
-				GameTooltip:AddLine(format("Smite: %.2f%%", total4)) end
-			if spell5 > 0 and spell5 ~= spell3 then
-				GameTooltip:AddLine(format("Holy Fire: %.2f%%", total5)) end
+				if spell2 > 0 then
+					GameTooltip:AddLine(format("Shadow spells: %.2f%%", total3))
+				else
+					GameTooltip:AddLine(format("Offensive spells: %.2f%%", total3))
+				end
+			end
+			if spell4 > 0 then
+				GameTooltip:AddLine(format("Prayer of Healing: %.2f%%", total4 + spell1))
+			end
+
 		elseif class == "MAGE" then -- dont show specific spells if they have same chance as fire spells
 			if spell1 > 0 then
-				GameTooltip:AddLine(format("Arcane spells: %.2f%%", total1)) end
+				GameTooltip:AddLine(format("Arcane spells: %.2f%%", total1))
+			end
 			if spell2 > 0 then
-				GameTooltip:AddLine(format("Fire spells: %.2f%%", total2)) end
+				GameTooltip:AddLine(format("Fire spells: %.2f%%", total2))
+			end
 			if spell3 > 0 and spell3 ~= spell2 then
-				GameTooltip:AddLine(format("Fire Blast: %.2f%%", total3)) end
+				GameTooltip:AddLine(format("Fire Blast: %.2f%%", total3))
+			end
 			if spell4 > 0 and spell4 ~= spell2 then
-				GameTooltip:AddLine(format("Scorch: %.2f%%", total4)) end
+				GameTooltip:AddLine(format("Scorch: %.2f%%", total4))
+			end
 			if spell5 > 0 and spell5 ~= spell2 then
-				GameTooltip:AddLine(format("Flamestrike: %.2f%%", total5)) end
+				GameTooltip:AddLine(format("Flamestrike: %.2f%%", total5))
+			end
 			if spell6 > 0 then
-				GameTooltip:AddLine(format("Frozen targets: %.2f%%", total6)) end
+				GameTooltip:AddLine(format("Frozen targets: %.2f%%", total6))
+			end
+
 		elseif class == "SHAMAN" then
 			if spell1 > 0 then
-				GameTooltip:AddLine(format("Lightning Bolt: %.2f%%", total1)) end
+				GameTooltip:AddLine(format("Lightning Bolt: %.2f%%", total1))
+			end
 			if spell2 > 0 then
-				GameTooltip:AddLine(format("Chain Lightning: %.2f%%", total2)) end
+				GameTooltip:AddLine(format("Chain Lightning: %.2f%%", total2))
+			end
 			if spell3 > 0 then
-				GameTooltip:AddLine(format("Lightning Shield: %.2f%%", total3)) end
+				GameTooltip:AddLine(format("Lightning Shield: %.2f%%", total3))
+			end
 			if spell4 > 0 then
-				GameTooltip:AddLine(format("Fire and Frost spells: %.2f%%", total4)) end
+				GameTooltip:AddLine(format("Fire and Frost spells: %.2f%%", total4))
+			end
 			if spell5 > 0 then
-				GameTooltip:AddLine(format("Healing spells: %.2f%%", total5)) end
+				GameTooltip:AddLine(format("Healing spells: %.2f%%", total5))
+			end	
 		end
 		GameTooltip:Show()
 	end)
