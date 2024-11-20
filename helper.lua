@@ -1200,8 +1200,9 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							-- Spell Power enchant
-							-- apparently gives healing too
+							-- Spell Power (weapon/bracer enchant) apparently gives healing too
+							-- Arcanum of Focus (Head/Legs enchant)
+							-- Power of the Scourge (Shoulder enchant)
 							_,_, value = strfind(left:GetText(), "Spell Damage %+(%d+)")
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
@@ -1211,18 +1212,8 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
 							end
-							-- Arcanum of Focus (Head/Legs enchant)
-							_,_, value = strfind(left:GetText(), "Healing and Spell Damage %+(%d+)")
-							if value then
-								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-							end
 							-- Zandalar Signet of Mojo (Shoulder enchant)
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Spell Damage and Healing"])
-							if value then
-								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-							end
-							-- Power of the Scourge (Shoulder enchant)
-							_,_, value = strfind(left:GetText(), "Spell Damage %+(%d+) and %+%d+%% Spell Critical Strike")
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
@@ -1230,8 +1221,7 @@ function BCS:GetSpellPower(school)
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Damage and Healing Spells"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-							end
-							
+							end	
 							_,_, value = strfind(left:GetText(), L["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
@@ -1502,17 +1492,13 @@ function BCS:GetHealingPower()
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
-						-- Resilience of the Scourge (Shoulder enchant)
-						_,_, value = strfind(left:GetText(), L["^Healing %+(%d+) and %d+ mana per 5 sec."])
-						if value then
-							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
-						end
 						-- Zandalar Signet of Serenity (Shoulder enchant)
 						_,_, value = strfind(left:GetText(), L["^%+(%d+) Healing Spells"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
 						-- Beautiful Diamond Gemstone (Jewelcrafting)
+						-- Resilience of the Scourge (Shoulder enchant)
 						_,_, value = strfind(left:GetText(), "Healing %+(%d+)")
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
@@ -1604,7 +1590,7 @@ function BCS:GetHealingPower()
 	end
 	healPower = BCScache["gear"].healing + BCScache["auras"].healing + BCScache["talents"].healing
 
-	return healPower, treebonus
+	return healPower, treebonus, BCScache["talents"].healing
 end
 
 local function GetRegenMPPerSpirit()
@@ -1914,6 +1900,7 @@ function BCS:GetRangedWeaponSkill()
 end
 
 --https://us.forums.blizzard.com/en/wow/t/block-value-formula/283718/18
+local enhancingTotems = nil
 function BCS:GetBlockValue()
 	local blockValue = 0
 	local _, strength = UnitStat("player", 1)
@@ -1966,7 +1953,7 @@ function BCS:GetBlockValue()
 					--enhancing totems
 					_,_, value = strfind(left:GetText(), "increases block amount by (%d+)%%")
 					if value and rank > 0 then
-						mod = mod + tonumber(value)
+						enhancingTotems = tonumber(value)
 						break
 					end
 				end
@@ -1978,6 +1965,9 @@ function BCS:GetBlockValue()
 	local _, _, value = BCS:GetPlayerAura("Block value increased by (%d+).")
 	if value then
 		blockValue = blockValue + tonumber(value)
+	end
+	if enhancingTotems and BCS:GetPlayerAura("Stoneskin Totem") then
+		mod = mod + enhancingTotems
 	end
 
 	mod = mod/100

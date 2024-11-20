@@ -926,7 +926,7 @@ function BCS:SetHealing(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 
 	local damageAndHealing = BCS:GetSpellPower()
-	local healingOnly, treebonus = BCS:GetHealingPower()
+	local healingOnly, treebonus, ironclad = BCS:GetHealingPower()
 	local total = damageAndHealing + healingOnly
 
 	if treebonus and aura <= treebonus then
@@ -949,6 +949,9 @@ function BCS:SetHealing(statFrame)
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
 		GameTooltip:SetText(this.tooltip)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+		if ironclad > 0 then
+			GameTooltip:AddLine(format("Healing power from Ironclad: %d", ironclad))
+		end
 		GameTooltip:Show()
 	end)
 	frame:SetScript("OnLeave", function()
@@ -1425,7 +1428,9 @@ local function PlayerStatFrameLeftDropDown_Initialize()
 		info.value = BCS.PLAYERSTAT_DROPDOWN_OPTIONS[i]
 		info.checked = checked
 		info.owner = UIDROPDOWNMENU_OPEN_MENU
-		UIDropDownMenu_AddButton(info)
+		if not (UnitHasRelicSlot("player") and info.value == "PLAYERSTAT_RANGED_COMBAT") then
+			UIDropDownMenu_AddButton(info)
+		end
 	end
 end
 
@@ -1438,7 +1443,9 @@ local function PlayerStatFrameRightDropDown_Initialize()
 		info.value = BCS.PLAYERSTAT_DROPDOWN_OPTIONS[i]
 		info.checked = checked
 		info.owner = UIDROPDOWNMENU_OPEN_MENU
-		UIDropDownMenu_AddButton(info)
+		if not (UnitHasRelicSlot("player") and info.value == "PLAYERSTAT_RANGED_COMBAT") then
+			UIDropDownMenu_AddButton(info)
+		end
 	end
 end
 
