@@ -1200,6 +1200,11 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
+							-- Spell Power enchant
+							_,_, value = strfind(left:GetText(), "Spell Damage %+(%d+)")
+							if value then
+								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+							end
 							-- Atiesh (druid/priest)
 							_,_, value = strfind(left:GetText(), "Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+.")
 							if value then
