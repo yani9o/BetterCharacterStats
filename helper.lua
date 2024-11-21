@@ -1966,7 +1966,7 @@ function BCS:GetBlockValue()
 	if value then
 		blockValue = blockValue + tonumber(value)
 	end
-	if enhancingTotems and BCS:GetPlayerAura("Stoneskin Totem") then
+	if enhancingTotems and BCS:GetPlayerAura("^Stoneskin") then
 		mod = mod + enhancingTotems
 	end
 
