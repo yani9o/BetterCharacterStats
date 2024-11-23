@@ -1122,6 +1122,7 @@ function BCS:GetSpellCritFromClass(class)
 end
 
 local impInnerFire = nil
+local spiritualGuidance = nil
 function BCS:GetSpellPower(school)
 	if school then
 		local spellPower = 0;
@@ -1339,7 +1340,7 @@ function BCS:GetSpellPower(school)
 
 		if BCS.needScanTalents then
 			impInnerFire = nil
-			BCScache["talents"].damage_and_healing = 0
+			spiritualGuidance = nil
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
 				for talent=1, GetNumTalents(tab) do
@@ -1352,8 +1353,7 @@ function BCS:GetSpellPower(school)
 							-- Spiritual Guidance
 							local _,_, value = strfind(left:GetText(), L["Increases spell damage and healing by up to (%d+)%% of your total Spirit."])
 							if value and rank > 0 then
-								local stat, spirit = UnitStat("player", 5)
-								BCScache["talents"].damage_and_healing = BCScache["talents"].damage_and_healing + floor(((tonumber(value) / 100) * spirit))
+								spiritualGuidance = tonumber(value)
 								break
 							end
 							-- Improved Inner Fire
@@ -1430,6 +1430,12 @@ function BCS:GetSpellPower(school)
 		if BCScache["gear"].shadow > secondaryPower then
 			secondaryPower = BCScache["gear"].shadow
 			secondaryPowerName = L.SPELL_SCHOOL_SHADOW
+		end
+
+		if spiritualGuidance ~= nil then
+			BCScache["talents"].damage_and_healing = 0
+			local _, spirit = UnitStat("player", 5)
+			BCScache["talents"].damage_and_healing = BCScache["talents"].damage_and_healing + floor(((spiritualGuidance / 100) * spirit))
 		end
 
 		damageAndHealing = BCScache["gear"].damage_and_healing + BCScache["talents"].damage_and_healing + BCScache["auras"].damage_and_healing
