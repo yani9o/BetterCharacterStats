@@ -996,11 +996,9 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].mage_shatter
 	elseif class == "PRIEST" then
 		if BCS.needScanTalents then
-			BCScache["talents"].priest_healing_spells = 0
+			BCScache["talents"].priest_holy_spells = 0
+			BCScache["talents"].priest_discipline_spells = 0
 			BCScache["talents"].priest_offensive_spells = 0
-			BCScache["talents"].priest_smite = 0
-			BCScache["talents"].priest_holy_fire = 0
-			BCScache["talents"].priest_prayer = 0
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
 				for talent=1, GetNumTalents(tab) do
@@ -1012,17 +1010,14 @@ function BCS:GetSpellCritFromClass(class)
 							-- Divinity
 							local _,_, value = strfind(left:GetText(), L["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."])
 							if value and rank > 0 then
-								BCScache["talents"].priest_healing_spells = BCScache["talents"].priest_healing_spells + tonumber(value)
-								BCScache["talents"].priest_smite = BCScache["talents"].priest_smite + tonumber(value)
-								BCScache["talents"].priest_holy_fire = BCScache["talents"].priest_holy_fire + tonumber(value)
+								BCScache["talents"].priest_holy_spells = BCScache["talents"].priest_holy_spells + tonumber(value)
+								BCScache["talents"].priest_discipline_spells = BCScache["talents"].priest_discipline_spells + tonumber(value)
 								break
 							end
 							-- Force of Will
-							_,_, value = strfind(left:GetText(), L["Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%"])
+							_,_, value = strfind(left:GetText(), "Increases your spell damage and the critical strike chance of your offensive spells by (%d+)%%")
 							if value and rank > 0 then
 								BCScache["talents"].priest_offensive_spells = BCScache["talents"].priest_offensive_spells + tonumber(value)
-								BCScache["talents"].priest_smite = BCScache["talents"].priest_smite + tonumber(value)
-								BCScache["talents"].priest_holy_fire = BCScache["talents"].priest_holy_fire + tonumber(value)
 								break
 							end
 						end
@@ -1032,10 +1027,8 @@ function BCS:GetSpellCritFromClass(class)
 		end
 		-- scan gear 
 		if BCS.needScanGear then
-			-- t1 set gives + 2 crit to holy and 25 to prayer of healing
-			BCScache["gear"].priest_healing_spells = 0
-			BCScache["gear"].priest_smite = 0
-			BCScache["gear"].priest_holy_fire = 0
+			-- t1 set gives + 2% crit to holy and 25% to prayer of healing
+			BCScache["gear"].priest_holy_spells = 0
 			BCScache["gear"].priest_prayer = 0
 			local Crit_Set_Bonus = {}
 			for slot=1, 19 do
@@ -1053,9 +1046,7 @@ function BCS:GetSpellCritFromClass(class)
 							_, _, value = strfind(left:GetText(), L["^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%."])
 							if value and SET_NAME and not tContains(Crit_Set_Bonus, SET_NAME) then
 								tinsert(Crit_Set_Bonus, SET_NAME)
-								BCScache["gear"].priest_healing_spells = BCScache["gear"].priest_healing_spells + tonumber(value)
-								BCScache["gear"].priest_smite = BCScache["gear"].priest_smite + tonumber(value)
-								BCScache["gear"].priest_holy_fire = BCScache["gear"].priest_holy_fire + tonumber(value)
+								BCScache["gear"].priest_holy_spells = BCScache["gear"].priest_holy_spells + tonumber(value)
 							end
 							_, _, value = strfind(left:GetText(), L["^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%."])
 							if value and SET_NAME and not tContains(Crit_Set_Bonus, SET_NAME) then
@@ -1067,14 +1058,10 @@ function BCS:GetSpellCritFromClass(class)
 				end
 			end
 		end
-		local healingSpells, smite, holyFire, prayer
 
-		healingSpells = BCScache["talents"].priest_healing_spells + BCScache["gear"].priest_healing_spells
-		smite = BCScache["talents"].priest_smite + BCScache["gear"].priest_smite
-		holyFire = BCScache["talents"].priest_holy_fire + BCScache["gear"].priest_holy_fire
-		prayer = BCScache["talents"].priest_prayer + BCScache["gear"].priest_prayer
+		local holySpells = BCScache["talents"].priest_holy_spells + BCScache["gear"].priest_holy_spells
 
-		return healingSpells, prayer, BCScache["talents"].priest_offensive_spells, smite, holyFire, 0
+		return holySpells, BCScache["talents"].priest_discipline_spells, BCScache["talents"].priest_offensive_spells, BCScache["gear"].priest_prayer, 0, 0
 	elseif class == "SHAMAN" then
 		if BCS.needScanTalents then
 			BCScache["talents"].shaman_lightning_bolt = 0
@@ -1135,6 +1122,7 @@ function BCS:GetSpellCritFromClass(class)
 end
 
 local impInnerFire = nil
+local spiritualGuidance = nil
 function BCS:GetSpellPower(school)
 	if school then
 		local spellPower = 0;
@@ -1187,8 +1175,8 @@ function BCS:GetSpellPower(school)
 
 		return spellPower
 	else
-		local spellPower = 0
-		local damagePower = 0
+		local damageAndHealing = 0
+		local damageOnly = 0
 		local SpellPower_Set_Bonus = {}
 		if BCS.needScanGear then
 			BCScache["gear"].damage_and_healing = 0
@@ -1208,28 +1196,33 @@ function BCS:GetSpellPower(school)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
+							-- generic bonus on most gear
 							local _,_, value = strfind(left:GetText(), L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							_,_, value = strfind(left:GetText(), "Equip: Increases your spell damage by up to (%d+)")
+							-- Spell Power (weapon/bracer enchant) apparently gives healing too
+							-- Arcanum of Focus (Head/Legs enchant)
+							-- Power of the Scourge (Shoulder enchant)
+							_,_, value = strfind(left:GetText(), "Spell Damage %+(%d+)")
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							_,_, value = strfind(left:GetText(), L["Spell Damage %+(%d+)"])
+							-- Atiesh (druid/priest)
+							_,_, value = strfind(left:GetText(), "Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+.")
 							if value then
-								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-								--BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
 							end
+							-- Zandalar Signet of Mojo (Shoulder enchant)
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Spell Damage and Healing"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
+							-- Enchanted Armor Kit (Leatherworking)
 							_,_, value = strfind(left:GetText(), L["^%+(%d+) Damage and Healing Spells"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-							end
-							
+							end	
 							_,_, value = strfind(left:GetText(), L["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
@@ -1319,28 +1312,25 @@ function BCS:GetSpellPower(school)
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
+						-- apparently gives healing too
 						local found = strfind(left:GetText(), "Brilliant Wizard Oil")
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 36
 							break
 						end
 						found = strfind(left:GetText(), "Lesser Wizard Oil")
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 16
 							break
 						end
 						found = strfind(left:GetText(), "Minor Wizard Oil")
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 8
 							break
 						end
 						found = strfind(left:GetText(), "Wizard Oil")
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
-							BCScache["gear"].only_damage = BCScache["gear"].only_damage + 24
 							break
 						end
 					end
@@ -1350,7 +1340,7 @@ function BCS:GetSpellPower(school)
 
 		if BCS.needScanTalents then
 			impInnerFire = nil
-			BCScache["talents"].damage_and_healing = 0
+			spiritualGuidance = nil
 			-- scan talents
 			for tab=1, GetNumTalentTabs() do
 				for talent=1, GetNumTalents(tab) do
@@ -1363,8 +1353,7 @@ function BCS:GetSpellPower(school)
 							-- Spiritual Guidance
 							local _,_, value = strfind(left:GetText(), L["Increases spell damage and healing by up to (%d+)%% of your total Spirit."])
 							if value and rank > 0 then
-								local stat, spirit = UnitStat("player", 5)
-								BCScache["talents"].damage_and_healing = BCScache["talents"].damage_and_healing + floor(((tonumber(value) / 100) * spirit))
+								spiritualGuidance = tonumber(value)
 								break
 							end
 							-- Improved Inner Fire
@@ -1384,30 +1373,25 @@ function BCS:GetSpellPower(school)
 			-- buffs
 			local _, _, spellPowerFromAura = BCS:GetPlayerAura(L["Magical damage dealt is increased by up to (%d+)."])
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
 			if spellPowerFromAura then
 				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 			end
-			
+			-- Dreamtonic/Arcane Elixir
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Magical damage dealt by spells and abilities is increased by up to (%d+)")
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			
+			-- Dreamshard Elixir
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell damage is increased by up to (%d+)")
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			--turtle wow spell power food 
+			-- Danonzo's Tel'Abim Delight
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell Damage increased by (%d+)")
 			if spellPowerFromAura then
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
 			--Inner Fire
@@ -1417,7 +1401,6 @@ function BCS:GetSpellPower(school)
 				if impInnerFire then
 					spellPowerFromAura = floor((spellPowerFromAura * (impInnerFire/100)) + (spellPowerFromAura))
 				end
-				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + spellPowerFromAura
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + spellPowerFromAura
 			end
 		end
@@ -1449,14 +1432,21 @@ function BCS:GetSpellPower(school)
 			secondaryPowerName = L.SPELL_SCHOOL_SHADOW
 		end
 
-		spellPower = BCScache["gear"].damage_and_healing + BCScache["talents"].damage_and_healing + BCScache["auras"].damage_and_healing
-		damagePower = BCScache["auras"].only_damage + BCScache["gear"].only_damage
+		if spiritualGuidance ~= nil then
+			BCScache["talents"].damage_and_healing = 0
+			local _, spirit = UnitStat("player", 5)
+			BCScache["talents"].damage_and_healing = BCScache["talents"].damage_and_healing + floor(((spiritualGuidance / 100) * spirit))
+		end
 
-		return spellPower, secondaryPower, secondaryPowerName, damagePower
+		damageAndHealing = BCScache["gear"].damage_and_healing + BCScache["talents"].damage_and_healing + BCScache["auras"].damage_and_healing
+		damageOnly = BCScache["auras"].only_damage + BCScache["gear"].only_damage
+
+		return damageAndHealing, secondaryPower, secondaryPowerName, damageOnly
 	end
 end
 
 local ironClad = nil
+--this is stuff that gives ONLY healing, we count stuff that gives both damage and healing in GetSpellPower
 function BCS:GetHealingPower()
 	local healPower = 0;
 	local healPower_Set_Bonus = {}
@@ -1503,23 +1493,25 @@ function BCS:GetHealingPower()
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
+						-- Enchant Weapon/Gloves/Bracers - Healing Power
 						_,_, value = strfind(left:GetText(), L["Healing Spells %+(%d+)"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
-						_,_, value = strfind(left:GetText(), L["^Healing %+(%d+) and %d+ mana per 5 sec."])
-						if value then
-							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
-						end
+						-- Zandalar Signet of Serenity (Shoulder enchant)
 						_,_, value = strfind(left:GetText(), L["^%+(%d+) Healing Spells"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
-						-- Jewelcrafting
+						-- Beautiful Diamond Gemstone (Jewelcrafting)
+						-- Resilience of the Scourge (Shoulder enchant)
 						_,_, value = strfind(left:GetText(), "Healing %+(%d+)")
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
+						-- Enchanted Armor Kit (Leatherwotking) 
+						-- Arcanum of Focus (Head/Legs enchant)
+						-- already included in GetSpellPower
 
 						_,_, value = strfind(left:GetText(), "(.+) %(%d/%d%)")
 						if value then
@@ -1581,10 +1573,14 @@ function BCS:GetHealingPower()
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		_, _, healPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
+
+		-- ?
+		-- already included in GetSpellPower
+		--[[_, _, healPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
-		end
+		end]]
+
 		--Dreamshard Elixir
 		_, _, healPowerFromAura = BCS:GetPlayerAura("Healing done is increased by up to (%d+)")
 		if healPowerFromAura then
@@ -1600,7 +1596,7 @@ function BCS:GetHealingPower()
 	end
 	healPower = BCScache["gear"].healing + BCScache["auras"].healing + BCScache["talents"].healing
 
-	return healPower, treebonus, talentbonus
+	return healPower, treebonus, BCScache["talents"].healing
 end
 
 local function GetRegenMPPerSpirit()
@@ -1790,6 +1786,11 @@ function BCS:GetManaRegen()
 		if castingFromAura then
 			BCScache["auras"].casting = BCScache["auras"].casting + tonumber(castingFromAura)
 		end
+		--Sylvan Blessing
+		_, _, castingFromAura = BCS:GetPlayerAura("Allows (%d+)%% of mana regeneration while casting.")
+		if castingFromAura then
+			BCScache["auras"].casting = BCScache["auras"].casting + tonumber(castingFromAura)
+		end
 		--Improved Water Shield
 		if waterShield ~= nil then
 			for i = 1, 32 do
@@ -1905,6 +1906,7 @@ function BCS:GetRangedWeaponSkill()
 end
 
 --https://us.forums.blizzard.com/en/wow/t/block-value-formula/283718/18
+local enhancingTotems = nil
 function BCS:GetBlockValue()
 	local blockValue = 0
 	local _, strength = UnitStat("player", 1)
@@ -1948,9 +1950,16 @@ function BCS:GetBlockValue()
 						break
 					end
 					--shaman
+					--shield specialization
 					_,_, value = strfind(left:GetText(), "increases the amount blocked by (%d+)%%")
 					if value and rank > 0 then
 						mod = mod + tonumber(value)
+						break
+					end
+					--enhancing totems
+					_,_, value = strfind(left:GetText(), "increases block amount by (%d+)%%")
+					if value and rank > 0 then
+						enhancingTotems = tonumber(value)
 						break
 					end
 				end
@@ -1962,6 +1971,9 @@ function BCS:GetBlockValue()
 	local _, _, value = BCS:GetPlayerAura("Block value increased by (%d+).")
 	if value then
 		blockValue = blockValue + tonumber(value)
+	end
+	if enhancingTotems and BCS:GetPlayerAura("^Stoneskin") then
+		mod = mod + enhancingTotems
 	end
 
 	mod = mod/100
