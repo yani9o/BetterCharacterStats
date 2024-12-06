@@ -82,6 +82,42 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("CHAT_MSG_SKILL") --gaining weapon skill
 	self.Frame:RegisterEvent("CHAT_MSG_ADDON") --needed to recieve aura bonuses from other people
 end
+
+local function PostHookFunction(original,hook)
+    return function(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+      original(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+      hook(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+    end
+end
+
+local z, x, y = -0.2, 0, 0.1
+
+function BCS_PaperDollFrame_OnEvent(event, unit)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		CharacterModelFrame:SetPosition(0, 0, 0)
+		CharacterModelFrame:SetUnit("player")
+		CharacterModelFrame:SetPosition(z, x, y)
+		return
+	end
+	if ( unit and unit == "player" ) then
+		if ( event == "UNIT_MODEL_CHANGED" ) then
+			CharacterModelFrame:SetPosition(0, 0, 0)
+			CharacterModelFrame:SetUnit("player")
+			CharacterModelFrame:SetPosition(z, x, y)
+			return
+		end
+	end
+end
+
+function BCS_PaperDollFrame_OnShow()
+	CharacterModelFrame:SetPosition(0, 0, 0)
+	CharacterModelFrame:SetUnit("player")
+	CharacterModelFrame:SetPosition(z, x, y)
+end
+
+PaperDollFrame_OnShow = PostHookFunction(PaperDollFrame_OnShow, BCS_PaperDollFrame_OnShow)
+PaperDollFrame_OnEvent = PostHookFunction(PaperDollFrame_OnEvent, BCS_PaperDollFrame_OnEvent)
+
 -- Scan stuff depending on event, but make sure to scan everything when addon is loaded
 function BCS:OnEvent()
 	--[[if BCS.Debug then
@@ -148,6 +184,16 @@ function BCS:OnEvent()
 		end
 	elseif event == "ADDON_LOADED" and arg1 == "BetterCharacterStats" then
 		BCSFrame:UnregisterEvent("ADDON_LOADED")
+
+		local _, race = UnitRace("player")
+		if race == "Gnome" then
+			y = 0
+		elseif race == "Dwarf" then
+			y = 0.05
+		elseif race == "Troll" then
+			y = 0.15
+		end
+
 		BCS.needScanGear = true
 		BCS.needScanTalents = true
 		BCS.needScanAuras = true
@@ -160,6 +206,7 @@ function BCS:OnEvent()
 		UIDropDownMenu_SetSelectedValue(PlayerStatFrameRightDropDown, IndexRight)
 	end
 end
+
 --sending messages
 local sender = CreateFrame("Frame", "BCSsender")
 sender:RegisterEvent("PLAYER_AURAS_CHANGED")
@@ -1188,13 +1235,9 @@ function BCS:SetTotalAvoidance(statFrame)
 	local missChance = 5 + skillDiff * 0.04
 
 	local total = missChance + (GetBlockChance() + GetParryChance() + GetDodgeChance())
-	if total > 100 then
-		total = 100
-	end
-	if total < 0 then
-		total = 0
-	end
-
+	--if total > 100 then total = 100 end
+	if total < 0 then total = 0 end
+	
 	label:SetText(L.TOTAL_COLON)
 	text:SetText(format("%.2f%%", total))
 

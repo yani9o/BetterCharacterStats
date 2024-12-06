@@ -203,7 +203,7 @@ function BCS:GetHitRating(hitOnly)
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Rogue
 						local _,_, value = strfind(left:GetText(), L["Increases your chance to hit with melee weapons by (%d)%%."])
 						if value and rank > 0 then
@@ -329,7 +329,7 @@ function BCS:GetSpellHitRating()
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Mage
 						-- Elemental Precision
 						local _,_, value = strfind(left:GetText(), L["Reduces the chance that the opponent can resist your Frost and Fire spells by (%d)%%."])
@@ -411,7 +411,7 @@ function BCS:GetCritChance()
 	local crit = 0
 	--scan spellbook
 	for tab=1, GetNumSpellTabs() do
-		local name, texture, offset, numSpells = GetSpellTabInfo(tab)
+		local _, _, offset, numSpells = GetSpellTabInfo(tab)
 		for spell=1, numSpells do
 			local currentPage = ceil(spell/SPELLS_PER_PAGE)
 			local SpellID = spell + offset + ( SPELLS_PER_PAGE * (currentPage - 1))
@@ -458,7 +458,7 @@ function BCS:GetRangedCritChance()
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						local _,_, value = strfind(left:GetText(), L["Increases your critical strike chance with ranged weapons by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].ranged_crit = BCScache["talents"].ranged_crit + tonumber(value)
@@ -721,7 +721,7 @@ function BCS:GetSpellCritChance()
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Arcane Instability
 						local _,_, value = strfind(left:GetText(), L["Increases your spell damage and critical srike chance by (%d+)%%."])
 						if value and rank > 0 then
@@ -838,7 +838,7 @@ function BCS:GetSpellCritFromClass(class)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Holy Power
 							local _,_, value = strfind(left:GetText(), L["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."])
 							if value and rank > 0 then
@@ -873,7 +873,7 @@ function BCS:GetSpellCritFromClass(class)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Improved Moonfire
 							local _,_, value = strfind(left:GetText(), L["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."])
 							if value and rank > 0 then
@@ -906,7 +906,7 @@ function BCS:GetSpellCritFromClass(class)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Devastation
 							local _,_, value = strfind(left:GetText(), L["Increases the critical strike chance of your Destruction spells by (%d+)%%."])
 							if value and rank > 0 then
@@ -944,7 +944,7 @@ function BCS:GetSpellCritFromClass(class)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Arcane Impact
 							local _,_, value = strfind(left:GetText(), L["Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%."])
 							if value and rank > 0 then
@@ -1011,7 +1011,7 @@ function BCS:GetSpellCritFromClass(class)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Divinity
 							local _,_, value = strfind(left:GetText(), L["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."])
 							if value and rank > 0 then
@@ -1081,7 +1081,7 @@ function BCS:GetSpellCritFromClass(class)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Call of Thunder
 							local _,_, value = strfind(left:GetText(), L["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."])
 							if value and rank > 0 then
@@ -1353,7 +1353,7 @@ function BCS:GetSpellPower(school)
 					for line=1, BCS_Tooltip:NumLines() do
 						local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 						if left:GetText() then
-							local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Priest
 							-- Spiritual Guidance
 							local _,_, value = strfind(left:GetText(), L["Increases spell damage and healing by up to (%d+)%% of your total Spirit."])
@@ -1465,7 +1465,7 @@ function BCS:GetHealingPower()
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Paladin
 						-- Ironclad
 						local _,_, value = strfind(left:GetText(), L["Increases your healing power by (%d+)%% of your Armor."])
@@ -1606,23 +1606,23 @@ end
 
 local function GetRegenMPPerSpirit()
 	local addvalue = 0
-	local stat, Spirit, posBuff, negBuff = UnitStat("player", 5)
-	local lClass, class = UnitClass("player")
+	local _, spirit = UnitStat("player", 5)
+	local _, class = UnitClass("player")
 
 	if class == "DRUID" then
-		addvalue = (Spirit / 5 + 15)
+		addvalue = (spirit / 5 + 15)
 	elseif class == "HUNTER" then
-		addvalue = (Spirit / 5 + 15)
+		addvalue = (spirit / 5 + 15)
 	elseif class == "MAGE" then
-		addvalue = (Spirit / 4 + 12.5)
+		addvalue = (spirit / 4 + 12.5)
 	elseif class == "PALADIN" then
-		addvalue = (Spirit / 5 + 15)
+		addvalue = (spirit / 5 + 15)
 	elseif class == "PRIEST" then
-		addvalue = (Spirit / 4 + 12.5)
+		addvalue = (spirit / 4 + 12.5)
 	elseif class == "SHAMAN" then
-		addvalue = (Spirit / 5 + 17)
+		addvalue = (spirit / 5 + 17)
 	elseif class == "WARLOCK" then
-		addvalue = (Spirit / 5 + 15)
+		addvalue = (spirit / 5 + 15)
 	end
 
 	return addvalue
@@ -1645,7 +1645,7 @@ function BCS:GetManaRegen()
 				for line=1, BCS_Tooltip:NumLines() do
 					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 					if left:GetText() then
-						local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Priest (Meditation) / Druid (Reflection) / Mage (Arcane Meditation) / Shaman (Improved Water Shield)
 						local _,_, value = strfind(left:GetText(), L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
 						if value and rank > 0 then
@@ -1737,8 +1737,8 @@ function BCS:GetManaRegen()
 		BCScache["auras"].casting = 0
 		BCScache["auras"].mp5 = 0
 		-- improved Shadowform
-		for i = 1, MAX_SKILLLINE_TABS do
-			local name, texture, offset, numSpells = GetSpellTabInfo(i);
+		for tab=1, GetNumSpellTabs() do
+			local _, _, offset, numSpells = GetSpellTabInfo(tab);
 			for s = offset + 1, offset + numSpells do
 			local spell = GetSpellName(s, BOOKTYPE_SPELL);
 				if spell == "Improved Shadowform" and BCS:GetPlayerAura("Shadowform") then
@@ -1822,9 +1822,7 @@ function BCS:GetWeaponSkill(skillName)
 	-- loop through skills
 	local skillIndex = 1
 	while true do
-		local name, isHeader, isExpanded, skillRank, numTempPoints, skillModifier,
-		skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType,
-		skillDescription = GetSkillLineInfo(skillIndex)
+		local name, _, _, skillRank, _, skillModifier = GetSkillLineInfo(skillIndex)
 		if not name then
 			return 0
 		end
@@ -1873,40 +1871,46 @@ function BCS:GetWeaponSkillForWeaponType(weaponType)
 	return BCS:GetWeaponSkill("Unarmed")
 end
 
-function BCS:GetItemInfoForSlot(slot)
+function BCS:GetItemTypeForSlot(slot)
 	local _, _, id = string.find(GetInventoryItemLink("player", GetInventorySlotInfo(slot)) or "", "(item:%d+:%d+:%d+:%d+)");
 	if not id then
 		return
 	end
 
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(id);
+	local _, _, _, _, _, itemType = GetItemInfo(id);
 
-	return itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice;
+	return itemType
 end
 
 function BCS:GetMHWeaponSkill()
-	if not BCS.needScanSkills then return BCScache["skills"].mh end
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("MainHandSlot")
+	if not BCS.needScanSkills then
+		return BCScache["skills"].mh
+	end
+	local itemType = BCS:GetItemTypeForSlot("MainHandSlot")
 	BCScache["skills"].mh = BCS:GetWeaponSkillForWeaponType(itemType)
+
 	return BCScache["skills"].mh
 end
 
 function BCS:GetOHWeaponSkill()
-	if not BCS.needScanSkills then return BCScache["skills"].oh end
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("SecondaryHandSlot")
+	if not BCS.needScanSkills then
+		return BCScache["skills"].oh
+	end
+
+	local itemType = BCS:GetItemTypeForSlot("SecondaryHandSlot")
 	BCScache["skills"].oh = BCS:GetWeaponSkillForWeaponType(itemType)
+
 	return BCScache["skills"].oh
 end
 
 function BCS:GetRangedWeaponSkill()
-	if not BCS.needScanSkills then return BCScache["skills"].ranged end
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = BCS:GetItemInfoForSlot("RangedSlot")
+	if not BCS.needScanSkills then
+		return BCScache["skills"].ranged
+	end
+
+	local itemType = BCS:GetItemTypeForSlot("RangedSlot")
 	BCScache["skills"].ranged = BCS:GetWeaponSkillForWeaponType(itemType)
+
 	return BCScache["skills"].ranged
 end
 
@@ -1947,7 +1951,7 @@ function BCS:GetBlockValue()
 			for line=1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				if left:GetText() then
-					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
+					local _, _, _, _, rank = GetTalentInfo(tab, talent)
 					--warrior/paladin
 					local _,_, value = strfind(left:GetText(), "amount of damage absorbed by your shield by (%d+)%%")
 					if value and rank > 0 then
