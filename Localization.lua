@@ -69,6 +69,9 @@ BCS["L"] = {
 	["^%+(%d+) Healing Spells"] = "^%+(%d+) Healing Spells",
 	["^%+(%d+) Spell Damage and Healing"] = "^%+(%d+) Spell Damage and Healing",
 
+	-- sapphiron shoulder enchants
+	["%+(%d+)%% Critical Strike"] = "%+(%d+)%% Critical Strike",
+	
 	["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."] = "Equip: Increases damage and healing done by magical spells and effects by up to (%d+).",
 	["Equip: Increases healing done by spells and effects by up to (%d+)."] = "Equip: Increases healing done by spells and effects by up to (%d+).",
 

@@ -495,6 +495,11 @@ function BCS:GetRangedCritChance()
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
+						-- check for Might of the Scourge enchant
+						_,_, value = strfind(left:GetText(), L["%+(%d+)%% Critical Strike"])
+						if value then
+							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
+						end
 
 						_,_, value = strfind(left:GetText(), "(.+) %(%d/%d%)")
 						if value then
