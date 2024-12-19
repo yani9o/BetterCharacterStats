@@ -440,15 +440,32 @@ function BCS:GetRangedCritChance()
 	local vallvl1 = 0
 	local vallvl60 = 0
 	local classrate = 0
-	if class == "MAGE" then vallvl1 = 12.9 vallvl60 = 20
-	elseif class == "ROGUE" then vallvl1 = 2.2 vallvl60 = 29
-	elseif class == "HUNTER" then vallvl1 = 3.5 vallvl60 = 53
-	elseif class == "PRIEST" then vallvl1 = 11 vallvl60 = 20
-	elseif class == "WARLOCK" then vallvl1 = 8.4 vallvl60 = 20
-	elseif class == "WARRIOR" then vallvl1 = 3.9 vallvl60 = 20
-	else return crit end
+
+	if class == "MAGE" then
+		vallvl1 = 12.9
+		vallvl60 = 20
+	elseif class == "ROGUE" then
+		vallvl1 = 2.2
+		vallvl60 = 29
+	elseif class == "HUNTER" then
+		vallvl1 = 3.5
+		vallvl60 = 53
+	elseif class == "PRIEST" then
+		vallvl1 = 11
+		vallvl60 = 20
+	elseif class == "WARLOCK" then
+		vallvl1 = 8.4
+		vallvl60 = 20
+	elseif class == "WARRIOR" then
+		vallvl1 = 3.9
+		vallvl60 = 20
+	else
+		return crit
+	end
+
 	classrate = vallvl1 * (60 - UnitLevel("player")) / 59 + vallvl60 * (UnitLevel("player") - 1) / 59
 	crit = agility / classrate
+
 	if BCS.needScanTalents then
 		BCScache["talents"].ranged_crit = 0
 		--scan talents
@@ -495,7 +512,7 @@ function BCS:GetRangedCritChance()
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
-						-- check for Might of the Scourge enchant
+						-- Might of the Scourge (shoulder enchant)
 						_,_, value = strfind(left:GetText(), L["%+(%d+)%% Critical Strike"])
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
@@ -557,11 +574,17 @@ function BCS:GetRangedCritChance()
 			end
 		end
 	end
-	if class == "MAGE" then crit = crit + 3.2
-	elseif class == "PRIEST" then crit = crit + 3
-	elseif class == "WARLOCK" then crit = crit + 2
+
+	if class == "MAGE" then
+		crit = crit + 3.2
+	elseif class == "PRIEST" then
+		crit = crit + 3
+	elseif class == "WARLOCK" then
+		crit = crit + 2
 	end
+
 	crit = crit + BCScache["gear"].ranged_crit + BCScache["talents"].ranged_crit + BCScache["auras"].ranged_crit
+
 	return crit
 end
 
@@ -740,92 +763,10 @@ function BCS:GetSpellCritChance()
 end
 
 function BCS:GetSpellCritFromClass(class)
-	if not class then return 0, 0, 0, 0, 0, 0 end
-	--[[
-	Warlock: 
-		Devastation: + 1/2/3/4/5 %
-			Shadowbolt
-			Immolate
-			Searing Pain
-			Soulfire
-			Hellfire ?
-			Rain of Fire ?
-			Shadowburn
-			is there more?
-		Improved Searing Pain: + 2/4/6/8/10 %
-			Searing Pain
-	Mage:
-		Arcane Impact: + 2/4/6 %
-			Arcane Explosion
-			Arcane Missiles
-		Incinerate: + 2/4 % -?
-			Fireblast
-			Scorch
-		Improved Flamestrike: + 5/10/15 %
-			Flamestrike
-		Critical Mass: + 2/4/6 %
-			Fireball
-			Fireblast
-			Scorch
-			Flamestrike
-			Pyroblast
-			Blast Wave
-		Combustion:
-			+10% +20% +30% fire spell crit and so on untill 3 fire spell crits; DOES have stacks;
-		Shatter:
-		"Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."
-			+ to all spells agains FROZEN target
-	Paladin: 
-		Holy power: + 1/2/3/4/5 %
-			Holy Light
-			Flash of Light
-			Holy Shock
-			Lay on Hands ?
-		Divine Favor: 100% while active
-			Holy Light
-			Flash of Light
-			Holy Shock
-	Druid:
-		Improved Moonfire: + 2/4/6/8/10 %
-			Moonfire
-		Improved Regrowth: + 10/20/30/40/50 %
-			Regrowth
-	Shaman:
-		Call of Thunder: + 1/2/4/6 % ?
-			Lightning Bolt
-			Chain Lightning
-		Tidal Mastery: + 1/2/3/4/5 %
-			Lightning Bolt
-			Chain Lightning
-			Lesser Healing Wave
-			Healing Wave
-			Chain Heal
-			Lightning shield 
-			Stormstrike ?
-		(baseline?) Elemental Mastery: 100% while active (fire, frost, nature damage spells)
-			Lightning Bolt
-			Chain Lightning
-			Earth Shock
-			Flame Shock
-			Frost Shock
-			Fire Nova
-	Priest:
-		Force of Will: + 1/2/3/4/5 %
-			Smite
-			Holy Fire
-			Mind Blast
-			Pain Spike
-			Mana Burn
-			Holy Nova
-		Holy Specialization: + 1/2/3/4/5 %
-			Lesser Heal
-			Heal
-			Flash Heal
-			Greater Heal
-			Prayer of Healing
-			Smite
-			Desperate Prayer
-	]]
+	if not class then
+		return 0, 0, 0, 0, 0, 0
+	end
+
 	if class == "PALADIN" then
 		--scan talents
 		if BCS.needScanTalents or BCS.needScanAuras then
@@ -859,8 +800,9 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].paladin_holy_light,
-			BCScache["talents"].paladin_flash,
-			BCScache["talents"].paladin_shock, 0, 0, 0
+				BCScache["talents"].paladin_flash,
+				BCScache["talents"].paladin_shock, 0, 0, 0
+
 	elseif class == "DRUID" then
 		--scan talents
 		if BCS.needScanTalents then
@@ -893,7 +835,8 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].druid_moonfire,
-			BCScache["talents"].druid_regrowth, 0, 0, 0, 0
+				BCScache["talents"].druid_regrowth, 0, 0, 0, 0
+
 	elseif class == "WARLOCK" then
 		--scan talents
 		if BCS.needScanTalents then
@@ -927,7 +870,8 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].warlock_destruction_spells,
-			BCScache["talents"].warlock_searing_pain, 0, 0, 0, 0
+				BCScache["talents"].warlock_searing_pain, 0, 0, 0, 0
+
 	elseif class == "MAGE" then
 		--scan talents
 		if BCS.needScanTalents or BCS.needScanAuras then
@@ -987,18 +931,20 @@ function BCS:GetSpellCritFromClass(class)
 			local _, _, value = BCS:GetPlayerAura(L["Increases critical strike chance from Fire damage spells by (%d+)%%."])
 			-- Combustion
 			if value then
-				BCScache["talents"].mage_fire_spells = BCScache["talents"].mage_fire_spells + value
-				BCScache["talents"].mage_fireblast = BCScache["talents"].mage_fireblast + value
-				BCScache["talents"].mage_flamestrike = BCScache["talents"].mage_flamestrike + value
-				BCScache["talents"].mage_scorch = BCScache["talents"].mage_scorch + value
+				BCScache["talents"].mage_fire_spells = BCScache["talents"].mage_fire_spells + tonumber(value)
+				BCScache["talents"].mage_fireblast = BCScache["talents"].mage_fireblast + tonumber(value)
+				BCScache["talents"].mage_flamestrike = BCScache["talents"].mage_flamestrike + tonumber(value)
+				BCScache["talents"].mage_scorch = BCScache["talents"].mage_scorch + tonumber(value)
 			end
 		end
+
 		return BCScache["talents"].mage_arcane_spells,
-			BCScache["talents"].mage_fire_spells,
-			BCScache["talents"].mage_fireblast,
-			BCScache["talents"].mage_scorch,
-			BCScache["talents"].mage_flamestrike,
-			BCScache["talents"].mage_shatter
+				BCScache["talents"].mage_fire_spells,
+				BCScache["talents"].mage_fireblast,
+				BCScache["talents"].mage_scorch,
+				BCScache["talents"].mage_flamestrike,
+				BCScache["talents"].mage_shatter
+
 	elseif class == "PRIEST" then
 		if BCS.needScanTalents then
 			BCScache["talents"].priest_holy_spells = 0
@@ -1066,7 +1012,11 @@ function BCS:GetSpellCritFromClass(class)
 
 		local holySpells = BCScache["talents"].priest_holy_spells + BCScache["gear"].priest_holy_spells
 
-		return holySpells, BCScache["talents"].priest_discipline_spells, BCScache["talents"].priest_offensive_spells, BCScache["gear"].priest_prayer, 0, 0
+		return holySpells,
+				BCScache["talents"].priest_discipline_spells,
+				BCScache["talents"].priest_offensive_spells,
+				BCScache["gear"].priest_prayer, 0, 0
+
 	elseif class == "SHAMAN" then
 		if BCS.needScanTalents then
 			BCScache["talents"].shaman_lightning_bolt = 0
@@ -1115,12 +1065,15 @@ function BCS:GetSpellCritFromClass(class)
 				BCScache["auras"].shaman_firefrost_spells = 100
 			end
 		end
+
 		local lightningBolt = BCScache["auras"].shaman_lightning_bolt + BCScache["talents"].shaman_lightning_bolt
 		local chainLightning = BCScache["auras"].shaman_chain_lightning + BCScache["talents"].shaman_chain_lightning
+
 		return lightningBolt, chainLightning,
-			BCScache["talents"].shaman_lightning_shield,
-			BCScache["auras"].shaman_firefrost_spells,
-			BCScache["talents"].shaman_healing_spells, 0
+				BCScache["talents"].shaman_lightning_shield,
+				BCScache["auras"].shaman_firefrost_spells,
+				BCScache["talents"].shaman_healing_spells, 0
+	
 	else
 		return 0, 0, 0, 0, 0, 0
 	end
@@ -1578,14 +1531,6 @@ function BCS:GetHealingPower()
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-
-		-- ?
-		-- already included in GetSpellPower
-		--[[_, _, healPowerFromAura = BCS:GetPlayerAura("Increases damage and healing done by magical spells and effects by up to (%d+).")
-		if healPowerFromAura then
-			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
-		end]]
-
 		--Dreamshard Elixir
 		_, _, healPowerFromAura = BCS:GetPlayerAura("Healing done is increased by up to (%d+)")
 		if healPowerFromAura then
