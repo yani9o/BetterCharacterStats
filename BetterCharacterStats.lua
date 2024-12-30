@@ -17,6 +17,7 @@ BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_SPELL_COMBAT",
 	"PLAYERSTAT_SPELL_SCHOOLS",
 	"PLAYERSTAT_DEFENSES",
+	"PLAYERSTAT_DEFENSES_BOSS",
 }
 
 BCS.PaperDollFrame = PaperDollFrame
@@ -1129,12 +1130,13 @@ function BCS:SetManaRegen(statFrame)
 	BCS_AddTooltip(statFrame)
 end
 
-function BCS:SetDodge(statFrame)
+function BCS:SetDodge(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
+	local dodge = GetDodgeChance() - ((5* leveldiff) * 0.04)
 
 	label:SetText(L.DODGE_COLON)
-	text:SetText(format("%.2f%%", GetDodgeChance()))
+	text:SetText(format("%.2f%%", dodge))
 
 	statFrame.tooltip = format(L.PLAYER_DODGE_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_DODGE_TOOLTIP_SUB)
@@ -1142,12 +1144,13 @@ function BCS:SetDodge(statFrame)
 	BCS_AddTooltip(statFrame)
 end
 
-function BCS:SetParry(statFrame)
+function BCS:SetParry(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
+	local parry = GetParryChance() - ((5* leveldiff) * 0.04)
 
 	label:SetText(L.PARRY_COLON)
-	text:SetText(format("%.2f%%", GetParryChance()))
+	text:SetText(format("%.2f%%", parry))
 
 	statFrame.tooltip = format(L.PLAYER_PARRY_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_PARRY_TOOLTIP_SUB)
@@ -1155,18 +1158,18 @@ function BCS:SetParry(statFrame)
 	BCS_AddTooltip(statFrame)
 end
 
-function BCS:SetBlock(statFrame)
+function BCS:SetBlock(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local blockChance = GetBlockChance()
+	local block = GetBlockChance() - ((5* leveldiff) * 0.04)
 	local tooltipExtra
 
-	if blockChance > 0 then
+	if block > 0 then
 		tooltipExtra = "Block Value: "..BCS:GetBlockValue()
 	end
 
 	label:SetText(L.BLOCK_COLON)
-	text:SetText(format("%.2f%%", blockChance ))
+	text:SetText(format("%.2f%%", block ))
 
 	statFrame.tooltip = format(L.PLAYER_BLOCK_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_BLOCK_TOOLTIP_SUB)
@@ -1174,16 +1177,21 @@ function BCS:SetBlock(statFrame)
 	BCS_AddTooltip(statFrame, tooltipExtra)
 end
 
-function BCS:SetTotalAvoidance(statFrame)
+function BCS:SetTotalAvoidance(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-
 	-- apply skill modifier
 	local base, mod = UnitDefense("player")
-	local skillDiff = base + mod - UnitLevel("player") * 5
-	local missChance = 5 + skillDiff * 0.04
-	local total = missChance + GetBlockChance() + GetParryChance() + GetDodgeChance()
+	local skillDiff = (base + mod) - ((300)+(leveldiff * 5))
+	local missChance = 5 + (skillDiff * 0.04)
 
+
+	local block = GetBlockChance() - ((5* leveldiff) * 0.04)
+	local parry = GetParryChance() - ((5* leveldiff) * 0.04)
+	local dodge = GetDodgeChance() - ((5* leveldiff) * 0.04)
+
+	local total = missChance + (block + parry + dodge)
+	
 	if total < 0 then
 		total = 0
 	end
@@ -1386,10 +1394,17 @@ function BCS:UpdatePaperdollStats(prefix, index)
 	elseif (index == "PLAYERSTAT_DEFENSES") then
 		BCS:SetArmor(stat1)
 		BCS:SetDefense(stat2)
-		BCS:SetDodge(stat3)
-		BCS:SetParry(stat4)
-		BCS:SetBlock(stat5)
-		BCS:SetTotalAvoidance(stat6)
+		BCS:SetDodge(stat3, 0)
+		BCS:SetParry(stat4, 0)
+		BCS:SetBlock(stat5, 0)
+		BCS:SetTotalAvoidance(stat6, 0)
+	elseif (index == "PLAYERSTAT_DEFENSES_BOSS") then
+		BCS:SetArmor(stat1)
+		BCS:SetDefense(stat2)
+		BCS:SetDodge(stat3, 3)
+		BCS:SetParry(stat4, 3)
+		BCS:SetBlock(stat5, 3)
+		BCS:SetTotalAvoidance(stat6, 3)
 	end
 end
 
