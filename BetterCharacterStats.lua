@@ -83,7 +83,7 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
 	self.Frame:RegisterEvent("CHAT_MSG_SKILL") --gaining weapon skill
 	self.Frame:RegisterEvent("CHAT_MSG_ADDON") --needed to recieve aura bonuses from other people
-	AceEvent:RegisterBucketEvent("UNIT_INVENTORY_CHANGED", 0.3, function (args)
+	AceEvent:RegisterBucketEvent("UNIT_INVENTORY_CHANGED", 0.3, function(args)
 		if args["player"] then
 			BCS.needScanGear = true
 			BCS.needScanSkills = true
@@ -96,24 +96,24 @@ function BCS:OnLoad()
 	end)
 end
 
-local function PostHookFunction(original,hook)
-    return function(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-      original(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-      hook(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-    end
+local function PostHookFunction(original, hook)
+	return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+		original(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+		hook(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+	end
 end
 
 -- there is less space for player character model with this addon, zoom out and move it up slightly
 local z, x, y = -0.2, 0, 0.1
 function BCS_PaperDollFrame_OnEvent(event, unit)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
+	if (event == "PLAYER_ENTERING_WORLD") then
 		CharacterModelFrame:SetPosition(0, 0, 0)
 		CharacterModelFrame:SetUnit("player")
 		CharacterModelFrame:SetPosition(z, x, y)
 		return
 	end
-	if ( unit and unit == "player" ) then
-		if ( event == "UNIT_MODEL_CHANGED" ) then
+	if (unit and unit == "player") then
+		if (event == "UNIT_MODEL_CHANGED") then
 			CharacterModelFrame:SetPosition(0, 0, 0)
 			CharacterModelFrame:SetUnit("player")
 			CharacterModelFrame:SetPosition(z, x, y)
@@ -473,7 +473,6 @@ function BCS:SetArmor(statFrame)
 	BCS_AddTooltip(statFrame)
 end
 
-
 function BCS:GetMissChanceRaw(wepSkill)
 	local _, ver = pcall(GetBuildInfo)
 	local diff = wepSkill - 315
@@ -505,7 +504,6 @@ end
 function BCS:GetDualWieldMissChance(wepSkill)
 	return max(0, min(BCS:GetMissChanceRaw(wepSkill) + 19, 60))
 end
-
 
 function BCS:GetGlanceChance(wepSkill)
 	return 10 + 15 * 2;
@@ -549,11 +547,35 @@ function BCS:GetCritCap(wepSkill)
 	return cap;
 end
 
+function BCS:GetEffectiveBlockChance(leveldiff)
+	local block = GetBlockChance() - ((5 * leveldiff) * 0.04)
+	if block < 0 then
+		block = 0
+	end
+	return block
+end
+
+function BCS:GetEffectiveParryChance(leveldiff)
+	local parry = GetParryChance() - ((5 * leveldiff) * 0.04)
+	if parry < 0 then
+		parry = 0
+	end
+	return parry
+end
+
+function BCS:GetEffectiveDodgeChance(leveldiff)
+	local dodge = GetDodgeChance() - ((5 * leveldiff) * 0.04)
+	if dodge < 0 then
+		dodge = 0
+	end
+	return dodge
+end
+
 function BCS:SetDamage(statFrame)
 	local damageText = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
 	local speed, offhandSpeed = UnitAttackSpeed("player")
-	
+
 	BCS_AddDamageTooltip(damageText, statFrame, speed, offhandSpeed)
 
 	label:SetText(TEXT(DAMAGE_COLON))
@@ -634,14 +656,14 @@ function BCS:SetSpellPower(statFrame, school)
 		if fromSchool > 0 then
 			output = green .. output .. "|r"
 		end
-		
+
 		label:SetText(L["SPELL_SCHOOL_" .. strupper(school)])
 		text:SetText(output)
 
 		if fromSchool > 0 then
-			statFrame.tooltip = format(L.SPELL_SCHOOL_SECONDARY_TOOLTIP , school, base + fromSchool, base, fromSchool)
+			statFrame.tooltip = format(L.SPELL_SCHOOL_SECONDARY_TOOLTIP, school, base + fromSchool, base, fromSchool)
 		else
-			statFrame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP , school, base)
+			statFrame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP, school, base)
 		end
 		statFrame.tooltipSubtext = format(L.SPELL_SCHOOL_TOOLTIP_SUB, strlower(school))
 	else
@@ -650,7 +672,7 @@ function BCS:SetSpellPower(statFrame, school)
 
 		label:SetText(L.SPELL_POWER_COLON)
 		if secondaryPower > 0 then
-			text:SetText(green..total + secondaryPower)
+			text:SetText(green .. total + secondaryPower)
 		else
 			text:SetText(total + secondaryPower)
 		end
@@ -737,7 +759,7 @@ function BCS:SetHitRating(statFrame, ratingType)
 			end)
 		end
 	end
-	
+
 	if ratingType ~= "SPELL" then
 		BCS_AddTooltip(statFrame)
 	end
@@ -785,8 +807,8 @@ function BCS:SetRangedWeaponSkill(statFrame)
 		text:SetText(NOT_APPLICABLE)
 		return
 	end
-	
- 	text:SetText(format("%d", BCS:GetRangedWeaponSkill()))
+
+	text:SetText(format("%d", BCS:GetRangedWeaponSkill()))
 
 	statFrame.tooltip = format(L.RANGED_WEAPON_SKILL_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.RANGED_WEAPON_SKILL_TOOLTIP_SUB)
@@ -865,7 +887,6 @@ function BCS:SetBossCritCap(statFrame)
 	BCS_AddTooltip(statFrame)
 end
 
-
 function BCS:SetEffectiveBossCrit(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
@@ -924,18 +945,18 @@ function BCS:SetSpellCritChance(statFrame)
 	text:SetText(format("%.2f%%", generic))
 
 	-- warlock spells that can crit are all destruction so just add this to generic
-	if class == "WARLOCK" and spell1 > 0 then 
+	if class == "WARLOCK" and spell1 > 0 then
 		text:SetText(format("%.2f%%", generic + spell1))
 
-	-- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
-	elseif class == "PRIEST" and spell3 > 0 and spell2 > 0 then 
-		if spell2 < spell3 then 
+		-- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
+	elseif class == "PRIEST" and spell3 > 0 and spell2 > 0 then
+		if spell2 < spell3 then
 			text:SetText(format("%.2f%%", generic + spell2))
 		elseif spell2 >= spell3 then
 			text:SetText(format("%.2f%%", generic + spell3))
 		end
 	end
-	
+
 	statFrame.tooltip = format(L.SPELL_CRIT_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.SPELL_CRIT_TOOLTIP_SUB)
 
@@ -968,7 +989,8 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format("Searing Pain: %.2f%%", total2))
 			end
 
-		elseif class == "PRIEST" then -- all healing spells are holy, change tooltip if player have both talents
+		elseif class == "PRIEST" then
+			-- all healing spells are holy, change tooltip if player have both talents
 			if spell1 > 0 then
 				if spell3 > 0 then
 					GameTooltip:AddLine(format("Healing spells: %.2f%%", total1))
@@ -990,7 +1012,8 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format("Prayer of Healing: %.2f%%", total4 + spell1))
 			end
 
-		elseif class == "MAGE" then -- dont show specific spells if they have same chance as fire spells
+		elseif class == "MAGE" then
+			-- dont show specific spells if they have same chance as fire spells
 			if spell1 > 0 then
 				GameTooltip:AddLine(format("Arcane spells: %.2f%%", total1))
 			end
@@ -1052,9 +1075,9 @@ function BCS:SetRangedCritChance(statFrame)
 	-- apply skill difference modifier
 	local skill = BCS:GetRangedWeaponSkill()
 	local level = UnitLevel("player")
-	local skillDiff = skill - (level*5)
+	local skillDiff = skill - (level * 5)
 
-	if (skill >= (level*5)) then
+	if (skill >= (level * 5)) then
 		crit = crit + (skillDiff * 0.04)
 	else
 		crit = crit + (skillDiff * 0.2)
@@ -1133,7 +1156,7 @@ end
 function BCS:SetDodge(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local dodge = GetDodgeChance() - ((5* leveldiff) * 0.04)
+	local dodge = BCS:GetEffectiveDodgeChance(leveldiff)
 
 	label:SetText(L.DODGE_COLON)
 	text:SetText(format("%.2f%%", dodge))
@@ -1147,7 +1170,7 @@ end
 function BCS:SetParry(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local parry = GetParryChance() - ((5* leveldiff) * 0.04)
+	local parry = BCS:GetEffectiveParryChance(leveldiff)
 
 	label:SetText(L.PARRY_COLON)
 	text:SetText(format("%.2f%%", parry))
@@ -1161,15 +1184,15 @@ end
 function BCS:SetBlock(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local block = GetBlockChance() - ((5* leveldiff) * 0.04)
+	local block = BCS:GetEffectiveBlockChance(leveldiff)
 	local tooltipExtra
 
 	if block > 0 then
-		tooltipExtra = "Block Value: "..BCS:GetBlockValue()
+		tooltipExtra = "Block Value: " .. BCS:GetBlockValue()
 	end
 
 	label:SetText(L.BLOCK_COLON)
-	text:SetText(format("%.2f%%", block ))
+	text:SetText(format("%.2f%%", block))
 
 	statFrame.tooltip = format(L.PLAYER_BLOCK_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_BLOCK_TOOLTIP_SUB)
@@ -1182,20 +1205,19 @@ function BCS:SetTotalAvoidance(statFrame, leveldiff)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	-- apply skill modifier
 	local base, mod = UnitDefense("player")
-	local skillDiff = (base + mod) - ((300)+(leveldiff * 5))
+	local skillDiff = (base + mod) - ((300) + (leveldiff * 5))
 	local missChance = 5 + (skillDiff * 0.04)
 
-
-	local block = GetBlockChance() - ((5* leveldiff) * 0.04)
-	local parry = GetParryChance() - ((5* leveldiff) * 0.04)
-	local dodge = GetDodgeChance() - ((5* leveldiff) * 0.04)
+	local block = BCS:GetEffectiveBlockChance(leveldiff)
+	local parry = BCS:GetEffectiveParryChance(leveldiff)
+	local dodge = BCS:GetEffectiveDodgeChance(leveldiff)
 
 	local total = missChance + (block + parry + dodge)
-	
+
 	if total < 0 then
 		total = 0
 	end
-	
+
 	label:SetText(L.TOTAL_COLON)
 	text:SetText(format("%.2f%%", total))
 
@@ -1213,7 +1235,7 @@ function BCS:SetDefense(statFrame)
 	local negBuff = 0
 
 	label:SetText(TEXT(DEFENSE_COLON))
-	
+
 	if (modifier > 0) then
 		posBuff = modifier
 	elseif (modifier < 0) then
@@ -1258,7 +1280,7 @@ function BCS:SetRangedAttackSpeed(statFrame)
 
 	BCS_AddDamageTooltip(damageText, statFrame, nil, nil, true)
 
-	damageText:SetText(format("%.2f",UnitRangedDamage("player")))
+	damageText:SetText(format("%.2f", UnitRangedDamage("player")))
 end
 
 function BCS:SetRangedAttackPower(statFrame)
@@ -1274,7 +1296,7 @@ function BCS:SetRangedAttackPower(statFrame)
 		return
 	end
 
-	if ( HasWandEquipped() ) then
+	if (HasWandEquipped()) then
 		text:SetText("--");
 		statFrame.tooltip = nil;
 		return ;
