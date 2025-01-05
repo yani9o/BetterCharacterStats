@@ -397,6 +397,11 @@ function BCS:GetSpellHitRating()
 		if hitFromAura then
 			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
 		end
+		-- Elemental Devastation
+		_, _, hitFromAura = BCS:GetPlayerAura("Increases your chance to hit with spells by (%d+)%%")
+		if hitFromAura then
+			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
+		end
 	end
 	hit = BCScache["gear"].spell_hit + BCScache["talents"].spell_hit + BCScache["auras"].spell_hit
 	hit_fire = BCScache["talents"].spell_hit_fire
