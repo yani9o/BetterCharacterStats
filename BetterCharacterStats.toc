@@ -2,7 +2,6 @@
 ## Title: BetterCharacterStats
 ## Author: moh, Bennylava, |cffbe5effLexie|r, Spit, Pepopo
 ## Version: 1.12.6
-## SavedVariablesPerCharacter: BCSConfig bcsupdateavailable BCScache
+## SavedVariablesPerCharacter: BCSConfig BCScache
 
 BetterCharacterStats.xml
-ChatThrottleLib\ChatThrottleLib.lua

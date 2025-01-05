@@ -230,7 +230,7 @@ sender:SetScript("OnEvent", function()
 		local player = UnitName("player")
 		if event == "PLAYER_AURAS_CHANGED" then
 			if BCS:GetPlayerAura("Tree of Life Aura") then
-				ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player, "PARTY")
+				SendAddonMessage("bcs", "TREE"..","..player, "PARTY")
 				--BCS:Print("sent tree request")
 			end
 		end
@@ -239,7 +239,7 @@ sender:SetScript("OnEvent", function()
 			if name ~= player then
 				local _, treebonus = BCS:GetHealingPower()
 				if not amount and type == "TREE" and treebonus then
-					ChatThrottleLib:SendAddonMessage("BULK","bcs", "TREE"..","..player..","..treebonus, "PARTY")
+					SendAddonMessage("bcs", "TREE"..","..player..","..treebonus, "PARTY")
 					--BCS:Print("sent tree response, amount="..treebonus)
 				end
 			end
