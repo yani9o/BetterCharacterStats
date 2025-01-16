@@ -543,8 +543,9 @@ function BCS:SetSpellPower(statFrame, school)
 	local green = "|cff20ff20"
 
 	if school then
-		local base = BCS:GetSpellPower()
+		local base, _, _, dmgOnly = BCS:GetSpellPower()
 		local fromSchool = BCS:GetSpellPower(school)
+		base = base + dmgOnly
 		local output = base + fromSchool
 
 		if fromSchool > 0 then

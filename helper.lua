@@ -1352,6 +1352,11 @@ function BCS:GetSpellPower(school)
 			if spellPowerFromAura then
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
+			-- Flask of Supreme Power
+			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell damage increased by up to (%d+)")
+			if spellPowerFromAura then
+				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
+			end
 			-- Danonzo's Tel'Abim Delight
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell Damage increased by (%d+)")
 			if spellPowerFromAura then
