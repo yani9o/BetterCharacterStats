@@ -35,6 +35,7 @@ BCS["L"] = {
 
 	["Shadow Damage %+(%d+)"] = "Shadow Damage %+(%d+)",
 	["Spell Damage %+(%d+)"] = "Spell Damage %+(%d+)",
+	["Arcane Damage %+(%d+)"] = "Arcane Damage %+(%d+)",
 	["Fire Damage %+(%d+)"] = "Fire Damage %+(%d+)",
 	["Frost Damage %+(%d+)"] = "Frost Damage %+(%d+)",
 	["Healing Spells %+(%d+)"] = "Healing Spells %+(%d+)",

@@ -1194,7 +1194,11 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
-							
+							_,_, value = strfind(left:GetText(), L["Arcane Damage %+(%d+)"])
+							if value then
+								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
+							end
+
 							_,_, value = strfind(left:GetText(), L["Equip: Increases damage done by Fire spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].fire = BCScache["gear"].fire + tonumber(value)
