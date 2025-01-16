@@ -397,6 +397,11 @@ function BCS:GetSpellHitRating()
 		if hitFromAura then
 			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
 		end
+		-- Elemental Devastation
+		_, _, hitFromAura = BCS:GetPlayerAura("Increases your chance to hit with spells by (%d+)%%")
+		if hitFromAura then
+			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
+		end
 	end
 	hit = BCScache["gear"].spell_hit + BCScache["talents"].spell_hit + BCScache["auras"].spell_hit
 	hit_fire = BCScache["talents"].spell_hit_fire
@@ -1344,6 +1349,11 @@ function BCS:GetSpellPower(school)
 			end
 			-- Dreamshard Elixir
 			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell damage is increased by up to (%d+)")
+			if spellPowerFromAura then
+				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
+			end
+			-- Flask of Supreme Power
+			_, _, spellPowerFromAura = BCS:GetPlayerAura("Spell damage increased by up to (%d+)")
 			if spellPowerFromAura then
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
