@@ -651,20 +651,20 @@ function BCS:SetSpellPower(statFrame, school)
 	if school then
 		local base, _, _, dmgOnly = BCS:GetSpellPower()
 		local fromSchool = BCS:GetSpellPower(school)
-		base = base + dmgOnly
-		local output = base + fromSchool
+		local total = base + dmgOnly + fromSchool
 
 		if fromSchool > 0 then
-			output = green .. output .. "|r"
+			text:SetText(green .. total .. "|r")
+		else
+			text:SetText(total)
 		end
 
 		label:SetText(L["SPELL_SCHOOL_" .. strupper(school)])
-		text:SetText(output)
 
 		if fromSchool > 0 then
-			statFrame.tooltip = format(L.SPELL_SCHOOL_SECONDARY_TOOLTIP, school, base + fromSchool, base, fromSchool)
+			statFrame.tooltip = format(L.SPELL_SCHOOL_SECONDARY_TOOLTIP , school, total,  base + dmgOnly, fromSchool)
 		else
-			statFrame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP, school, base)
+			statFrame.tooltip = format(L.SPELL_SCHOOL_TOOLTIP , school, total)
 		end
 		statFrame.tooltipSubtext = format(L.SPELL_SCHOOL_TOOLTIP_SUB, strlower(school))
 	else
@@ -1145,8 +1145,11 @@ function BCS:SetManaRegen(statFrame)
 	local mp2 = mp5 * 0.4
 	local totalRegen = base + mp2
 	local totalRegenWhileCasting = (casting / 100) * base + mp2
-
-	text:SetText(format("%d (%d)", totalRegen, totalRegenWhileCasting))
+	if totalRegenWhileCasting ~= totalRegen then
+		text:SetText(format("%d (%d)", totalRegen, totalRegenWhileCasting))
+	else
+		text:SetText(format("%d", totalRegen))
+	end
 
 	statFrame.tooltip = format(L.SPELL_MANA_REGEN_TOOLTIP, totalRegen, totalRegenWhileCasting)
 	statFrame.tooltipSubtext = format(L.SPELL_MANA_REGEN_TOOLTIP_SUB, base, casting, mp5, mp2)
