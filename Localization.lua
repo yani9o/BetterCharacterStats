@@ -4,18 +4,18 @@ BCS["L"] = {
 	["%+(%d+)%% Critical Strike"] = "%+(%d+)%% Critical Strike",
 	["([%d.]+)%% chance to crit"] = "([%d.]+)%% chance to crit",
 
-	["^Set: Improves your chance to hit by (%d)%%."] = "^Set: Improves your chance to hit by (%d)%%.",
-	["^Set: Improves your chance to get a critical strike with spells by (%d)%%."] = "^Set: Improves your chance to get a critical strike with spells by (%d)%%.",
-	["^Set: Improves your chance to hit with spells by (%d)%%."] = "^Set: Improves your chance to hit with spells by (%d)%%.",
-	["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = "^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%.",
-	["^Set: Increases healing done by spells and effects by up to (%d+)%."] = "^Set: Increases healing done by spells and effects by up to (%d+)%.",
-	["^Set: Allows (%d+)%% of your Mana regeneration to continue while casting."] = "^Set: Allows (%d+)%% of your Mana regeneration to continue while casting.",
-	["^Set: Improves your chance to get a critical strike by (%d)%%."] = "^Set: Improves your chance to get a critical strike by (%d)%%.",
+	["^Set: Improves your chance to hit by (%d)%%."] = string.format(ITEM_SET_BONUS, "Improves your chance to hit by (%d)%%."),
+	["^Set: Improves your chance to get a critical strike with spells by (%d)%%."] = string.format(ITEM_SET_BONUS, "Improves your chance to get a critical strike with spells by (%d)%%."),
+	["^Set: Improves your chance to hit with spells by (%d)%%."] = string.format(ITEM_SET_BONUS, "Improves your chance to hit with spells by (%d)%%."),
+	["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = string.format(ITEM_SET_BONUS, "Increases damage and healing done by magical spells and effects by up to (%d+)%."),
+	["^Set: Increases healing done by spells and effects by up to (%d+)%."] = string.format(ITEM_SET_BONUS, "Increases healing done by spells and effects by up to (%d+)%."),
+	["^Set: Allows (%d+)%% of your Mana regeneration to continue while casting."] = string.format(ITEM_SET_BONUS, "Allows (%d+)%% of your Mana regeneration to continue while casting."),
+	["^Set: Improves your chance to get a critical strike by (%d)%%."] = string.format(ITEM_SET_BONUS, "Improves your chance to get a critical strike by (%d)%%."),
 
-	["Equip: Improves your chance to hit by (%d)%%."] = "Equip: Improves your chance to hit by (%d)%%.",
-	["Equip: Improves your chance to get a critical strike with spells by (%d)%%."] = "Equip: Improves your chance to get a critical strike with spells by (%d)%%.",
-	["Equip: Improves your chance to hit with spells by (%d)%%."] = "Equip: Improves your chance to hit with spells by (%d)%%.",
-	["Equip: Improves your chance to get a critical strike by (%d)%%."] = "Equip: Improves your chance to get a critical strike by (%d)%%.",
+	["Equip: Improves your chance to hit by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to hit by (%d)%%.",
+	["Equip: Improves your chance to get a critical strike with spells by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to get a critical strike with spells by (%d)%%.",
+	["Equip: Improves your chance to hit with spells by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to hit with spells by (%d)%%.",
+	["Equip: Improves your chance to get a critical strike by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to get a critical strike by (%d)%%.",
 	["Increases your chance to hit with melee weapons by (%d)%%."] = "Increases your chance to hit with melee weapons by (%d)%%.",
 	["Increases your critical strike chance with ranged weapons by (%d)%%."] = "Increases your critical strike chance with ranged weapons by (%d)%%.",
 	["Increases hit chance by (%d)%% and increases the chance movement impairing effects will be resisted by an additional %d+%%."] = "Increases hit chance by (%d)%% and increases the chance movement impairing effects will be resisted by an additional %d+%%.",
@@ -26,12 +26,12 @@ BCS["L"] = {
 	["Reduces the chance that the opponent can resist your Arcane spells by (%d+)%%."] = "Reduces the chance that the opponent can resist your Arcane spells by (%d+)%%.",
 	["Reduces your target's chance to resist your Shadow spells by (%d+)%%."] = "Reduces your target's chance to resist your Shadow spells by (%d+)%%.",
 
-	["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."] = "Equip: Increases damage done by Arcane spells and effects by up to (%d+).",
-	["Equip: Increases damage done by Fire spells and effects by up to (%d+)."] = "Equip: Increases damage done by Fire spells and effects by up to (%d+).",
-	["Equip: Increases damage done by Frost spells and effects by up to (%d+)."] = "Equip: Increases damage done by Frost spells and effects by up to (%d+).",
-	["Equip: Increases damage done by Holy spells and effects by up to (%d+)."] = "Equip: Increases damage done by Holy spells and effects by up to (%d+).",
-	["Equip: Increases damage done by Nature spells and effects by up to (%d+)."] = "Equip: Increases damage done by Nature spells and effects by up to (%d+).",
-	["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."] = "Equip: Increases damage done by Shadow spells and effects by up to (%d+).",
+	["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage done by Arcane spells and effects by up to (%d+).",
+	["Equip: Increases damage done by Fire spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage done by Fire spells and effects by up to (%d+).",
+	["Equip: Increases damage done by Frost spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage done by Frost spells and effects by up to (%d+).",
+	["Equip: Increases damage done by Holy spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage done by Holy spells and effects by up to (%d+).",
+	["Equip: Increases damage done by Nature spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage done by Nature spells and effects by up to (%d+).",
+	["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage done by Shadow spells and effects by up to (%d+).",
 
 	["Shadow Damage %+(%d+)"] = "Shadow Damage %+(%d+)",
 	["Spell Damage %+(%d+)"] = "Spell Damage %+(%d+)",
@@ -41,7 +41,7 @@ BCS["L"] = {
 	["Healing Spells %+(%d+)"] = "Healing Spells %+(%d+)",
 	["^Healing %+(%d+) and %d+ mana per 5 sec."] = "^Healing %+(%d+) and %d+ mana per 5 sec.",
 
-	["Equip: Restores (%d+) mana per 5 sec."] = "Equip: Restores (%d+) mana per 5 sec.",
+	["Equip: Restores (%d+) mana per 5 sec."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Restores (%d+) mana per 5 sec.",
 	["+(%d)%% Ranged Hit"] = "+(%d)%% Ranged Hit",
 
 	-- Random Bonuses // https://wow.gamepedia.com/index.php?title=SuffixId&oldid=204406
@@ -73,8 +73,8 @@ BCS["L"] = {
 	-- sapphiron shoulder enchants
 	["%+(%d+)%% Critical Strike"] = "%+(%d+)%% Critical Strike",
 	
-	["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."] = "Equip: Increases damage and healing done by magical spells and effects by up to (%d+).",
-	["Equip: Increases healing done by spells and effects by up to (%d+)."] = "Equip: Increases healing done by spells and effects by up to (%d+).",
+	["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage and healing done by magical spells and effects by up to (%d+).",
+	["Equip: Increases healing done by spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases healing done by spells and effects by up to (%d+).",
 
 	-- auras
 	["Chance to hit increased by (%d)%%."] = "Chance to hit increased by (%d)%%.",
@@ -105,7 +105,7 @@ BCS["L"] = {
 	["Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration."] = "Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration.",
 	["Critical strike chance with spells and melee attacks increased by (%d+)%%."] = "Critical strike chance with spells and melee attacks increased by (%d+)%%.",
 	["Increases ranged and melee critical chance by (%d+)%%."] = "Increases ranged and melee critical chance by (%d+)%%.",
-	["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."] = "Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%.",
+	["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%.",
 	-- druid
 	["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."] = "Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%.",
 	["Increases the critical effect chance of your Regrowth spell by (%d+)%%."] = "Increases the critical effect chance of your Regrowth spell by (%d+)%%.",
@@ -132,8 +132,8 @@ BCS["L"] = {
 	["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%.",
 	["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."] = "Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%.",
 	["Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%"] = "Increases your spell damage by %d+%% and the critical strike chance of your offensive spells by (%d)%%",
-	["^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%."] = "^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%.",
-	["^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%."] = "^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%.",
+	["^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%."] = string.format(ITEM_SET_BONUS, "Improves your chance to get a critical strike with Holy spells by (%d)%%."),
+	["^Set: Increases your chance of a critical hit with Prayer of Healing by (%d+)%%."] = string.format(ITEM_SET_BONUS, "Increases your chance of a critical hit with Prayer of Healing by (%d+)%%."),
 	--defense
 	["DEFENSE_TOOLTIP"] = [[|cffffffffDefense Skill|r]],
 	["DEFENSE_TOOLTIP_SUB"] = [[Higher defense makes you harder to hit and makes monsters less likely to land a crushing blow.]],
