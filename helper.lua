@@ -1219,7 +1219,7 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
-							_,_, value = strfind(left:GetText(), L["Arcane Damage %+(%d+)"])
+							_,_, value = strfind(text, L["Arcane Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
