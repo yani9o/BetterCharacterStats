@@ -92,9 +92,8 @@ function BCS:GetPlayerAura(searchText, auraType)
 				for line=1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local value = {strfind(text, searchText)}
-						if value[1] then
-							return unpack(value)
+						if strfind(text, searchText) then
+							return strfind(text, searchText)
 						end
 					end
 				end
@@ -108,9 +107,8 @@ function BCS:GetPlayerAura(searchText, auraType)
 				for line=1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local value = {strfind(text, searchText)}
-						if value[1] then
-							return unpack(value)
+						if strfind(text, searchText) then
+							return strfind(text, searchText)
 						end
 					end
 				end
@@ -663,7 +661,7 @@ function BCS:GetSpellCritChance()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["Brilliant Wizard Oil"])
+					local found = strfind(text, L["^Brilliant Wizard Oil"])
 					if found then
 						BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + 1
 					end
@@ -1296,22 +1294,22 @@ function BCS:GetSpellPower(school)
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						-- apparently gives healing too
-						local found = strfind(text, L["Brilliant Wizard Oil"])
+						local found = strfind(text, L["^Brilliant Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
 							break
 						end
-						found = strfind(text, L["Lesser Wizard Oil"])
+						found = strfind(text, L["^Lesser Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
 							break
 						end
-						found = strfind(text, L["Minor Wizard Oil"])
+						found = strfind(text, L["^Minor Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
 							break
 						end
-						found = strfind(text, L["Wizard Oil"])
+						found = strfind(text, L["^Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
 							break
@@ -1523,7 +1521,7 @@ function BCS:GetHealingPower()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Mana Oil %((%d+) min%"])
+					local found = strfind(text, L["^Brilliant Mana Oil"])
 					if found then
 						BCScache["gear"].healing = BCScache["gear"].healing + 25
 					end
@@ -1698,15 +1696,15 @@ function BCS:GetManaRegen()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Mana Oil %((%d+) min%"])
+					local found = strfind(text, L["^Brilliant Mana Oil"])
 					if found then
 						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 12
 					end
-					found = strfind(text, L["^Lesser Mana Oil ((%d+) min)"])
+					found = strfind(text, L["^Lesser Mana Oil"])
 					if found then
 						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 8
 					end
-					found = strfind(text, L["^Minor Mana Oil ((%d+) min)"])
+					found = strfind(text, L["^Minor Mana Oil"])
 					if found then
 						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 4
 					end

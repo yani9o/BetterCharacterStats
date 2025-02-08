@@ -64,15 +64,18 @@ BCS["L"] = {
 	["Restores (%d+) mana every 1 sec."] = "Restores (%d+) mana every 1 sec.",
 	["(%d+)%% of your Mana regeneration continuing while casting."] = "(%d+)%% of your Mana regeneration continuing while casting.",
 	["(%d+)%% of your mana regeneration to continue while casting."] = "(%d+)%% of your mana regeneration to continue while casting.",
+	
 	-- Wizard Oils
-	["Brilliant Wizard Oil"] = "Brilliant Wizard Oil",
-	["Lesser Wizard Oil"] = "Lesser Wizard Oil",
-	["Minor Wizard Oil"] = "Minor Wizard Oil",
-	["Wizard Oil"] = "Wizard Oil",
+	["^Brilliant Wizard Oil"] = "^Brilliant Wizard Oil",
+	["^Lesser Wizard Oil"] = "^Lesser Wizard Oil",
+	["^Minor Wizard Oil"] = "^Minor Wizard Oil",
+	["^Wizard Oil"] = "^Wizard Oil",
+	
 	-- Mana Oils
-	["^Brilliant Mana Oil %((%d+) min%"] = "^Brilliant Mana Oil %((%d+) min%",
-	["^Lesser Mana Oil ((%d+) min)"] = "^Lesser Mana Oil ((%d+) min)",
-	["^Minor Mana Oil ((%d+) min)"] = "^Minor Mana Oil ((%d+) min)",
+	["^Brilliant Mana Oil"] = "^Brilliant Mana Oil",
+	["^Lesser Mana Oil"] = "^Lesser Mana Oil",
+	["^Minor Mana Oil"] = "^Minor Mana Oil",
+	
 	-- snowflakes ZG enchants
 	["/Hit %+(%d+)"] = "/Hit %+(%d+)",
 	["/Spell Hit %+(%d+)"] = "/Spell Hit %+(%d+)",
@@ -114,6 +117,7 @@ BCS["L"] = {
 	["Critical strike chance with spells and melee attacks increased by (%d+)%%."] = "Critical strike chance with spells and melee attacks increased by (%d+)%%.",
 	["Increases ranged and melee critical chance by (%d+)%%."] = "Increases ranged and melee critical chance by (%d+)%%.",
 	["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."] = "Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%.",
+	
 	-- druid
 	["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."] = "Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%.",
 	["Increases the critical effect chance of your Regrowth spell by (%d+)%%."] = "Increases the critical effect chance of your Regrowth spell by (%d+)%%.",
@@ -122,18 +126,22 @@ BCS["L"] = {
 	["Tree of Life Form"] = "Tree of Life Form",
 	["Tree of Life Aura"] = "Tree of Life Aura",
 	["Mana regeneration increased by (%d+)%%.  (%d+)%% Mana regeneration may continue while casting."] = "Mana regeneration increased by (%d+)%%.  (%d+)%% Mana regeneration may continue while casting.",
+	
 	-- paladin
 	["Increases your healing power by (%d+)%% of your Armor."] = "Increases your healing power by (%d+)%% of your Armor.",
 	["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."] = "Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%.",
 	["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."] = "Improves your chance to get a critical strike with Holy Shock by (%d+)%%.",
+	
 	-- shaman
 	["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%.",
 	["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."] = "Increases the critical effect chance of your healing and lightning spells by (%d+)%%.",
 	["Elemental Mastery"] = "Elemental Mastery",
+	
 	-- warlock
 	["Increases the critical strike chance of your Destruction spells by (%d+)%%."] = "Increases the critical strike chance of your Destruction spells by (%d+)%%.",
 	["Increases the critical strike chance of your Searing Pain spell by (%d+)%%."] = "Increases the critical strike chance of your Searing Pain spell by (%d+)%%.",
 	["Reduces the chance for enemies to resist your Affliction spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Affliction spells by (%d+)%%.",
+	
 	-- mage
 	["Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%.",
 	["Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%."] = "Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%.",
@@ -142,6 +150,7 @@ BCS["L"] = {
 	["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."] = "Increases the critical strike chance of all your spells against frozen targets by (%d+)%%.",
 	["Increases your spell damage and critical srike chance by (%d+)%%."] = "Increases your spell damage and critical srike chance by (%d+)%%.",
 	["Increases critical strike chance from Fire damage spells by (%d+)%%."] = "Increases critical strike chance from Fire damage spells by (%d+)%%.",
+	
 	-- priest
 	["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%.",
 	["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."] = "Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%.",
@@ -153,6 +162,7 @@ BCS["L"] = {
 	["Increases the effects of your Inner Fire spell by (%d+)%%."] = "Increases the effects of your Inner Fire spell by (%d+)%%.",
 	["Improved Shadowform"] = "Improved Shadowform",
 	["Shadowform"] = "Shadowform",
+	
 	--defense
 	["DEFENSE_TOOLTIP"] = [[|cffffffffDefense Skill|r]],
 	["DEFENSE_TOOLTIP_SUB"] = [[Higher defense makes you harder to hit and makes monsters less likely to land a crushing blow.]],
@@ -179,6 +189,7 @@ BCS["L"] = {
 	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks.]],
 	["MELEE_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffMelee Weapon Skill|r]],
 	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Higher weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
+	
 	--ranged
 	["RANGED_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffRanged Weapon Skill|r]],
 	["RANGED_WEAPON_SKILL_TOOLTIP_SUB"] = [[Higher weapon skill reduces your chance to miss with a ranged weapon.]],
