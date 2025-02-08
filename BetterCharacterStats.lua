@@ -1187,7 +1187,7 @@ end
 function BCS:SetBlock(statFrame, leveldiff)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local block = BCS:GetEffectiveBlockChance(leveldiff)
+	local blockChance = BCS:GetEffectiveBlockChance(leveldiff)
 	local tooltipExtra
 
 	if blockChance > 0 then
@@ -1195,7 +1195,7 @@ function BCS:SetBlock(statFrame, leveldiff)
 	end
 
 	label:SetText(L.BLOCK_COLON)
-	text:SetText(format("%.2f%%", block))
+	text:SetText(format("%.2f%%", blockChance))
 
 	statFrame.tooltip = format(L.PLAYER_BLOCK_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_BLOCK_TOOLTIP_SUB)
