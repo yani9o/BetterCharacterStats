@@ -1438,6 +1438,7 @@ function BCS:GetSpellPower(school)
 end
 
 local ironClad = nil
+local toughness = nil
 --this is stuff that gives ONLY healing, we count stuff that gives both damage and healing in GetSpellPower
 function BCS:GetHealingPower()
 	local healPower = 0;
@@ -1445,6 +1446,7 @@ function BCS:GetHealingPower()
 	--talents
 	if BCS.needScanTalents then
 		ironClad = nil
+		toughness = nil
 		BCScache["talents"].healing = 0
 		for tab=1, GetNumTalentTabs() do
 			for talent=1, GetNumTalents(tab) do
@@ -1458,6 +1460,13 @@ function BCS:GetHealingPower()
 						local _,_, value = strfind(text, L["Increases your healing power by (%d+)%% of your Armor."])
 						if value and rank > 0 then
 							ironClad = tonumber(value)
+							break
+						end
+						-- Paladin
+						-- Toughness
+						local _,_, value = strfind(text, L["Increases your armor value from items by (%d+)%%."])
+						if value and rank > 0 then
+							toughness = tonumber(value)
 							break
 						end
 					end
@@ -1580,6 +1589,10 @@ function BCS:GetHealingPower()
 		local base = UnitArmor("player")
 		local _, agility = UnitStat("player", 2)
 		local armorFromGear = base - (agility * 2)
+		-- Iron Clad is calculate on raw armor without toughness bonus, base armor includes the bonus
+		if toughness ~= nil then
+			armorFromGear = armorFromGear / (1 + toughness/100)
+		end
 		BCScache["talents"].healing = floor(((ironClad / 100) * armorFromGear))
 	end
 	healPower = BCScache["gear"].healing + BCScache["auras"].healing + BCScache["talents"].healing
