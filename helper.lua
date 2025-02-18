@@ -215,21 +215,21 @@ function BCS:GetHitRating(hitOnly)
 						end
 						-- Druid
 						-- Natural Weapons
-						_,_, value = strfind(text, "Also increases chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Precision
-						_,_, value = strfind(text, "Increases your chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Shaman
 						-- Elemental Devastation
-						_,_, value = strfind(text, "Increases your chance to hit with spells and melee attacks by (%d+)%%")
+						_,_, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
@@ -360,21 +360,21 @@ function BCS:GetSpellHitRating()
 						end
 						-- Druid
 						-- Natural Weapons
-						_,_, value = strfind(text, "Also increases chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Precision
-						_,_, value = strfind(text, "Increases your chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Shaman
 						-- Elemental Devastation
-						_,_, value = strfind(text, "Increases your chance to hit with spells and melee attacks by (%d+)%%")
+						_,_, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
@@ -399,7 +399,7 @@ function BCS:GetSpellHitRating()
 			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
 		end
 		-- Elemental Devastation
-		_, _, hitFromAura = BCS:GetPlayerAura("Increases your chance to hit with spells by (%d+)%%")
+		_, _, hitFromAura = BCS:GetPlayerAura(L["Increases your chance to hit with spells by (%d+)%%"])
 		if hitFromAura then
 			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
 		end
@@ -1656,7 +1656,7 @@ function BCS:GetManaRegen()
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
 						_,_, value = strfind(text, L["Equip: Restores (%d+) mana per 5 sec."])
-						if value and not strfind(text, "to all party members") then
+						if value and not strfind(text, L["to all party members"]) then
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
 						_,_, value = strfind(text, L["^Healing %+%d+ and (%d+) mana per 5 sec."])

@@ -126,17 +126,21 @@ BCS["L"] = {
 	["Tree of Life Form"] = "Tree of Life Form",
 	["Tree of Life Aura"] = "Tree of Life Aura",
 	["Mana regeneration increased by (%d+)%%.  (%d+)%% Mana regeneration may continue while casting."] = "Mana regeneration increased by (%d+)%%.  (%d+)%% Mana regeneration may continue while casting.",
-	
+	["Also increases chance to hit with melee attacks and spells by (%d+)%%."] = "Also increases chance to hit with melee attacks and spells by (%d+)%%.",
+
 	-- paladin
 	["Increases your healing power by (%d+)%% of your Armor."] = "Increases your healing power by (%d+)%% of your Armor.",
 	["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."] = "Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%.",
 	["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."] = "Improves your chance to get a critical strike with Holy Shock by (%d+)%%.",
+	["Increases your chance to hit with melee attacks and spells by (%d+)%%."] = "Increases your chance to hit with melee attacks and spells by (%d+)%%.",
 	
 	-- shaman
 	["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%.",
 	["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."] = "Increases the critical effect chance of your healing and lightning spells by (%d+)%%.",
 	["Elemental Mastery"] = "Elemental Mastery",
-	
+	["Increases your chance to hit with spells and melee attacks by (%d+)%%"] = "Increases your chance to hit with spells and melee attacks by (%d+)%%",
+	["Increases your chance to hit with spells by (%d+)%%"] = "Increases your chance to hit with spells by (%d+)%%",
+
 	-- warlock
 	["Increases the critical strike chance of your Destruction spells by (%d+)%%."] = "Increases the critical strike chance of your Destruction spells by (%d+)%%.",
 	["Increases the critical strike chance of your Searing Pain spell by (%d+)%%."] = "Increases the critical strike chance of your Searing Pain spell by (%d+)%%.",
@@ -219,7 +223,7 @@ BCS["L"] = {
 	["SPELL_HEALING_POWER_SECONDARY_TOOLTIP"] = [[|cffffffffHealing Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
 	["SPELL_HEALING_POWER_TOOLTIP_SUB"] = [[Increases healing done by spells and effects.]],
 
-	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana regen: %d |cffffffff(%d)|r]],
+	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana Regeneration: %d |cffffffff(%d)|r]],
 	["SPELL_MANA_REGEN_TOOLTIP_SUB"] = [[Mana regen when not casting and (while casting).
 	Mana regenerates every 2 seconds and the amount is dependent on your total spirit and MP5.
 	Spirit Regen: %d
@@ -240,7 +244,7 @@ BCS["L"] = {
 	MELEE_CRIT_COLON = "Crit Chance:",
 	RANGED_CRIT_COLON = "Crit Chance:",
 	SPELL_CRIT_COLON = "Crit Chance:",
-	MANA_REGEN_COLON = "Mana regen:",
+	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
@@ -316,4 +320,6 @@ BCS["L"] = {
 	["increases block amount by (%d+)%%"] = "increases block amount by (%d+)%%",
 	["Block value increased by (%d+)."] = "Block value increased by (%d+).",
 	["^Stoneskin$"] = "^Stoneskin$",
+
+	["to all party members"] = "to all party members",
 }
