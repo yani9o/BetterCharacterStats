@@ -64,15 +64,18 @@ BCS["L"] = {
 	["Restores (%d+) mana every 1 sec."] = "Restores (%d+) mana every 1 sec.",
 	["(%d+)%% of your Mana regeneration continuing while casting."] = "(%d+)%% of your Mana regeneration continuing while casting.",
 	["(%d+)%% of your mana regeneration to continue while casting."] = "(%d+)%% of your mana regeneration to continue while casting.",
+	
 	-- Wizard Oils
-	["Brilliant Wizard Oil"] = "Brilliant Wizard Oil",
-	["Lesser Wizard Oil"] = "Lesser Wizard Oil",
-	["Minor Wizard Oil"] = "Minor Wizard Oil",
-	["Wizard Oil"] = "Wizard Oil",
+	["^Brilliant Wizard Oil"] = "^Brilliant Wizard Oil",
+	["^Lesser Wizard Oil"] = "^Lesser Wizard Oil",
+	["^Minor Wizard Oil"] = "^Minor Wizard Oil",
+	["^Wizard Oil"] = "^Wizard Oil",
+	
 	-- Mana Oils
-	["^Brilliant Mana Oil %((%d+) min%"] = "^Brilliant Mana Oil %((%d+) min%",
-	["^Lesser Mana Oil ((%d+) min)"] = "^Lesser Mana Oil ((%d+) min)",
-	["^Minor Mana Oil ((%d+) min)"] = "^Minor Mana Oil ((%d+) min)",
+	["^Brilliant Mana Oil"] = "^Brilliant Mana Oil",
+	["^Lesser Mana Oil"] = "^Lesser Mana Oil",
+	["^Minor Mana Oil"] = "^Minor Mana Oil",
+	
 	-- snowflakes ZG enchants
 	["/Hit %+(%d+)"] = "/Hit %+(%d+)",
 	["/Spell Hit %+(%d+)"] = "/Spell Hit %+(%d+)",
@@ -125,19 +128,27 @@ BCS["L"] = {
 	["Tree of Life Form"] = "Tree of Life Form",
 	["Tree of Life Aura"] = "Tree of Life Aura",
 	["Mana regeneration increased by (%d+)%%.  (%d+)%% Mana regeneration may continue while casting."] = "Mana regeneration increased by (%d+)%%.  (%d+)%% Mana regeneration may continue while casting.",
+	["Also increases chance to hit with melee attacks and spells by (%d+)%%."] = "Also increases chance to hit with melee attacks and spells by (%d+)%%.",
+
 	-- paladin
 	["Increases your healing power by (%d+)%% of your Armor."] = "Increases your healing power by (%d+)%% of your Armor.",
 	["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."] = "Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%.",
 	["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."] = "Improves your chance to get a critical strike with Holy Shock by (%d+)%%.",
+	["Increases your chance to hit with melee attacks and spells by (%d+)%%."] = "Increases your chance to hit with melee attacks and spells by (%d+)%%.",
+	
 	["Increases your armor value from items by (%d+)%%."] = "Increases your armor value from items by (%d+)%%.",
 	-- shaman
 	["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%.",
 	["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."] = "Increases the critical effect chance of your healing and lightning spells by (%d+)%%.",
 	["Elemental Mastery"] = "Elemental Mastery",
+	["Increases your chance to hit with spells and melee attacks by (%d+)%%"] = "Increases your chance to hit with spells and melee attacks by (%d+)%%",
+	["Increases your chance to hit with spells by (%d+)%%"] = "Increases your chance to hit with spells by (%d+)%%",
+
 	-- warlock
 	["Increases the critical strike chance of your Destruction spells by (%d+)%%."] = "Increases the critical strike chance of your Destruction spells by (%d+)%%.",
 	["Increases the critical strike chance of your Searing Pain spell by (%d+)%%."] = "Increases the critical strike chance of your Searing Pain spell by (%d+)%%.",
 	["Reduces the chance for enemies to resist your Affliction spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Affliction spells by (%d+)%%.",
+	
 	-- mage
 	["Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%.",
 	["Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%."] = "Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%.",
@@ -146,6 +157,7 @@ BCS["L"] = {
 	["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."] = "Increases the critical strike chance of all your spells against frozen targets by (%d+)%%.",
 	["Increases your spell damage and critical srike chance by (%d+)%%."] = "Increases your spell damage and critical srike chance by (%d+)%%.",
 	["Increases critical strike chance from Fire damage spells by (%d+)%%."] = "Increases critical strike chance from Fire damage spells by (%d+)%%.",
+	
 	-- priest
 	["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%.",
 	["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."] = "Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%.",
@@ -157,6 +169,7 @@ BCS["L"] = {
 	["Increases the effects of your Inner Fire spell by (%d+)%%."] = "Increases the effects of your Inner Fire spell by (%d+)%%.",
 	["Improved Shadowform"] = "Improved Shadowform",
 	["Shadowform"] = "Shadowform",
+	
 	--defense
 	["DEFENSE_TOOLTIP"] = [[|cffffffffDefense Skill|r]],
 	["DEFENSE_TOOLTIP_SUB"] = [[Higher defense makes you harder to hit and makes monsters less likely to land a crushing blow.]],
@@ -183,6 +196,7 @@ BCS["L"] = {
 	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks.]],
 	["MELEE_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffMelee Weapon Skill|r]],
 	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Higher weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
+	
 
 	--boss
 	["MELEE_MISS_VS_BOSS_TOOLTIP"] = [[|cffffffffChance To Miss Boss(lvl 63)|r]],
@@ -225,7 +239,7 @@ BCS["L"] = {
 	["SPELL_HEALING_POWER_SECONDARY_TOOLTIP"] = [[|cffffffffHealing Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
 	["SPELL_HEALING_POWER_TOOLTIP_SUB"] = [[Increases healing done by spells and effects.]],
 
-	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana regen: %d |cffffffff(%d)|r]],
+	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana Regeneration: %d |cffffffff(%d)|r]],
 	["SPELL_MANA_REGEN_TOOLTIP_SUB"] = [[Mana regen when not casting and (while casting).
 	Mana regenerates every 2 seconds and the amount is dependent on your total spirit and MP5.
 	Spirit Regen: %d
@@ -253,7 +267,7 @@ BCS["L"] = {
 	MELEE_CRIT_COLON = "Crit Chance:",
 	RANGED_CRIT_COLON = "Crit Chance:",
 	SPELL_CRIT_COLON = "Crit Chance:",
-	MANA_REGEN_COLON = "Mana regen:",
+	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
@@ -329,4 +343,6 @@ BCS["L"] = {
 	["increases block amount by (%d+)%%"] = "increases block amount by (%d+)%%",
 	["Block value increased by (%d+)."] = "Block value increased by (%d+).",
 	["^Stoneskin$"] = "^Stoneskin$",
+
+	["to all party members"] = "to all party members",
 }

@@ -92,9 +92,8 @@ function BCS:GetPlayerAura(searchText, auraType)
 				for line=1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local value = {strfind(text, searchText)}
-						if value[1] then
-							return unpack(value)
+						if strfind(text, searchText) then
+							return strfind(text, searchText)
 						end
 					end
 				end
@@ -108,9 +107,8 @@ function BCS:GetPlayerAura(searchText, auraType)
 				for line=1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local value = {strfind(text, searchText)}
-						if value[1] then
-							return unpack(value)
+						if strfind(text, searchText) then
+							return strfind(text, searchText)
 						end
 					end
 				end
@@ -217,21 +215,21 @@ function BCS:GetHitRating(hitOnly)
 						end
 						-- Druid
 						-- Natural Weapons
-						_,_, value = strfind(text, "Also increases chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Precision
-						_,_, value = strfind(text, "Increases your chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Shaman
 						-- Elemental Devastation
-						_,_, value = strfind(text, "Increases your chance to hit with spells and melee attacks by (%d+)%%")
+						_,_, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
@@ -362,21 +360,21 @@ function BCS:GetSpellHitRating()
 						end
 						-- Druid
 						-- Natural Weapons
-						_,_, value = strfind(text, "Also increases chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Precision
-						_,_, value = strfind(text, "Increases your chance to hit with melee attacks and spells by (%d+)%%.")
+						_,_, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Shaman
 						-- Elemental Devastation
-						_,_, value = strfind(text, "Increases your chance to hit with spells and melee attacks by (%d+)%%")
+						_,_, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
@@ -401,7 +399,7 @@ function BCS:GetSpellHitRating()
 			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
 		end
 		-- Elemental Devastation
-		_, _, hitFromAura = BCS:GetPlayerAura("Increases your chance to hit with spells by (%d+)%%")
+		_, _, hitFromAura = BCS:GetPlayerAura(L["Increases your chance to hit with spells by (%d+)%%"])
 		if hitFromAura then
 			BCScache["auras"].spell_hit = BCScache["auras"].spell_hit + tonumber(hitFromAura)
 		end
@@ -663,7 +661,7 @@ function BCS:GetSpellCritChance()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["Brilliant Wizard Oil"])
+					local found = strfind(text, L["^Brilliant Wizard Oil"])
 					if found then
 						BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + 1
 					end
@@ -1300,22 +1298,22 @@ function BCS:GetSpellPower(school)
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						-- apparently gives healing too
-						local found = strfind(text, L["Brilliant Wizard Oil"])
+						local found = strfind(text, L["^Brilliant Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
 							break
 						end
-						found = strfind(text, L["Lesser Wizard Oil"])
+						found = strfind(text, L["^Lesser Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
 							break
 						end
-						found = strfind(text, L["Minor Wizard Oil"])
+						found = strfind(text, L["^Minor Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
 							break
 						end
-						found = strfind(text, L["Wizard Oil"])
+						found = strfind(text, L["^Wizard Oil"])
 						if found then
 							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
 							break
@@ -1536,7 +1534,7 @@ function BCS:GetHealingPower()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Mana Oil %((%d+) min%"])
+					local found = strfind(text, L["^Brilliant Mana Oil"])
 					if found then
 						BCScache["gear"].healing = BCScache["gear"].healing + 25
 					end
@@ -1675,7 +1673,7 @@ function BCS:GetManaRegen()
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
 						_,_, value = strfind(text, L["Equip: Restores (%d+) mana per 5 sec."])
-						if value and not strfind(text, "to all party members") then
+						if value and not strfind(text, L["to all party members"]) then
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
 						_,_, value = strfind(text, L["^Healing %+%d+ and (%d+) mana per 5 sec."])
@@ -1715,15 +1713,15 @@ function BCS:GetManaRegen()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Mana Oil %((%d+) min%"])
+					local found = strfind(text, L["^Brilliant Mana Oil"])
 					if found then
 						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 12
 					end
-					found = strfind(text, L["^Lesser Mana Oil ((%d+) min)"])
+					found = strfind(text, L["^Lesser Mana Oil"])
 					if found then
 						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 8
 					end
-					found = strfind(text, L["^Minor Mana Oil ((%d+) min)"])
+					found = strfind(text, L["^Minor Mana Oil"])
 					if found then
 						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 4
 					end
