@@ -483,11 +483,13 @@ function BCS:GetRangedCritChance()
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
+                        -- Lethal Shots
 						local _,_, value = strfind(text, L["Increases your critical strike chance with ranged weapons by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].ranged_crit = BCScache["talents"].ranged_crit + tonumber(value)
 							break
 						end
+                        -- Killer Instinct
 						_,_, value = strfind(text, L["Increases your critical strike chance with all attacks by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].ranged_crit = BCScache["talents"].ranged_crit + tonumber(value)
@@ -557,6 +559,11 @@ function BCS:GetRangedCritChance()
 		end
 		--songflower
 		_, _, critFromAura = BCS:GetPlayerAura(L["Increases chance for a melee, ranged, or spell critical by (%d+)%% and all attributes by %d+."])
+		if critFromAura then
+			BCScache["auras"].ranged_crit = BCScache["auras"].ranged_crit + tonumber(critFromAura)
+		end
+        -- Tricks of the Trade
+        _, _, critFromAura = BCS:GetPlayerAura(L["Critical strike chance increased by (%d+)%%."])
 		if critFromAura then
 			BCScache["auras"].ranged_crit = BCScache["auras"].ranged_crit + tonumber(critFromAura)
 		end
@@ -1721,7 +1728,7 @@ function BCS:GetManaRegen()
 		for tab=1, GetNumSpellTabs() do
 			local _, _, offset, numSpells = GetSpellTabInfo(tab);
 			for s = offset + 1, offset + numSpells do
-			local spell = GetSpellName(s, BOOKTYPE_SPELL);
+			    local spell = GetSpellName(s, BOOKTYPE_SPELL);
 				if spell == L["Improved Shadowform"] and BCS:GetPlayerAura(L["Shadowform"]) then
 					BCScache["auras"].casting = BCScache["auras"].casting + 15
 				end

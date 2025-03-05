@@ -82,40 +82,8 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("CHAT_MSG_ADDON") --needed to recieve aura bonuses from other people
 end
 
-local function PostHookFunction(original,hook)
-    return function(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-      original(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-      hook(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-    end
-end
-
 -- there is less space for player character model with this addon, zoom out and move it up slightly
-local z, x, y = -0.2, 0, 0.1
-function BCS_PaperDollFrame_OnEvent(event, unit)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		CharacterModelFrame:SetPosition(0, 0, 0)
-		CharacterModelFrame:SetUnit("player")
-		CharacterModelFrame:SetPosition(z, x, y)
-		return
-	end
-	if ( unit and unit == "player" ) then
-		if ( event == "UNIT_MODEL_CHANGED" ) then
-			CharacterModelFrame:SetPosition(0, 0, 0)
-			CharacterModelFrame:SetUnit("player")
-			CharacterModelFrame:SetPosition(z, x, y)
-			return
-		end
-	end
-end
-
-function BCS_PaperDollFrame_OnShow()
-	CharacterModelFrame:SetPosition(0, 0, 0)
-	CharacterModelFrame:SetUnit("player")
-	CharacterModelFrame:SetPosition(z, x, y)
-end
-
-PaperDollFrame_OnShow = PostHookFunction(PaperDollFrame_OnShow, BCS_PaperDollFrame_OnShow)
-PaperDollFrame_OnEvent = PostHookFunction(PaperDollFrame_OnEvent, BCS_PaperDollFrame_OnEvent)
+CharacterModelFrame:SetHeight(CharacterModelFrame:GetHeight() - 19)
 
 local function strsplit(delimiter, subject)
 	if not subject then
@@ -680,7 +648,7 @@ function BCS:SetWeaponSkill(statFrame)
 	label:SetText(L.WEAPON_SKILL_COLON)
 
 	if OffhandHasWeapon() == 1 then
-		text:SetText(format("%d |%d", BCS:GetMHWeaponSkill(), BCS:GetOHWeaponSkill()))
+		text:SetText(format("%d | %d", BCS:GetMHWeaponSkill(), BCS:GetOHWeaponSkill()))
 	else
 		text:SetText(format("%d", BCS:GetMHWeaponSkill()))
 	end

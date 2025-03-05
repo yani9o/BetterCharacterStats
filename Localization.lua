@@ -88,6 +88,7 @@ BCS["L"] = {
 	["Equip: Increases healing done by spells and effects by up to (%d+)."] = "Equip: Increases healing done by spells and effects by up to (%d+).",
 
 	-- auras
+    ["Critical strike chance increased by (%d+)%%."] = "Critical strike chance increased by (%d+)%%.",
 	["Chance to hit increased by (%d)%%."] = "Chance to hit increased by (%d)%%.",
 	["Magical damage dealt is increased by up to (%d+)."] = "Magical damage dealt is increased by up to (%d+).",
 	["Healing done by magical spells is increased by up to (%d+)."] = "Healing done by magical spells is increased by up to (%d+).",
