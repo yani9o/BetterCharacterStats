@@ -164,15 +164,6 @@ function BCS:OnEvent()
 	elseif event == "ADDON_LOADED" and arg1 == "BetterCharacterStats" then
 		BCSFrame:UnregisterEvent("ADDON_LOADED")
 
-		local _, race = UnitRace("player")
-		if race == "Gnome" then
-			y = 0
-		elseif race == "Dwarf" then
-			y = 0.05
-		elseif race == "Troll" then
-			y = 0.15
-		end
-
 		BCS.needScanGear = true
 		BCS.needScanTalents = true
 		BCS.needScanAuras = true
