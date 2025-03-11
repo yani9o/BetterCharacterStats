@@ -80,6 +80,7 @@ BCScache = BCScache or {
 		ranged = 0
 	}
 }
+
 function BCS:GetPlayerAura(searchText, auraType)
 	if not auraType then
 		-- buffs
@@ -753,7 +754,7 @@ function BCS:GetSpellCritChance()
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + tonumber(critFromAura)
 		end
 		-- debuffs
-		_, _, _, critFromAura = BCS:GetPlayerAura(L["Melee critical-hit chance reduced by (%d+)%%.\r\nSpell critical-hit chance reduced by (%d+)%%."], 'HARMFUL')
+		_, _, _, critFromAura = BCS:GetPlayerAura(L["Spell critical-hit chance reduced by (%d+)%%."], 'HARMFUL')
 		if critFromAura then
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit - tonumber(critFromAura)
 		end
@@ -1111,15 +1112,10 @@ local spiritualGuidance = nil
 function BCS:GetSpellPower(school)
 	if school then
 		local spellPower = 0;
+        local key = strlower(school)
 		--scan gear
 		if BCS.needScanGear then
-			if school == "Arcane" then BCScache["gear"].arcane = 0
-			elseif school == "Fire" then BCScache["gear"].fire = 0
-			elseif school == "Frost" then BCScache["gear"].frost = 0
-			elseif school == "Holy" then BCScache["gear"].holy = 0
-			elseif school == "Nature" then BCScache["gear"].nature = 0
-			elseif school == "Shadow" then BCScache["gear"].shadow = 0
-			end
+            BCScache["gear"][key] = 0
 			for slot=1, 19 do
 				if BCS_Tooltip:SetInventoryItem("player", slot) then
 					for line=1, BCS_Tooltip:NumLines() do
@@ -1141,21 +1137,9 @@ function BCS:GetSpellPower(school)
 					end
 				end
 			end
-			if school == "Arcane" then BCScache["gear"].arcane = spellPower
-			elseif school == "Fire" then BCScache["gear"].fire = spellPower
-			elseif school == "Frost" then BCScache["gear"].frost = spellPower
-			elseif school == "Holy" then BCScache["gear"].holy = spellPower
-			elseif school == "Nature" then BCScache["gear"].nature = spellPower
-			elseif school == "Shadow" then BCScache["gear"].shadow = spellPower
-			end
+            BCScache["gear"][key] = spellPower
 		else
-			if school == "Arcane" then spellPower = BCScache["gear"].arcane
-			elseif school == "Fire" then spellPower = BCScache["gear"].fire
-			elseif school == "Frost" then spellPower = BCScache["gear"].frost
-			elseif school == "Holy" then spellPower = BCScache["gear"].holy
-			elseif school == "Nature" then spellPower = BCScache["gear"].nature
-			elseif school == "Shadow" then spellPower = BCScache["gear"].shadow
-			end
+            spellPower = BCScache["gear"][key]
 		end
 
 		return spellPower
@@ -1196,11 +1180,6 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							-- Atiesh (druid/priest)
-							_,_, value = strfind(text, L["Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+."])
-							if value then
-								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
-							end
 							-- Zandalar Signet of Mojo (Shoulder enchant)
 							_,_, value = strfind(text, L["^%+(%d+) Spell Damage and Healing"])
 							if value then
@@ -1210,7 +1189,13 @@ function BCS:GetSpellPower(school)
 							_,_, value = strfind(text, L["^%+(%d+) Damage and Healing Spells"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-							end	
+							end
+                            -- Atiesh (druid/priest)
+                            _,_, value = strfind(text, L["Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+."])
+                            if value then
+                                BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+                            end
+                            -- Arcane
 							_,_, value = strfind(text, L["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
@@ -1219,7 +1204,11 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
-							
+                            _,_, value = strfind(text, L["Arcane Damage %+(%d+)"])
+							if value then
+								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
+							end
+							-- Fire
 							_,_, value = strfind(text, L["Equip: Increases damage done by Fire spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].fire = BCScache["gear"].fire + tonumber(value)
@@ -1232,7 +1221,7 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].fire = BCScache["gear"].fire + tonumber(value)
 							end
-							
+							-- Frost
 							_,_, value = strfind(text, L["Equip: Increases damage done by Frost spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].frost = BCScache["gear"].frost + tonumber(value)
@@ -1245,7 +1234,7 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].frost = BCScache["gear"].frost + tonumber(value)
 							end
-							
+							-- Holy
 							_,_, value = strfind(text, L["Equip: Increases damage done by Holy spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].holy = BCScache["gear"].holy + tonumber(value)
@@ -1254,7 +1243,11 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].holy = BCScache["gear"].holy + tonumber(value)
 							end
-							
+                            _,_, value = strfind(text, L["Holy Damage %+(%d+)"])
+							if value then
+								BCScache["gear"].holy = BCScache["gear"].holy + tonumber(value)
+							end
+							-- Nature
 							_,_, value = strfind(text, L["Equip: Increases damage done by Nature spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
@@ -1267,7 +1260,7 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
 							end
-
+                            -- Shadow
 							_,_, value = strfind(text, L["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
@@ -1280,12 +1273,11 @@ function BCS:GetSpellPower(school)
 							if value then
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
 							end
-							
+							-- Set Bonuses
 							_,_, value = strfind(text, setPattern)
 							if value then
 								SET_NAME = value
 							end
-
 							_, _, value = strfind(text, L["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."])
 							if value and SET_NAME and not tContains(SpellPower_Set_Bonus, SET_NAME) then
 								tinsert(SpellPower_Set_Bonus, SET_NAME)

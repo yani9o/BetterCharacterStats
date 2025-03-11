@@ -53,7 +53,6 @@ function BCS:DebugTrace(start, limit)
 			i = length
 		end
 	end
-
 end
 
 function BCS:Print(message)
@@ -99,7 +98,7 @@ end
 
 -- Scan stuff depending on event, but make sure to scan everything when addon is loaded
 function BCS:OnEvent()
-	--[[if BCS.Debug then
+	if BCS.Debug then
 		local t = {
 			E = event,
 			arg1 = arg1 or "nil",
@@ -109,7 +108,7 @@ function BCS:OnEvent()
 			arg5 = arg5 or "nil",
 		}
 		tinsert(BCS.DebugStack, t)
-	end]]
+	end
 	if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
 		BCS.needScanAuras = true
 		local type, player, amount = strsplit(",", arg2)
@@ -214,31 +213,33 @@ function BCS:OnShow()
 end
 
 -- debugging / profiling
---local avgV = {}
---local avg = 0
+local avgV = {}
+local avg = 0
 function BCS:UpdateStats()
-	--[[if BCS.Debug then
-		local e = event or "nil"
-		BCS:Print("Update due to " .. e)
-	end
-	local beginTime = debugprofilestop()]]
+    local beginTime
+    if BCS.Debug then
+        local e = event or "nil"
+        BCS:Print("Update due to " .. e)
+        beginTime = debugprofilestop()
+    end
 
-	BCS:UpdatePaperdollStats("PlayerStatFrameLeft", IndexLeft)
-	BCS:UpdatePaperdollStats("PlayerStatFrameRight", IndexRight)
-	BCS.needScanGear = false
-	BCS.needScanTalents = false
-	BCS.needScanAuras = false
-	BCS.needScanSkills = false
-	--[[local timeUsed = debugprofilestop()-beginTime
-	table.insert(avgV, timeUsed)
-	avg = 0
+    BCS:UpdatePaperdollStats("PlayerStatFrameLeft", IndexLeft)
+    BCS:UpdatePaperdollStats("PlayerStatFrameRight", IndexRight)
+    BCS.needScanGear = false
+    BCS.needScanTalents = false
+    BCS.needScanAuras = false
+    BCS.needScanSkills = false
 
-	for i,v in ipairs(avgV) do
-		avg = avg + v
-	end
-	avg = avg / getn(avgV)
-
-	BCS:Print(format("Average: %d (%d results), Exact: %d", avg, getn(avgV), timeUsed))]]
+    if BCS.Debug then
+        local timeUsed = debugprofilestop() - beginTime
+        table.insert(avgV, timeUsed)
+        avg = 0
+        for i, v in ipairs(avgV) do
+            avg = avg + v
+        end
+        avg = avg / getn(avgV)
+        BCS:Print(format("Average: %d (%d results), Exact: %d", avg, getn(avgV), timeUsed))
+    end
 end
 
 local function BCS_AddTooltip(statFrame, tooltipExtra)
