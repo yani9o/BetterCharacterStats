@@ -57,7 +57,6 @@ function BCS:DebugTrace(start, limit)
 			i = length
 		end
 	end
-
 end
 
 function BCS:Print(message)
@@ -96,40 +95,8 @@ function BCS:OnLoad()
 	end)
 end
 
-local function PostHookFunction(original, hook)
-	return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-		original(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-		hook(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-	end
-end
-
 -- there is less space for player character model with this addon, zoom out and move it up slightly
-local z, x, y = -0.2, 0, 0.1
-function BCS_PaperDollFrame_OnEvent(event, unit)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		CharacterModelFrame:SetPosition(0, 0, 0)
-		CharacterModelFrame:SetUnit("player")
-		CharacterModelFrame:SetPosition(z, x, y)
-		return
-	end
-	if (unit and unit == "player") then
-		if (event == "UNIT_MODEL_CHANGED") then
-			CharacterModelFrame:SetPosition(0, 0, 0)
-			CharacterModelFrame:SetUnit("player")
-			CharacterModelFrame:SetPosition(z, x, y)
-			return
-		end
-	end
-end
-
-function BCS_PaperDollFrame_OnShow()
-	CharacterModelFrame:SetPosition(0, 0, 0)
-	CharacterModelFrame:SetUnit("player")
-	CharacterModelFrame:SetPosition(z, x, y)
-end
-
-PaperDollFrame_OnShow = PostHookFunction(PaperDollFrame_OnShow, BCS_PaperDollFrame_OnShow)
-PaperDollFrame_OnEvent = PostHookFunction(PaperDollFrame_OnEvent, BCS_PaperDollFrame_OnEvent)
+CharacterModelFrame:SetHeight(CharacterModelFrame:GetHeight() - 19)
 
 local function strsplit(delimiter, subject)
 	if not subject then
@@ -145,7 +112,7 @@ end
 
 -- Scan stuff depending on event, but make sure to scan everything when addon is loaded
 function BCS:OnEvent()
-	--[[if BCS.Debug then
+	if BCS.Debug then
 		local t = {
 			E = event,
 			arg1 = arg1 or "nil",
@@ -155,7 +122,7 @@ function BCS:OnEvent()
 			arg5 = arg5 or "nil",
 		}
 		tinsert(BCS.DebugStack, t)
-	end]]
+	end
 	if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
 		BCS.needScanAuras = true
 		local type, player, amount = strsplit(",", arg2)
@@ -201,15 +168,6 @@ function BCS:OnEvent()
 		end
 	elseif event == "ADDON_LOADED" and arg1 == "BetterCharacterStats" then
 		BCSFrame:UnregisterEvent("ADDON_LOADED")
-
-		local _, race = UnitRace("player")
-		if race == "Gnome" then
-			y = 0
-		elseif race == "Dwarf" then
-			y = 0.05
-		elseif race == "Troll" then
-			y = 0.15
-		end
 
 		BCS.needScanGear = true
 		BCS.needScanTalents = true
@@ -261,31 +219,33 @@ function BCS:OnShow()
 end
 
 -- debugging / profiling
---local avgV = {}
---local avg = 0
+local avgV = {}
+local avg = 0
 function BCS:UpdateStats()
-	--[[if BCS.Debug then
-		local e = event or "nil"
-		BCS:Print("Update due to " .. e)
-	end
-	local beginTime = debugprofilestop()]]
+    local beginTime
+    if BCS.Debug then
+        local e = event or "nil"
+        BCS:Print("Update due to " .. e)
+        beginTime = debugprofilestop()
+    end
 
-	BCS:UpdatePaperdollStats("PlayerStatFrameLeft", IndexLeft)
-	BCS:UpdatePaperdollStats("PlayerStatFrameRight", IndexRight)
-	BCS.needScanGear = false
-	BCS.needScanTalents = false
-	BCS.needScanAuras = false
-	BCS.needScanSkills = false
-	--[[local timeUsed = debugprofilestop()-beginTime
-	table.insert(avgV, timeUsed)
-	avg = 0
+    BCS:UpdatePaperdollStats("PlayerStatFrameLeft", IndexLeft)
+    BCS:UpdatePaperdollStats("PlayerStatFrameRight", IndexRight)
+    BCS.needScanGear = false
+    BCS.needScanTalents = false
+    BCS.needScanAuras = false
+    BCS.needScanSkills = false
 
-	for i,v in ipairs(avgV) do
-		avg = avg + v
-	end
-	avg = avg / getn(avgV)
-
-	BCS:Print(format("Average: %d (%d results), Exact: %d", avg, getn(avgV), timeUsed))]]
+    if BCS.Debug then
+        local timeUsed = debugprofilestop() - beginTime
+        table.insert(avgV, timeUsed)
+        avg = 0
+        for i, v in ipairs(avgV) do
+            avg = avg + v
+        end
+        avg = avg / getn(avgV)
+        BCS:Print(format("Average: %d (%d results), Exact: %d", avg, getn(avgV), timeUsed))
+    end
 end
 
 local function BCS_AddTooltip(statFrame, tooltipExtra)

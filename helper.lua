@@ -13,7 +13,7 @@ local tinsert = tinsert
 local function tContains(table, item)
 	local index = 1
 	while table[index] do
-		if ( item == table[index] ) then
+		if (item == table[index]) then
 			return 1
 		end
 		index = index + 1
@@ -80,16 +80,17 @@ BCScache = BCScache or {
 		ranged = 0
 	}
 }
+
 function BCS:GetPlayerAura(searchText, auraType)
 	if not auraType then
 		-- buffs
 		-- http://blue.cardplace.com/cache/wow-dungeons/624230.htm
 		-- 32 buffs max
-		for i=0, 31 do
+		for i = 0, 31 do
 			local index = GetPlayerBuff(i, 'HELPFUL')
 			if index > -1 then
 				BCS_Tooltip:SetPlayerBuff(index)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						if strfind(text, searchText) then
@@ -100,11 +101,11 @@ function BCS:GetPlayerAura(searchText, auraType)
 			end
 		end
 	elseif auraType == 'HARMFUL' then
-		for i=0, 6 do
+		for i = 0, 6 do
 			local index = GetPlayerBuff(i, auraType)
 			if index > -1 then
 				BCS_Tooltip:SetPlayerBuff(index)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						if strfind(text, searchText) then
@@ -124,7 +125,7 @@ function BCS:GetHitRating(hitOnly)
 	if BCS.needScanGear then
 		BCScache["gear"].hit = 0
 		--scan gear
-		for slot=1, 19 do
+		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem('player', slot) then
 				local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 				if eqItemLink then
@@ -132,23 +133,23 @@ function BCS:GetHitRating(hitOnly)
 					BCS_Tooltip:SetHyperlink(eqItemLink)
 				end
 				local SET_NAME = nil
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local _,_, value = strfind(text, L["Equip: Improves your chance to hit by (%d)%%."])
+						local _, _, value = strfind(text, L["Equip: Improves your chance to hit by (%d)%%."])
 						if value then
 							BCScache["gear"].hit = BCScache["gear"].hit + tonumber(value)
 						end
-						_,_, value = strfind(text, L["/Hit %+(%d+)"])
+						_, _, value = strfind(text, L["/Hit %+(%d+)"])
 						if value then
 							BCScache["gear"].hit = BCScache["gear"].hit + tonumber(value)
 						end
 
-						_,_, value = strfind(text, setPattern)
+						_, _, value = strfind(text, setPattern)
 						if value then
 							SET_NAME = value
 						end
-						_,_, value = strfind(text, L["^Set: Improves your chance to hit by (%d)%%."])
+						_, _, value = strfind(text, L["^Set: Improves your chance to hit by (%d)%%."])
 						if value and SET_NAME and not tContains(Hit_Set_Bonus, SET_NAME) then
 							tinsert(Hit_Set_Bonus, SET_NAME)
 							BCScache["gear"].hit = BCScache["gear"].hit + tonumber(value)
@@ -194,42 +195,42 @@ function BCS:GetHitRating(hitOnly)
 	if BCS.needScanTalents then
 		BCScache["talents"].hit = 0
 		--scan talents
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
+		for tab = 1, GetNumTalentTabs() do
+			for talent = 1, GetNumTalents(tab) do
 				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Rogue
-						local _,_, value = strfind(text, L["Increases your chance to hit with melee weapons by (%d)%%."])
+						local _, _, value = strfind(text, L["Increases your chance to hit with melee weapons by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Hunter
-						_,_, value = strfind(text, L["Increases hit chance by (%d)%% and increases the chance movement impairing effects will be resisted by an additional %d+%%."])
+						_, _, value = strfind(text, L["Increases hit chance by (%d)%% and increases the chance movement impairing effects will be resisted by an additional %d+%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Druid
 						-- Natural Weapons
-						_,_, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Precision
-						_,_, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
 						end
 						-- Shaman
 						-- Elemental Devastation
-						_,_, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
+						_, _, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
 						if value and rank > 0 then
 							BCScache["talents"].hit = BCScache["talents"].hit + tonumber(value)
 							break
@@ -242,7 +243,9 @@ function BCS:GetHitRating(hitOnly)
 	hit = BCScache["talents"].hit + BCScache["gear"].hit + BCScache["auras"].hit
 	if not hitOnly then
 		hit = hit - BCScache["auras"].hit_debuff
-		if hit < 0 then hit = 0 end -- Dust Cloud OP
+		if hit < 0 then
+			hit = 0
+		end -- Dust Cloud OP
 		return hit
 	else
 		return hit
@@ -253,11 +256,11 @@ function BCS:GetRangedHitRating()
 	if BCS.needScanGear then
 		BCScache["gear"].ranged_hit = 0
 		if BCS_Tooltip:SetInventoryItem("player", 18) then
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local _,_, value = strfind(text, L["+(%d)%% Ranged Hit"])
+					local _, _, value = strfind(text, L["+(%d)%% Ranged Hit"])
 					if value then
 						BCScache["gear"].ranged_hit = BCScache["gear"].ranged_hit + tonumber(value)
 						break
@@ -267,7 +270,9 @@ function BCS:GetRangedHitRating()
 		end
 	end
 	local ranged_hit = BCS:GetHitRating(true) + BCScache["gear"].ranged_hit - BCScache["auras"].hit_debuff
-	if ranged_hit < 0 then ranged_hit = 0 end
+	if ranged_hit < 0 then
+		ranged_hit = 0
+	end
 	return ranged_hit
 end
 
@@ -282,7 +287,7 @@ function BCS:GetSpellHitRating()
 	if BCS.needScanGear then
 		BCScache["gear"].spell_hit = 0
 		-- scan gear
-		for slot=1, 19 do
+		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem('player', slot) then
 				local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 				if eqItemLink then
@@ -290,19 +295,19 @@ function BCS:GetSpellHitRating()
 					BCS_Tooltip:SetHyperlink(eqItemLink)
 				end
 				local SET_NAME
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local _,_, value = strfind(text, L["Equip: Improves your chance to hit with spells by (%d)%%."])
+						local _, _, value = strfind(text, L["Equip: Improves your chance to hit with spells by (%d)%%."])
 						if value then
 							BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
 						end
-						_,_, value = strfind(text, L["/Spell Hit %+(%d+)"])
+						_, _, value = strfind(text, L["/Spell Hit %+(%d+)"])
 						if value then
 							BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
 						end
-						
-						_,_, value = strfind(text, setPattern)
+
+						_, _, value = strfind(text, setPattern)
 						if value then
 							SET_NAME = value
 						end
@@ -324,64 +329,64 @@ function BCS:GetSpellHitRating()
 		BCScache["talents"].spell_hit_shadow = 0
 		BCScache["talents"].spell_hit_holy = 0
 		-- scan talents
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
+		for tab = 1, GetNumTalentTabs() do
+			for talent = 1, GetNumTalents(tab) do
 				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Mage
 						-- Elemental Precision
-						local _,_, value = strfind(text, L["Reduces the chance that the opponent can resist your Frost and Fire spells by (%d)%%."])
+						local _, _, value = strfind(text, L["Reduces the chance that the opponent can resist your Frost and Fire spells by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit_fire = BCScache["talents"].spell_hit_fire + tonumber(value)
 							BCScache["talents"].spell_hit_frost = BCScache["talents"].spell_hit_frost + tonumber(value)
 							break
 						end
 						-- Arcane Focus
-						_,_, value = strfind(text, L["Reduces the chance that the opponent can resist your Arcane spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Reduces the chance that the opponent can resist your Arcane spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit_arcane = BCScache["talents"].spell_hit_arcane + tonumber(value)
 							break
 						end
 						-- Priest
 						-- Piercing Light
-						_,_, value = strfind(text, L["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit_holy = BCScache["talents"].spell_hit_holy + tonumber(value)
 							break
 						end
 						-- Shadow Focus
-						_,_, value = strfind(text, L["Reduces your target's chance to resist your Shadow spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Reduces your target's chance to resist your Shadow spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit_shadow = BCScache["talents"].spell_hit_shadow + tonumber(value)
 							break
 						end
 						-- Druid
 						-- Natural Weapons
-						_,_, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Also increases chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Precision
-						_,_, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Increases your chance to hit with melee attacks and spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Shaman
 						-- Elemental Devastation
-						_,_, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
+						_, _, value = strfind(text, L["Increases your chance to hit with spells and melee attacks by (%d+)%%"])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit = BCScache["talents"].spell_hit + tonumber(value)
 							break
 						end
 						-- Warlock
 						-- Suppression
-						_,_, value = strfind(text, L["Reduces the chance for enemies to resist your Affliction spells by (%d+)%%."])
+						_, _, value = strfind(text, L["Reduces the chance for enemies to resist your Affliction spells by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_hit_shadow = BCScache["talents"].spell_hit_shadow + tonumber(value)
 							break
@@ -416,17 +421,17 @@ end
 function BCS:GetCritChance()
 	local crit = 0
 	--scan spellbook
-	for tab=1, GetNumSpellTabs() do
+	for tab = 1, GetNumSpellTabs() do
 		local _, _, offset, numSpells = GetSpellTabInfo(tab)
-		for spell=1, numSpells do
-			local currentPage = ceil(spell/SPELLS_PER_PAGE)
-			local SpellID = spell + offset + ( SPELLS_PER_PAGE * (currentPage - 1))
+		for spell = 1, numSpells do
+			local currentPage = ceil(spell / SPELLS_PER_PAGE)
+			local SpellID = spell + offset + (SPELLS_PER_PAGE * (currentPage - 1))
 			BCS_Tooltip:SetSpell(SpellID, BOOKTYPE_SPELL)
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local _,_, value = strfind(text, L["([%d.]+)%% chance to crit"])
+					local _, _, value = strfind(text, L["([%d.]+)%% chance to crit"])
 					if value then
 						crit = crit + tonumber(value)
 						break
@@ -476,19 +481,21 @@ function BCS:GetRangedCritChance()
 	if BCS.needScanTalents then
 		BCScache["talents"].ranged_crit = 0
 		--scan talents
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
+		for tab = 1, GetNumTalentTabs() do
+			for talent = 1, GetNumTalents(tab) do
 				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
-						local _,_, value = strfind(text, L["Increases your critical strike chance with ranged weapons by (%d)%%."])
+						-- Lethal Shots
+						local _, _, value = strfind(text, L["Increases your critical strike chance with ranged weapons by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].ranged_crit = BCScache["talents"].ranged_crit + tonumber(value)
 							break
 						end
-						_,_, value = strfind(text, L["Increases your critical strike chance with all attacks by (%d)%%."])
+						-- Killer Instinct
+						_, _, value = strfind(text, L["Increases your critical strike chance with all attacks by (%d)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].ranged_crit = BCScache["talents"].ranged_crit + tonumber(value)
 							break
@@ -503,7 +510,7 @@ function BCS:GetRangedCritChance()
 		BCScache["gear"].ranged_crit = 0
 		--scan gear
 		local Crit_Set_Bonus = {}
-		for slot=1, 19 do
+		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem('player', slot) then
 				local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 				if eqItemLink then
@@ -511,24 +518,24 @@ function BCS:GetRangedCritChance()
 					BCS_Tooltip:SetHyperlink(eqItemLink)
 				end
 				local SET_NAME
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local _,_, value = strfind(text, L["Equip: Improves your chance to get a critical strike by (%d)%%."])
+						local _, _, value = strfind(text, L["Equip: Improves your chance to get a critical strike by (%d)%%."])
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
-						_,_, value = strfind(text, L["Equip: Improves your chance to get a critical strike with missile weapons by (%d)%%."])
+						_, _, value = strfind(text, L["Equip: Improves your chance to get a critical strike with missile weapons by (%d)%%."])
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
 						-- Might of the Scourge (shoulder enchant)
-						_,_, value = strfind(text, L["%+(%d+)%% Critical Strike"])
+						_, _, value = strfind(text, L["%+(%d+)%% Critical Strike"])
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
 
-						_,_, value = strfind(text, setPattern)
+						_, _, value = strfind(text, setPattern)
 						if value then
 							SET_NAME = value
 						end
@@ -560,21 +567,26 @@ function BCS:GetRangedCritChance()
 		if critFromAura then
 			BCScache["auras"].ranged_crit = BCScache["auras"].ranged_crit + tonumber(critFromAura)
 		end
+		-- Tricks of the Trade
+		_, _, critFromAura = BCS:GetPlayerAura(L["Critical strike chance increased by (%d+)%%."])
+		if critFromAura then
+			BCScache["auras"].ranged_crit = BCScache["auras"].ranged_crit + tonumber(critFromAura)
+		end
 		--leader of the pack
 		_, _, critFromAura = BCS:GetPlayerAura(L["Increases ranged and melee critical chance by (%d+)%%."])
 		if critFromAura then
 			BCScache["auras"].ranged_crit = BCScache["auras"].ranged_crit + tonumber(critFromAura)
 			--check if druid is shapeshifted and have Idol of the Moonfang equipped
-			for i=1, GetNumPartyMembers() do
-				local _, partyClass = UnitClass("party"..i)
+			for i = 1, GetNumPartyMembers() do
+				local _, partyClass = UnitClass("party" .. i)
 				if partyClass == "DRUID" then
-					if BCS_Tooltip:SetInventoryItem("party"..i, 18) and UnitCreatureType("party"..i) == "Beast" then
-						for line=1, BCS_Tooltip:NumLines() do
+					if BCS_Tooltip:SetInventoryItem("party" .. i, 18) and UnitCreatureType("party" .. i) == "Beast" then
+						for line = 1, BCS_Tooltip:NumLines() do
 							local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 							local text = left:GetText()
 							if text then
 								_, _, critFromAura = strfind(text, L["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."])
-								if critFromAura  then
+								if critFromAura then
 									BCScache["auras"].ranged_crit = BCScache["auras"].ranged_crit + tonumber(critFromAura)
 									break
 								end
@@ -604,7 +616,7 @@ function BCS:GetSpellCritChance()
 	local spellCrit = 0;
 	local _, intellect = UnitStat("player", 4)
 	local _, class = UnitClass("player")
-	
+
 	-- values from vmangos core 
 	local playerLevel = UnitLevel("player")
 	if class == "MAGE" then
@@ -623,7 +635,7 @@ function BCS:GetSpellCritChance()
 	if BCS.needScanGear then
 		BCScache["gear"].spell_crit = 0
 		--scan gear
-		for slot=1, 19 do
+		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem('player', slot) then
 				local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 				if eqItemLink then
@@ -631,15 +643,15 @@ function BCS:GetSpellCritChance()
 					BCS_Tooltip:SetHyperlink(eqItemLink)
 				end
 				local SET_NAME = nil
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local _,_, value = strfind(text, L["Equip: Improves your chance to get a critical strike with spells by (%d)%%."])
+						local _, _, value = strfind(text, L["Equip: Improves your chance to get a critical strike with spells by (%d)%%."])
 						if value then
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
 
-						_,_, value = strfind(text, setPattern)
+						_, _, value = strfind(text, setPattern)
 						if value then
 							SET_NAME = value
 						end
@@ -648,7 +660,7 @@ function BCS:GetSpellCritChance()
 							tinsert(Crit_Set_Bonus, SET_NAME)
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
-						_,_, value = strfind(text, L["(%d)%% Spell Critical Strike"])
+						_, _, value = strfind(text, L["(%d)%% Spell Critical Strike"])
 						if value then
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
@@ -657,7 +669,7 @@ function BCS:GetSpellCritChance()
 			end
 		end
 		if BCS_Tooltip:SetInventoryItem("player", 16) then
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
@@ -681,29 +693,29 @@ function BCS:GetSpellCritChance()
 		if critFromAura then
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + 3
 			if BCS:GetPlayerAura(L["Moonkin Form"]) and BCS_Tooltip:SetInventoryItem("player", 18) then
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						_, _, critFromAura = strfind(text, L["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."])
-						if critFromAura  then
+						if critFromAura then
 							BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + tonumber(critFromAura)
 						end
 					end
 				end
 			else
 				--check if druid is shapeshifted and have Idol of the Moonfang equipped
-				for i=1, GetNumPartyMembers() do
-					local _, partyClass = UnitClass("party"..i)
+				for i = 1, GetNumPartyMembers() do
+					local _, partyClass = UnitClass("party" .. i)
 					if partyClass == "DRUID" then
-						if BCS_Tooltip:SetInventoryItem("party"..i, 18) then
-							for line=1, BCS_Tooltip:NumLines() do
+						if BCS_Tooltip:SetInventoryItem("party" .. i, 18) then
+							for line = 1, BCS_Tooltip:NumLines() do
 								local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 								local text = left:GetText()
 								if text then
 									_, _, critFromAura = strfind(text, L["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."])
-									if critFromAura  then
+									if critFromAura then
 										for buff = 1, 32 do
-											if UnitBuff("party"..i, buff) and UnitBuff("party"..i, buff) == "Interface\\Icons\\Spell_Nature_ForceOfNature" then
+											if UnitBuff("party" .. i, buff) and UnitBuff("party" .. i, buff) == "Interface\\Icons\\Spell_Nature_ForceOfNature" then
 												BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + tonumber(critFromAura)
 												break
 											end
@@ -746,7 +758,7 @@ function BCS:GetSpellCritChance()
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit + tonumber(critFromAura)
 		end
 		-- debuffs
-		_, _, _, critFromAura = BCS:GetPlayerAura(L["Melee critical-hit chance reduced by (%d+)%%.\r\nSpell critical-hit chance reduced by (%d+)%%."], 'HARMFUL')
+		_, _, _, critFromAura = BCS:GetPlayerAura(L["Spell critical-hit chance reduced by (%d+)%%."], 'HARMFUL')
 		if critFromAura then
 			BCScache["auras"].spell_crit = BCScache["auras"].spell_crit - tonumber(critFromAura)
 		end
@@ -755,15 +767,15 @@ function BCS:GetSpellCritChance()
 	-- scan talents
 	if BCS.needScanTalents then
 		BCScache["talents"].spell_crit = 0
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
+		for tab = 1, GetNumTalentTabs() do
+			for talent = 1, GetNumTalents(tab) do
 				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Arcane Instability
-						local _,_, value = strfind(text, L["Increases your spell damage and critical srike chance by (%d+)%%."])
+						local _, _, value = strfind(text, L["Increases your spell damage and critical srike chance by (%d+)%%."])
 						if value and rank > 0 then
 							BCScache["talents"].spell_crit = BCScache["talents"].spell_crit + tonumber(value)
 							break
@@ -790,22 +802,22 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].paladin_holy_light = 0
 			BCScache["talents"].paladin_flash = 0
 			BCScache["talents"].paladin_shock = 0
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Holy Power
-							local _,_, value = strfind(text, L["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."])
+							local _, _, value = strfind(text, L["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].paladin_holy_light = BCScache["talents"].paladin_holy_light + tonumber(value)
 								BCScache["talents"].paladin_flash = BCScache["talents"].paladin_flash + tonumber(value)
 								break
 							end
 							-- Divine Favor
-							_,_, value = strfind(text, L["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."])
+							_, _, value = strfind(text, L["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].paladin_shock = BCScache["talents"].paladin_shock + tonumber(value)
 								break
@@ -817,8 +829,8 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].paladin_holy_light,
-				BCScache["talents"].paladin_flash,
-				BCScache["talents"].paladin_shock, 0, 0, 0
+		BCScache["talents"].paladin_flash,
+		BCScache["talents"].paladin_shock, 0, 0, 0
 
 	elseif class == "DRUID" then
 		--scan talents
@@ -826,21 +838,21 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].druid_moonfire = 0
 			BCScache["talents"].druid_regrowth = 0
 			-- scan talents
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Improved Moonfire
-							local _,_, value = strfind(text, L["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."])
+							local _, _, value = strfind(text, L["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].druid_moonfire = BCScache["talents"].druid_moonfire + tonumber(value)
 								break
 							end
 							-- Improved Regrowth
-							_,_, value = strfind(text, L["Increases the critical effect chance of your Regrowth spell by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical effect chance of your Regrowth spell by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].druid_regrowth = BCScache["talents"].druid_regrowth + tonumber(value)
 								break
@@ -852,7 +864,7 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].druid_moonfire,
-				BCScache["talents"].druid_regrowth, 0, 0, 0, 0
+		BCScache["talents"].druid_regrowth, 0, 0, 0, 0
 
 	elseif class == "WARLOCK" then
 		--scan talents
@@ -860,22 +872,22 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].warlock_destruction_spells = 0
 			BCScache["talents"].warlock_searing_pain = 0
 			-- scan talents
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Devastation
-							local _,_, value = strfind(text, L["Increases the critical strike chance of your Destruction spells by (%d+)%%."])
+							local _, _, value = strfind(text, L["Increases the critical strike chance of your Destruction spells by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].warlock_destruction_spells = BCScache["talents"].warlock_destruction_spells + tonumber(value)
 								BCScache["talents"].warlock_searing_pain = BCScache["talents"].warlock_searing_pain + tonumber(value)
 								break
 							end
 							-- Improved Searing Pain
-							_,_, value = strfind(text, L["Increases the critical strike chance of your Searing Pain spell by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical strike chance of your Searing Pain spell by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].warlock_searing_pain = BCScache["talents"].warlock_searing_pain + tonumber(value)
 								break
@@ -887,7 +899,7 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].warlock_destruction_spells,
-				BCScache["talents"].warlock_searing_pain, 0, 0, 0, 0
+		BCScache["talents"].warlock_searing_pain, 0, 0, 0, 0
 
 	elseif class == "MAGE" then
 		--scan talents
@@ -899,34 +911,34 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].mage_flamestrike = 0
 			BCScache["talents"].mage_shatter = 0
 			-- scan talents
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Arcane Impact
-							local _,_, value = strfind(text, L["Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%."])
+							local _, _, value = strfind(text, L["Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].mage_arcane_spells = BCScache["talents"].mage_arcane_spells + tonumber(value)
 								break
 							end
 							-- Incinerate
-							_,_, value = strfind(text, L["Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].mage_fireblast = BCScache["talents"].mage_fireblast + tonumber(value)
 								BCScache["talents"].mage_scorch = BCScache["talents"].mage_scorch + tonumber(value)
 								break
 							end
 							-- Improved Flamestrike
-							_,_, value = strfind(text, L["Increases the critical strike chance of your Flamestrike spell by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical strike chance of your Flamestrike spell by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].mage_flamestrike = BCScache["talents"].mage_flamestrike + tonumber(value)
 								break
 							end
 							-- Critical Mass
-							_,_, value = strfind(text, L["Increases the critical strike chance of your Fire spells by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical strike chance of your Fire spells by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].mage_fire_spells = BCScache["talents"].mage_fire_spells + tonumber(value)
 								BCScache["talents"].mage_fireblast = BCScache["talents"].mage_fireblast + tonumber(value)
@@ -935,7 +947,7 @@ function BCS:GetSpellCritFromClass(class)
 								break
 							end
 							-- Shatter
-							_,_, value = strfind(text, L["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].mage_shatter = BCScache["talents"].mage_shatter + tonumber(value)
 								break
@@ -956,11 +968,11 @@ function BCS:GetSpellCritFromClass(class)
 		end
 
 		return BCScache["talents"].mage_arcane_spells,
-				BCScache["talents"].mage_fire_spells,
-				BCScache["talents"].mage_fireblast,
-				BCScache["talents"].mage_scorch,
-				BCScache["talents"].mage_flamestrike,
-				BCScache["talents"].mage_shatter
+		BCScache["talents"].mage_fire_spells,
+		BCScache["talents"].mage_fireblast,
+		BCScache["talents"].mage_scorch,
+		BCScache["talents"].mage_flamestrike,
+		BCScache["talents"].mage_shatter
 
 	elseif class == "PRIEST" then
 		if BCS.needScanTalents then
@@ -968,22 +980,22 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].priest_discipline_spells = 0
 			BCScache["talents"].priest_offensive_spells = 0
 			-- scan talents
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Divinity
-							local _,_, value = strfind(text, L["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."])
+							local _, _, value = strfind(text, L["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].priest_holy_spells = BCScache["talents"].priest_holy_spells + tonumber(value)
 								BCScache["talents"].priest_discipline_spells = BCScache["talents"].priest_discipline_spells + tonumber(value)
 								break
 							end
 							-- Force of Will
-							_,_, value = strfind(text, L["Increases your spell damage and the critical strike chance of your offensive spells by (%d+)%%"])
+							_, _, value = strfind(text, L["Increases your spell damage and the critical strike chance of your offensive spells by (%d+)%%"])
 							if value and rank > 0 then
 								BCScache["talents"].priest_offensive_spells = BCScache["talents"].priest_offensive_spells + tonumber(value)
 								break
@@ -999,7 +1011,7 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["gear"].priest_holy_spells = 0
 			BCScache["gear"].priest_prayer = 0
 			local Crit_Set_Bonus = {}
-			for slot=1, 19 do
+			for slot = 1, 19 do
 				if BCS_Tooltip:SetInventoryItem('player', slot) then
 					local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 					if eqItemLink then
@@ -1007,10 +1019,10 @@ function BCS:GetSpellCritFromClass(class)
 						BCS_Tooltip:SetHyperlink(eqItemLink)
 					end
 					local SET_NAME = nil
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
-							local _,_, value = strfind(text, setPattern)
+							local _, _, value = strfind(text, setPattern)
 							if value then
 								SET_NAME = value
 							end
@@ -1033,9 +1045,9 @@ function BCS:GetSpellCritFromClass(class)
 		local holySpells = BCScache["talents"].priest_holy_spells + BCScache["gear"].priest_holy_spells
 
 		return holySpells,
-				BCScache["talents"].priest_discipline_spells,
-				BCScache["talents"].priest_offensive_spells,
-				BCScache["gear"].priest_prayer, 0, 0
+		BCScache["talents"].priest_discipline_spells,
+		BCScache["talents"].priest_offensive_spells,
+		BCScache["gear"].priest_prayer, 0, 0
 
 	elseif class == "SHAMAN" then
 		if BCS.needScanTalents then
@@ -1045,22 +1057,22 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["talents"].shaman_firefrost_spells = 0
 			BCScache["talents"].shaman_healing_spells = 0
 			-- scan talents
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Call of Thunder
-							local _,_, value = strfind(text, L["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."])
+							local _, _, value = strfind(text, L["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].shaman_lightning_bolt = BCScache["talents"].shaman_lightning_bolt + tonumber(value)
 								BCScache["talents"].shaman_chain_lightning = BCScache["talents"].shaman_chain_lightning + tonumber(value)
 								break
 							end
 							-- Tidal Mastery
-							_,_, value = strfind(text, L["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."])
 							if value and rank > 0 then
 								BCScache["talents"].shaman_lightning_bolt = BCScache["talents"].shaman_lightning_bolt + tonumber(value)
 								BCScache["talents"].shaman_chain_lightning = BCScache["talents"].shaman_chain_lightning + tonumber(value)
@@ -1090,10 +1102,10 @@ function BCS:GetSpellCritFromClass(class)
 		local chainLightning = BCScache["auras"].shaman_chain_lightning + BCScache["talents"].shaman_chain_lightning
 
 		return lightningBolt, chainLightning,
-				BCScache["talents"].shaman_lightning_shield,
-				BCScache["auras"].shaman_firefrost_spells,
-				BCScache["talents"].shaman_healing_spells, 0
-	
+		BCScache["talents"].shaman_lightning_shield,
+		BCScache["auras"].shaman_firefrost_spells,
+		BCScache["talents"].shaman_healing_spells, 0
+
 	else
 		return 0, 0, 0, 0, 0, 0
 	end
@@ -1104,29 +1116,24 @@ local spiritualGuidance = nil
 function BCS:GetSpellPower(school)
 	if school then
 		local spellPower = 0;
+		local key = strlower(school)
 		--scan gear
 		if BCS.needScanGear then
-			if school == "Arcane" then BCScache["gear"].arcane = 0
-			elseif school == "Fire" then BCScache["gear"].fire = 0
-			elseif school == "Frost" then BCScache["gear"].frost = 0
-			elseif school == "Holy" then BCScache["gear"].holy = 0
-			elseif school == "Nature" then BCScache["gear"].nature = 0
-			elseif school == "Shadow" then BCScache["gear"].shadow = 0
-			end
-			for slot=1, 19 do
+			BCScache["gear"][key] = 0
+			for slot = 1, 19 do
 				if BCS_Tooltip:SetInventoryItem("player", slot) then
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
-							local _,_, value = strfind(text, L["Equip: Increases damage done by "..school.." spells and effects by up to (%d+)."])
+							local _, _, value = strfind(text, L["Equip: Increases damage done by " .. school .. " spells and effects by up to (%d+)."])
 							if value then
 								spellPower = spellPower + tonumber(value)
 							end
-							_,_, value = strfind(text, L[school.." Damage %+(%d+)"])
+							_, _, value = strfind(text, L[school .. " Damage %+(%d+)"])
 							if value then
 								spellPower = spellPower + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) "..school.." Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) " .. school .. " Spell Damage"])
 							if value then
 								spellPower = spellPower + tonumber(value)
 							end
@@ -1134,21 +1141,9 @@ function BCS:GetSpellPower(school)
 					end
 				end
 			end
-			if school == "Arcane" then BCScache["gear"].arcane = spellPower
-			elseif school == "Fire" then BCScache["gear"].fire = spellPower
-			elseif school == "Frost" then BCScache["gear"].frost = spellPower
-			elseif school == "Holy" then BCScache["gear"].holy = spellPower
-			elseif school == "Nature" then BCScache["gear"].nature = spellPower
-			elseif school == "Shadow" then BCScache["gear"].shadow = spellPower
-			end
+			BCScache["gear"][key] = spellPower
 		else
-			if school == "Arcane" then spellPower = BCScache["gear"].arcane
-			elseif school == "Fire" then spellPower = BCScache["gear"].fire
-			elseif school == "Frost" then spellPower = BCScache["gear"].frost
-			elseif school == "Holy" then spellPower = BCScache["gear"].holy
-			elseif school == "Nature" then spellPower = BCScache["gear"].nature
-			elseif school == "Shadow" then spellPower = BCScache["gear"].shadow
-			end
+			spellPower = BCScache["gear"][key]
 		end
 
 		return spellPower
@@ -1166,7 +1161,7 @@ function BCS:GetSpellPower(school)
 			BCScache["gear"].nature = 0
 			BCScache["gear"].shadow = 0
 			-- scan gear
-			for slot=1, 19 do
+			for slot = 1, 19 do
 				if BCS_Tooltip:SetInventoryItem('player', slot) then
 					local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 					if eqItemLink then
@@ -1174,115 +1169,120 @@ function BCS:GetSpellPower(school)
 						BCS_Tooltip:SetHyperlink(eqItemLink)
 					end
 					local SET_NAME
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							-- generic bonus on most gear
-							local _,_, value = strfind(text, L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."])
+							local _, _, value = strfind(text, L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
 							-- Spell Power (weapon/bracer enchant) apparently gives healing too
 							-- Arcanum of Focus (Head/Legs enchant)
 							-- Power of the Scourge (Shoulder enchant)
-							_,_, value = strfind(text, L["Spell Damage %+(%d+)"])
+							_, _, value = strfind(text, L["Spell Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
-							-- Atiesh (druid/priest)
-							_,_, value = strfind(text, L["Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+."])
-							if value then
-								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
-							end
 							-- Zandalar Signet of Mojo (Shoulder enchant)
-							_,_, value = strfind(text, L["^%+(%d+) Spell Damage and Healing"])
+							_, _, value = strfind(text, L["^%+(%d+) Spell Damage and Healing"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
 							-- Enchanted Armor Kit (Leatherworking)
-							_,_, value = strfind(text, L["^%+(%d+) Damage and Healing Spells"])
+							_, _, value = strfind(text, L["^%+(%d+) Damage and Healing Spells"])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
-							end	
-							_,_, value = strfind(text, L["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."])
+							end
+							-- Atiesh (druid/priest)
+							_, _, value = strfind(text, L["Equip: Increases your spell damage by up to (%d+) and your healing by up to %d+."])
+							if value then
+								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
+							end
+							-- Arcane
+							_, _, value = strfind(text, L["Equip: Increases damage done by Arcane spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) Arcane Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) Arcane Spell Damage"])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
-							_,_, value = strfind(text, L["Arcane Damage %+(%d+)"])
+							_, _, value = strfind(text, L["Arcane Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].arcane = BCScache["gear"].arcane + tonumber(value)
 							end
+							-- Fire
 
-							_,_, value = strfind(text, L["Equip: Increases damage done by Fire spells and effects by up to (%d+)."])
+							_, _, value = strfind(text, L["Equip: Increases damage done by Fire spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].fire = BCScache["gear"].fire + tonumber(value)
 							end
-							_,_, value = strfind(text, L["Fire Damage %+(%d+)"])
+							_, _, value = strfind(text, L["Fire Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].fire = BCScache["gear"].fire + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) Fire Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) Fire Spell Damage"])
 							if value then
 								BCScache["gear"].fire = BCScache["gear"].fire + tonumber(value)
 							end
-							
-							_,_, value = strfind(text, L["Equip: Increases damage done by Frost spells and effects by up to (%d+)."])
+							-- Frost
+							_, _, value = strfind(text, L["Equip: Increases damage done by Frost spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].frost = BCScache["gear"].frost + tonumber(value)
 							end
-							_,_, value = strfind(text, L["Frost Damage %+(%d+)"])
+							_, _, value = strfind(text, L["Frost Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].frost = BCScache["gear"].frost + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) Frost Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) Frost Spell Damage"])
 							if value then
 								BCScache["gear"].frost = BCScache["gear"].frost + tonumber(value)
 							end
-							
-							_,_, value = strfind(text, L["Equip: Increases damage done by Holy spells and effects by up to (%d+)."])
+							-- Holy
+							_, _, value = strfind(text, L["Equip: Increases damage done by Holy spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].holy = BCScache["gear"].holy + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) Holy Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) Holy Spell Damage"])
 							if value then
 								BCScache["gear"].holy = BCScache["gear"].holy + tonumber(value)
 							end
-							
-							_,_, value = strfind(text, L["Equip: Increases damage done by Nature spells and effects by up to (%d+)."])
+							_, _, value = strfind(text, L["Holy Damage %+(%d+)"])
+							if value then
+								BCScache["gear"].holy = BCScache["gear"].holy + tonumber(value)
+							end
+							-- Nature
+							_, _, value = strfind(text, L["Equip: Increases damage done by Nature spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) Nature Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) Nature Spell Damage"])
 							if value then
 								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
 							end
-							_,_, value = strfind(text, L["Nature Damage %+(%d+)"])
+							_, _, value = strfind(text, L["Nature Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].nature = BCScache["gear"].nature + tonumber(value)
 							end
-
-							_,_, value = strfind(text, L["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."])
+							-- Shadow
+							_, _, value = strfind(text, L["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."])
 							if value then
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
 							end
-							_,_, value = strfind(text, L["Shadow Damage %+(%d+)"])
+							_, _, value = strfind(text, L["Shadow Damage %+(%d+)"])
 							if value then
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
 							end
-							_,_, value = strfind(text, L["^%+(%d+) Shadow Spell Damage"])
+							_, _, value = strfind(text, L["^%+(%d+) Shadow Spell Damage"])
 							if value then
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
 							end
-							
-							_,_, value = strfind(text, setPattern)
+							-- Set Bonuses
+							_, _, value = strfind(text, setPattern)
 							if value then
 								SET_NAME = value
 							end
-
 							_, _, value = strfind(text, L["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."])
 							if value and SET_NAME and not tContains(SpellPower_Set_Bonus, SET_NAME) then
 								tinsert(SpellPower_Set_Bonus, SET_NAME)
@@ -1294,7 +1294,7 @@ function BCS:GetSpellPower(school)
 			end
 			-- SetHyperLink doesnt show temporary enhancements, have to use SetInventoryItem
 			if BCS_Tooltip:SetInventoryItem("player", 16) then
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						-- apparently gives healing too
@@ -1327,22 +1327,22 @@ function BCS:GetSpellPower(school)
 			impInnerFire = nil
 			spiritualGuidance = nil
 			-- scan talents
-			for tab=1, GetNumTalentTabs() do
-				for talent=1, GetNumTalents(tab) do
+			for tab = 1, GetNumTalentTabs() do
+				for talent = 1, GetNumTalents(tab) do
 					BCS_Tooltip:SetTalent(tab, talent)
-					for line=1, BCS_Tooltip:NumLines() do
+					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							local _, _, _, _, rank = GetTalentInfo(tab, talent)
 							-- Priest
 							-- Spiritual Guidance
-							local _,_, value = strfind(text, L["Increases spell damage and healing by up to (%d+)%% of your total Spirit."])
+							local _, _, value = strfind(text, L["Increases spell damage and healing by up to (%d+)%% of your total Spirit."])
 							if value and rank > 0 then
 								spiritualGuidance = tonumber(value)
 								break
 							end
 							-- Improved Inner Fire
-							_,_, value = strfind(text, L["Increases the effects of your Inner Fire spell by (%d+)%%."])
+							_, _, value = strfind(text, L["Increases the effects of your Inner Fire spell by (%d+)%%."])
 							if value and rank > 0 then
 								impInnerFire = tonumber(value)
 								break
@@ -1389,14 +1389,14 @@ function BCS:GetSpellPower(school)
 			if spellPowerFromAura then
 				spellPowerFromAura = tonumber(spellPowerFromAura)
 				if impInnerFire then
-					spellPowerFromAura = floor((spellPowerFromAura * (impInnerFire/100)) + (spellPowerFromAura))
+					spellPowerFromAura = floor((spellPowerFromAura * (impInnerFire / 100)) + (spellPowerFromAura))
 				end
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + spellPowerFromAura
 			end
 		end
 		local secondaryPower = 0
 		local secondaryPowerName = ""
-	
+
 		if BCScache["gear"].arcane > secondaryPower then
 			secondaryPower = BCScache["gear"].arcane
 			secondaryPowerName = L.SPELL_SCHOOL_ARCANE
@@ -1446,23 +1446,23 @@ function BCS:GetHealingPower()
 		ironClad = nil
 		toughness = nil
 		BCScache["talents"].healing = 0
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
+		for tab = 1, GetNumTalentTabs() do
+			for talent = 1, GetNumTalents(tab) do
 				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Paladin
 						-- Ironclad
-						local _,_, value = strfind(text, L["Increases your healing power by (%d+)%% of your Armor."])
+						local _, _, value = strfind(text, L["Increases your healing power by (%d+)%% of your Armor."])
 						if value and rank > 0 then
 							ironClad = tonumber(value)
 							break
 						end
 						-- Paladin
 						-- Toughness
-						local _,_, value = strfind(text, L["Increases your armor value from items by (%d+)%%."])
+						local _, _, value = strfind(text, L["Increases your armor value from items by (%d+)%%."])
 						if value and rank > 0 then
 							toughness = tonumber(value)
 							break
@@ -1475,7 +1475,7 @@ function BCS:GetHealingPower()
 	if BCS.needScanGear then
 		BCScache["gear"].healing = 0
 		--scan gear
-		for slot=1, 19 do
+		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem('player', slot) then
 				local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 				if eqItemLink then
@@ -1483,31 +1483,31 @@ function BCS:GetHealingPower()
 					BCS_Tooltip:SetHyperlink(eqItemLink)
 				end
 				local SET_NAME
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local _,_, value = strfind(text, L["Equip: Increases healing done by spells and effects by up to (%d+)."])
+						local _, _, value = strfind(text, L["Equip: Increases healing done by spells and effects by up to (%d+)."])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
 						-- Atiesh (druid/priest)
-						_,_, value = strfind(text, L["Equip: Increases your spell damage by up to %d+ and your healing by up to (%d+)."])
+						_, _, value = strfind(text, L["Equip: Increases your spell damage by up to %d+ and your healing by up to (%d+)."])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
 						-- Enchant Weapon/Gloves/Bracers - Healing Power
-						_,_, value = strfind(text, L["Healing Spells %+(%d+)"])
+						_, _, value = strfind(text, L["Healing Spells %+(%d+)"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
 						-- Zandalar Signet of Serenity (Shoulder enchant)
-						_,_, value = strfind(text, L["^%+(%d+) Healing Spells"])
+						_, _, value = strfind(text, L["^%+(%d+) Healing Spells"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
 						-- Beautiful Diamond Gemstone (Jewelcrafting)
 						-- Resilience of the Scourge (Shoulder enchant)
-						_,_, value = strfind(text, L["Healing %+(%d+)"])
+						_, _, value = strfind(text, L["Healing %+(%d+)"])
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
@@ -1515,7 +1515,7 @@ function BCS:GetHealingPower()
 						-- Arcanum of Focus (Head/Legs enchant)
 						-- already included in GetSpellPower
 
-						_,_, value = strfind(text, setPattern)
+						_, _, value = strfind(text, setPattern)
 						if value then
 							SET_NAME = value
 						end
@@ -1530,7 +1530,7 @@ function BCS:GetHealingPower()
 		end
 		-- SetHyperLink doesnt show temporary enhancements, have to use SetInventoryItem
 		if BCS_Tooltip:SetInventoryItem("player", 16) then
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
@@ -1589,7 +1589,7 @@ function BCS:GetHealingPower()
 		local armorFromGear = base - (agility * 2)
 		-- Iron Clad is calculate on raw armor without toughness bonus, base armor includes the bonus
 		if toughness ~= nil then
-			armorFromGear = armorFromGear / (1 + toughness/100)
+			armorFromGear = armorFromGear / (1 + toughness / 100)
 		end
 		BCScache["talents"].healing = floor(((ironClad / 100) * armorFromGear))
 	end
@@ -1633,15 +1633,15 @@ function BCS:GetManaRegen()
 	if BCS.needScanTalents then
 		waterShield = nil
 		BCScache["talents"].casting = 0
-		for tab=1, GetNumTalentTabs() do
-			for talent=1, GetNumTalents(tab) do
+		for tab = 1, GetNumTalentTabs() do
+			for talent = 1, GetNumTalents(tab) do
 				BCS_Tooltip:SetTalent(tab, talent)
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						local _, _, _, _, rank = GetTalentInfo(tab, talent)
 						-- Priest (Meditation) / Druid (Reflection) / Mage (Arcane Meditation) / Shaman (Improved Water Shield)
-						local _,_, value = strfind(text, L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
+						local _, _, value = strfind(text, L["Allows (%d+)%% of your Mana regeneration to continue while casting."])
 						if value and rank > 0 then
 							BCScache["talents"].casting = BCScache["talents"].casting + tonumber(value)
 							waterShield = rank
@@ -1657,7 +1657,7 @@ function BCS:GetManaRegen()
 		BCScache["gear"].mp5 = 0
 		BCScache["gear"].casting = 0
 		--scan gear
-		for slot=1, 19 do
+		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem('player', slot) then
 				local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 				if eqItemLink then
@@ -1665,40 +1665,40 @@ function BCS:GetManaRegen()
 					BCS_Tooltip:SetHyperlink(eqItemLink)
 				end
 				local SET_NAME
-				for line=1, BCS_Tooltip:NumLines() do
+				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
-						local _,_, value = strfind(text, L["^Mana Regen %+(%d+)"])
+						local _, _, value = strfind(text, L["^Mana Regen %+(%d+)"])
 						if value then
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
-						_,_, value = strfind(text, L["Equip: Restores (%d+) mana per 5 sec."])
+						_, _, value = strfind(text, L["Equip: Restores (%d+) mana per 5 sec."])
 						if value and not strfind(text, L["to all party members"]) then
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
-						_,_, value = strfind(text, L["^Healing %+%d+ and (%d+) mana per 5 sec."])
+						_, _, value = strfind(text, L["^Healing %+%d+ and (%d+) mana per 5 sec."])
 						if value then
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
-						_,_, value = strfind(text, L["^%+(%d+) mana every 5 sec."])
+						_, _, value = strfind(text, L["^%+(%d+) mana every 5 sec."])
 						if value then
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
 						end
-						_,_, value = strfind(text, L["^Equip: Allows (%d+)%% of your Mana regeneration to continue while casting."])
+						_, _, value = strfind(text, L["^Equip: Allows (%d+)%% of your Mana regeneration to continue while casting."])
 						if value then
 							BCScache["gear"].casting = BCScache["gear"].casting + tonumber(value)
 						end
 
-						_,_, value = strfind(text, setPattern)
+						_, _, value = strfind(text, setPattern)
 						if value then
 							SET_NAME = value
 						end
-						_,_, value = strfind(text, L["^Set: Allows (%d+)%% of your Mana regeneration to continue while casting."])
+						_, _, value = strfind(text, L["^Set: Allows (%d+)%% of your Mana regeneration to continue while casting."])
 						if value and SET_NAME and not tContains(mp5_Set_Bonus, SET_NAME) then
 							tinsert(mp5_Set_Bonus, SET_NAME)
 							BCScache["gear"].casting = BCScache["gear"].casting + tonumber(value)
 						end
-						_,_, value = strfind(text, L["^Set: Restores (%d+) mana per 5 sec."])
+						_, _, value = strfind(text, L["^Set: Restores (%d+) mana per 5 sec."])
 						if value and SET_NAME and not tContains(mp5_Set_Bonus, SET_NAME) then
 							tinsert(mp5_Set_Bonus, SET_NAME)
 							BCScache["gear"].mp5 = BCScache["gear"].mp5 + tonumber(value)
@@ -1709,7 +1709,7 @@ function BCS:GetManaRegen()
 		end
 		-- SetHyperLink doesnt show temporary enhancements, have to use SetInventoryItem
 		if BCS_Tooltip:SetInventoryItem("player", 16) then
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
@@ -1735,10 +1735,10 @@ function BCS:GetManaRegen()
 		BCScache["auras"].casting = 0
 		BCScache["auras"].mp5 = 0
 		-- improved Shadowform
-		for tab=1, GetNumSpellTabs() do
+		for tab = 1, GetNumSpellTabs() do
 			local _, _, offset, numSpells = GetSpellTabInfo(tab);
 			for s = offset + 1, offset + numSpells do
-			local spell = GetSpellName(s, BOOKTYPE_SPELL);
+				local spell = GetSpellName(s, BOOKTYPE_SPELL);
 				if spell == L["Improved Shadowform"] and BCS:GetPlayerAura(L["Shadowform"]) then
 					BCScache["auras"].casting = BCScache["auras"].casting + 15
 				end
@@ -1757,7 +1757,7 @@ function BCS:GetManaRegen()
 		--Nightfin Soup 
 		_, _, mp5FromAura = BCS:GetPlayerAura(L["Regenerating (%d+) Mana every 5 seconds."])
 		if mp5FromAura then
-			BCScache["auras"].mp5 = BCScache["auras"].mp5 + tonumber(mp5FromAura)*2.5 -- had to double the mp5FromAura because the item is a true mp5 tick
+			BCScache["auras"].mp5 = BCScache["auras"].mp5 + tonumber(mp5FromAura) * 2.5 -- had to double the mp5FromAura because the item is a true mp5 tick
 		end
 		--Mageblood Potion 
 		_, _, mp5FromAura = BCS:GetPlayerAura(L["Regenerate (%d+) mana per 5 sec."])
@@ -1767,12 +1767,12 @@ function BCS:GetManaRegen()
 		--Fizzy Energy Drink and Sagefin
 		_, _, mp5FromAura = BCS:GetPlayerAura(L["Mana Regeneration increased by (%d+) every 5 seconds."])
 		if mp5FromAura then
-			BCScache["auras"].mp5 = BCScache["auras"].mp5 + tonumber(mp5FromAura)*2.5
+			BCScache["auras"].mp5 = BCScache["auras"].mp5 + tonumber(mp5FromAura) * 2.5
 		end
 		--Second Wind
 		_, _, mp5FromAura = BCS:GetPlayerAura(L["Restores (%d+) mana every 1 sec."])
 		if mp5FromAura then
-			BCScache["auras"].mp5 = BCScache["auras"].mp5 + tonumber(mp5FromAura)*5 -- had to multiply by 5 the mp5FromAura because the item is a sec per tick
+			BCScache["auras"].mp5 = BCScache["auras"].mp5 + tonumber(mp5FromAura) * 5 -- had to multiply by 5 the mp5FromAura because the item is a sec per tick
 		end
 		--Power of the Guardian
 		_, _, mp5FromAura = BCS:GetPlayerAura(L["Restores (%d+) mana per 5 seconds."])
@@ -1930,26 +1930,26 @@ function BCS:GetBlockValue()
 	local _, strength = UnitStat("player", 1)
 	local mod = 0
 	-- scan gear
-	for slot=1, 19 do
+	for slot = 1, 19 do
 		if BCS_Tooltip:SetInventoryItem('player', slot) then
 			local _, _, eqItemLink = strfind(GetInventoryItemLink('player', slot), "(item:%d+:%d+:%d+:%d+)")
 			if eqItemLink then
 				BCS_Tooltip:ClearLines()
 				BCS_Tooltip:SetHyperlink(eqItemLink)
 			end
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local _,_, value = strfind(text, L["(%d+) Block"])
+					local _, _, value = strfind(text, L["(%d+) Block"])
 					if value then
 						blockValue = blockValue + tonumber(value)
 					end
-					_,_, value = strfind(text, L["Equip: Increases the block value of your shield by (%d+)."])
+					_, _, value = strfind(text, L["Equip: Increases the block value of your shield by (%d+)."])
 					if value then
 						blockValue = blockValue + tonumber(value)
 					end
-					_,_, value = strfind(text, L["Block Value %+(%d+)"])
+					_, _, value = strfind(text, L["Block Value %+(%d+)"])
 					if value then
 						blockValue = blockValue + tonumber(value)
 					end
@@ -1958,29 +1958,29 @@ function BCS:GetBlockValue()
 		end
 	end
 	-- scan talents
-	for tab=1, GetNumTalentTabs() do
-		for talent=1, GetNumTalents(tab) do
+	for tab = 1, GetNumTalentTabs() do
+		for talent = 1, GetNumTalents(tab) do
 			BCS_Tooltip:SetTalent(tab, talent)
-			for line=1, BCS_Tooltip:NumLines() do
+			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
 					local _, _, _, _, rank = GetTalentInfo(tab, talent)
 					--warrior/paladin
-					local _,_, value = strfind(text, L["amount of damage absorbed by your shield by (%d+)%%"])
+					local _, _, value = strfind(text, L["amount of damage absorbed by your shield by (%d+)%%"])
 					if value and rank > 0 then
 						mod = mod + tonumber(value)
 						break
 					end
 					--shaman
 					--shield specialization
-					_,_, value = strfind(text, L["increases the amount blocked by (%d+)%%"])
+					_, _, value = strfind(text, L["increases the amount blocked by (%d+)%%"])
 					if value and rank > 0 then
 						mod = mod + tonumber(value)
 						break
 					end
 					--enhancing totems
-					_,_, value = strfind(text, L["increases block amount by (%d+)%%"])
+					_, _, value = strfind(text, L["increases block amount by (%d+)%%"])
 					if value and rank > 0 then
 						enhancingTotems = tonumber(value)
 						break
@@ -1999,11 +1999,13 @@ function BCS:GetBlockValue()
 		mod = mod + enhancingTotems
 	end
 
-	mod = mod/100
-	blockValue = blockValue + (strength/20 - 1)
+	mod = mod / 100
+	blockValue = blockValue + (strength / 20 - 1)
 	blockValue = floor(blockValue + blockValue * mod)
 
-	if blockValue < 0 then blockValue = 0 end
+	if blockValue < 0 then
+		blockValue = 0
+	end
 
 	return blockValue
 end
