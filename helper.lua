@@ -1581,6 +1581,11 @@ function BCS:GetHealingPower()
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
+		--Increased Healing bonus kara40 food
+		_, _, healPowerFromAura = BCS:GetPlayerAura(L["Healing Bonus increased by (%d+)"])
+		if healPowerFromAura then
+			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
+		end
 	end
 	if ironClad ~= nil then
 		BCScache["talents"].healing = 0
