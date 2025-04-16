@@ -305,7 +305,7 @@ BCS["L"] = {
 	["Healing %+(%d+)"] = "Healing %+(%d+)",
 	["Healing done is increased by up to (%d+)"] = "Healing done is increased by up to (%d+)",
 
-	["Increases damage and healing done by magical spells and effects by up to (%d+)."] = "Increases damage and healing done by magical spells and effects by up to (%d+).",
+	["Increases damage and healing done by magical spells and effects by up to (%d+)"] = "Increases damage and healing done by magical spells and effects by up to (%d+)",
 	["Magical damage dealt by spells and abilities is increased by up to (%d+)"] = "Magical damage dealt by spells and abilities is increased by up to (%d+)",
 	["Increased damage done by magical spells and effects by (%d+)."] = "Increased damage done by magical spells and effects by (%d+).",
 	["Increases healing done by magical spells and effects by up to (%d+)."] = "Increases healing done by magical spells and effects by up to (%d+).",

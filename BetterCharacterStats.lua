@@ -6,6 +6,7 @@ L = BCS.L
 
 -- Tree of Life aura bonus from other players, your own is calculated in GetHealingPower()
 local aura = .0
+local playerName = UnitName("player")
 
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
@@ -15,8 +16,6 @@ BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_SPELL_SCHOOLS",
 	"PLAYERSTAT_DEFENSES",
 }
-
-BCS.PaperDollFrame = PaperDollFrame
 
 BCS.Debug = false
 BCS.DebugStack = {}
@@ -61,28 +60,24 @@ end
 
 function BCS:OnLoad()
 	CharacterAttributesFrame:Hide()
-	PaperDollFrame:UnregisterEvent('UNIT_DAMAGE')
-	PaperDollFrame:UnregisterEvent('PLAYER_DAMAGE_DONE_MODS')
-	PaperDollFrame:UnregisterEvent('UNIT_ATTACK_SPEED')
-	PaperDollFrame:UnregisterEvent('UNIT_RANGEDDAMAGE')
-	PaperDollFrame:UnregisterEvent('UNIT_ATTACK')
-	PaperDollFrame:UnregisterEvent('UNIT_STATS')
-	PaperDollFrame:UnregisterEvent('UNIT_ATTACK_POWER')
-	PaperDollFrame:UnregisterEvent('UNIT_RANGED_ATTACK_POWER')
-
-	self.Frame = BCSFrame
-	self.needUpdate = nil
-
-	self.Frame:RegisterEvent("ADDON_LOADED")
-	self.Frame:RegisterEvent("UNIT_INVENTORY_CHANGED") -- fires when equipment changes
-	self.Frame:RegisterEvent("CHARACTER_POINTS_CHANGED") -- fires when learning talent
-	self.Frame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
-	self.Frame:RegisterEvent("CHAT_MSG_SKILL") --gaining weapon skill
-	self.Frame:RegisterEvent("CHAT_MSG_ADDON") --needed to recieve aura bonuses from other people
+	PaperDollFrame:UnregisterEvent("UNIT_DAMAGE")
+	PaperDollFrame:UnregisterEvent("PLAYER_DAMAGE_DONE_MODS")
+	PaperDollFrame:UnregisterEvent("UNIT_ATTACK_SPEED")
+	PaperDollFrame:UnregisterEvent("UNIT_RANGEDDAMAGE")
+	PaperDollFrame:UnregisterEvent("UNIT_ATTACK")
+	PaperDollFrame:UnregisterEvent("UNIT_STATS")
+	PaperDollFrame:UnregisterEvent("UNIT_ATTACK_POWER")
+	PaperDollFrame:UnregisterEvent("UNIT_RANGED_ATTACK_POWER")
+	BCSFrame:RegisterEvent("ADDON_LOADED")
+	BCSFrame:RegisterEvent("UNIT_INVENTORY_CHANGED") -- fires when equipment changes
+	BCSFrame:RegisterEvent("CHARACTER_POINTS_CHANGED") -- fires when learning talent
+	BCSFrame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
+	BCSFrame:RegisterEvent("CHAT_MSG_SKILL") -- gaining weapon skill
+	BCSFrame:RegisterEvent("CHAT_MSG_ADDON") -- needed to recieve aura bonuses from other people
+	BCS.needUpdate = nil
+    -- there is less space for player character model with this addon, zoom out and move it up slightly
+    CharacterModelFrame:SetHeight(CharacterModelFrame:GetHeight() - 19)
 end
-
--- there is less space for player character model with this addon, zoom out and move it up slightly
-CharacterModelFrame:SetHeight(CharacterModelFrame:GetHeight() - 19)
 
 local function strsplit(delimiter, subject)
 	if not subject then
@@ -110,44 +105,55 @@ function BCS:OnEvent()
 		tinsert(BCS.DebugStack, t)
 	end
 	if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
+        if (GetNumPartyMembers() + GetNumRaidMembers()) == 0 then
+            return
+        end
 		BCS.needScanAuras = true
-		local type, player, amount = strsplit(",", arg2)
-		if type and player and amount then
-			if player ~= UnitName("player") then
-				amount = tonumber(amount)
-				if type =="TREE" then
-					--BCS:Print("got tree response amount="..amount)
-					if amount >= aura then
-						aura = amount
-						if BCS.PaperDollFrame:IsVisible() then
-							BCS:UpdateStats()
-						else
-							BCS.needUpdate = true
-						end
-					end
-				end
-			end
-		end
+		local type, name, amount = strsplit(",", arg2)
+        if name ~= playerName then
+            amount = tonumber(amount)
+            if amount then
+                --BCS:Print("got tree response amount="..amount)
+                if amount >= aura then
+                    aura = amount
+                    if PaperDollFrame:IsVisible() then
+                        BCS:UpdateStats()
+                    else
+                        BCS.needUpdate = true
+                    end
+                end
+            else
+                local _, treebonus = BCS:GetHealingPower()
+                if treebonus then
+                    SendAddonMessage("bcs", "TREE"..","..playerName..","..treebonus, "PARTY")
+                    --BCS:Print("sent tree response, amount="..treebonus)
+                end
+            end
+        end
 	elseif event == "PLAYER_AURAS_CHANGED" then
 		BCS.needScanAuras = true
-		if not BCS:GetPlayerAura(L["Tree of Life Aura"]) then
+        local hasTreeAura = BCS:GetPlayerAura(L["Tree of Life Aura"])
+		if not hasTreeAura then
 			aura = 0
+        else
+            SendAddonMessage("bcs", "TREE"..","..player, "PARTY")
+            --BCS:Print("sent tree request")
 		end
-		if BCS.PaperDollFrame:IsVisible() then
+		if PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
 			BCS.needUpdate = true
 		end
 	elseif event == "CHARACTER_POINTS_CHANGED" then
 		BCS.needScanTalents = true
-		if BCS.PaperDollFrame:IsVisible() then
+		if PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
 			BCS.needUpdate = true
 		end
 	elseif event == "CHAT_MSG_SKILL" then
 		BCS.needScanSkills = true
-		if BCS.PaperDollFrame:IsVisible() then
+		if PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
 			BCS.needUpdate = true
@@ -155,7 +161,7 @@ function BCS:OnEvent()
 	elseif event == "UNIT_INVENTORY_CHANGED" and arg1 == "player" then
 		BCS.needScanGear = true
 		BCS.needScanSkills = true
-		if BCS.PaperDollFrame:IsVisible() then
+		if PaperDollFrame:IsVisible() then
 			BCS:UpdateStats()
 		else
 			BCS.needUpdate = true
@@ -175,35 +181,6 @@ function BCS:OnEvent()
 		UIDropDownMenu_SetSelectedValue(PlayerStatFrameRightDropDown, IndexRight)
 	end
 end
-
---sending messages
-local sender = CreateFrame("Frame", "BCSsender")
-sender:RegisterEvent("PLAYER_AURAS_CHANGED")
-sender:RegisterEvent("CHAT_MSG_ADDON")
-sender:SetScript("OnEvent", function()
-	if not (UnitInParty("player") or UnitInRaid("player")) then
-		return
-	end
-	if event then
-		local player = UnitName("player")
-		if event == "PLAYER_AURAS_CHANGED" then
-			if BCS:GetPlayerAura(L["Tree of Life Aura"]) then
-				SendAddonMessage("bcs", "TREE"..","..player, "PARTY")
-				--BCS:Print("sent tree request")
-			end
-		end
-		if event == "CHAT_MSG_ADDON" and arg1 == "bcs" then
-			local type, name, amount = strsplit(",", arg2)
-			if name ~= player then
-				local _, treebonus = BCS:GetHealingPower()
-				if not amount and type == "TREE" and treebonus then
-					SendAddonMessage("bcs", "TREE"..","..player..","..treebonus, "PARTY")
-					--BCS:Print("sent tree response, amount="..treebonus)
-				end
-			end
-		end
-	end
-end)
 
 function BCS:OnShow()
 	if BCS.needUpdate then
@@ -1042,10 +1019,10 @@ function BCS:SetRangedAttackPower(statFrame)
 		return
 	end
 
-	if ( HasWandEquipped() ) then
-		text:SetText("--");
-		statFrame.tooltip = nil;
-		return;
+	if HasWandEquipped() then
+		text:SetText("--")
+		statFrame.tooltip = nil
+		return
 	end
 
 	local base, posBuff, negBuff = UnitRangedAttackPower("player")
