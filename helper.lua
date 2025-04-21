@@ -1541,35 +1541,40 @@ function BCS:GetHealingPower()
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		--Tree of Life (own)
+		-- Tree of Life (own)
 		local found = BCS:GetPlayerAura(L["Tree of Life Form"]) and BCS:GetPlayerAura(L["Tree of Life Aura"])
 		local _, spirit = UnitStat("player", 5)
 		if found then
 			treebonus = spirit * 0.2
 		end
-		--Sweet Surprise
+		-- Sweet Surprise
 		_, _, healPowerFromAura = BCS:GetPlayerAura(L["Increases healing done by magical spells by up to (%d+) for 3600 sec."])
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		--Unstable Power
+		-- Unstable Power
 		_, _, healPowerFromAura = BCS:GetPlayerAura(L["Healing increased by up to (%d+)."])
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		--The Eye of the Dead
+		-- The Eye of the Dead
 		_, _, healPowerFromAura = BCS:GetPlayerAura(L["Healing spells increased by up to (%d+)."])
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		--Power of the Guardian
+		-- Power of the Guardian
 		_, _, healPowerFromAura = BCS:GetPlayerAura(L["Increases healing done by magical spells and effects by up to (%d+)."])
 		if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
-		--Dreamshard Elixir
+		-- Dreamshard Elixir
 		_, _, healPowerFromAura = BCS:GetPlayerAura(L["Healing done is increased by up to (%d+)"])
 		if healPowerFromAura then
+			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
+		end
+        -- Empowering Herbal Salad
+        _, _, healPowerFromAura = BCS:GetPlayerAura(L["Healing Bonus increased by (%d+)"])
+        if healPowerFromAura then
 			BCScache["auras"].healing = BCScache["auras"].healing + tonumber(healPowerFromAura)
 		end
 	end

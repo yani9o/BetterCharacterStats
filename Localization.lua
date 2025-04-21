@@ -323,4 +323,5 @@ BCS["L"] = {
 	["^Stoneskin$"] = "^Stoneskin$",
 
 	["to all party members"] = "to all party members",
+    ["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)"
 }
