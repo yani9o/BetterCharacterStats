@@ -140,7 +140,7 @@ function BCS:OnEvent()
 		if not hasTreeAura then
 			aura = 0
         else
-            SendAddonMessage("bcs", "TREE"..","..player, "PARTY")
+            SendAddonMessage("bcs", "TREE"..","..playerName, "PARTY")
             --BCS:Print("sent tree request")
 		end
 		if PaperDollFrame:IsVisible() then
