@@ -323,6 +323,11 @@ function BCS:GetSpellHitRating()
 							SetBonus.spellHit[setName] = true
 							BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
 						end
+                        -- Scythe
+                        exists = strfind(text, L["Equip: Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40."])
+                        if exists then
+                            BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + 2
+                        end
 					end
 				end
 			end
@@ -672,6 +677,11 @@ function BCS:GetSpellCritChance()
 						if value then
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
+                        -- Scythe
+                        exists = strfind(text, L["Equip: Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40."])
+                        if exists then
+                            BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + 2
+                        end
 					end
 				end
 			end
@@ -1207,11 +1217,9 @@ function BCS:GetSpellPower(school)
 								BCScache["gear"].only_damage = BCScache["gear"].only_damage + tonumber(value)
 							end
 							-- Scythe
-							_, _, value = strfind(text, L["Equip: Improves your chance to hit and get a critical strike with spells by 2%. Increases damage done by magical spells and effects by up to 40."])
-							if value then
+							exists = strfind(text, L["Equip: Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40."])
+							if exists then
 								BCScache["gear"].only_damage = BCScache["gear"].only_damage + 40
-								BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + 2
-								BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + 2
 							end
 
 							-- Arcane
