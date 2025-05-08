@@ -916,8 +916,17 @@ function BCS:GetSpellCritFromClass(class)
 			end
 		end
 
+        -- buffs
+		if BCS.needScanAuras then
+			BCScache["auras"].warlock_firestone_crit = 0
+			local hasAura = BCS:GetPlayerAura(L["Firestone"])
+			if hasAura then
+				BCScache["auras"].warlock_firestone_crit = 2
+			end
+		end
+
 		return BCScache["talents"].warlock_destruction_spells,
-		BCScache["talents"].warlock_searing_pain, 0, 0, 0, 0
+		BCScache["talents"].warlock_searing_pain + BCScache["auras"].warlock_firestone_crit, 0, 0, 0, 0
 
 	elseif class == "MAGE" then
 		--scan talents
