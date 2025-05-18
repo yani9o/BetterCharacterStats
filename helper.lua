@@ -88,6 +88,7 @@ local SetBonus = {
     healingPower = {},
     mp5 = {},
     haste = {},
+    armor_pen = {},
 }
 
 function BCS:GetPlayerAura(searchText, auraType)
@@ -1967,6 +1968,7 @@ function BCS:GetBlockValue()
 		end
 	end
 	-- Talents
+    enhancingTotems = nil
 	for tab = 1, GetNumTalentTabs() do
 		for talent = 1, GetNumTalents(tab) do
 			BCS_Tooltip:SetTalent(tab, talent)
@@ -2072,4 +2074,89 @@ function BCS:GetHaste()
     haste = haste + BCScache["gear"].haste
 
     return haste, BCScache["gear"].spell_haste
+end
+
+local masterOfArms
+function BCS:GetArmorPen()
+    if BCS.needScanTalents then
+        masterOfArms = nil
+        -- Talents
+        for tab = 1, GetNumTalentTabs() do
+            for talent = 1, GetNumTalents(tab) do
+                BCS_Tooltip:SetTalent(tab, talent)
+                for line = 1, BCS_Tooltip:NumLines() do
+                    local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+                    local text = left:GetText()
+                    if text then
+                        local _, _, _, _, rank = GetTalentInfo(tab, talent)
+                        -- Warrior (Master of Arms)
+                        local _, _, value = strfind(text, L["Causes your attacks to ignore (%d+) of your target's Armor per level"])
+                        if value and rank > 0 then
+                            masterOfArms = tonumber(value) * UnitLevel("player")
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if BCS.needScanGear then
+        BCScache["gear"].armor_pen = 0
+        twipe(SetBonus.armor_pen)
+        -- Gear
+        for slot = 1, 19 do
+            if BCS_Tooltip:SetInventoryItem("player", slot) then
+                local setName
+                for line = 1, BCS_Tooltip:NumLines() do
+                    local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+                    local text = left:GetText()
+                    if text then
+                        local _, _, value = strfind(text, L["^Equip: Your attacks ignore (%d+) of the target's armor"])
+                        if value then
+                            BCScache["gear"].armor_pen = BCScache["gear"].armor_pen + tonumber(value)
+                        end
+
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
+                        _, _, value = strfind(text, L["^Set: Your attacks ignore (%d+) of the target's armor"])
+                        if value and setName and not SetBonus.armor_pen[setName] then
+                            SetBonus.armor_pen[setName] = true
+                            BCScache["gear"].armor_pen = BCScache["gear"].armor_pen + tonumber(value)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if BCS.needScanAuras then
+        BCScache["auras"].armor_pen = 0
+        -- Buffs
+        -- Bonereaver's Edge
+        local _, _, value = BCS:GetPlayerAura(L["^Ignore (%d+) of enemies' armor"])
+        if value then
+            BCScache["auras"].armor_pen = BCScache["auras"].armor_pen + tonumber(value)
+        end
+        -- Badge of the Swarmguard
+        _, _, value = BCS:GetPlayerAura(L["^Current target's armor is reduced by (%d+)"])
+        if value then
+            BCScache["auras"].armor_pen = BCScache["auras"].armor_pen + tonumber(value)
+        end
+    end
+
+    if masterOfArms then
+        BCScache["talents"].armor_pen = 0
+        local _, _, itemID = strfind(GetInventoryItemLink("player", 16) or "", "item:(%d+)")
+        if itemID then
+            local itemName, itemLink, itemQuality, itemMinLevel, itemType, itemSubType = GetItemInfo(itemID)
+            if itemSubType and (itemSubType == L["One-Handed Maces"] or itemSubType == L["Two-Handed Maces"]) then
+                BCScache["talents"].armor_pen = masterOfArms
+            end
+        end
+    end
+
+    return BCScache["gear"].armor_pen + BCScache["auras"].armor_pen + BCScache["talents"].armor_pen, BCScache["talents"].armor_pen
 end

@@ -251,6 +251,7 @@ BCS["L"] = {
 	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
     HASTE_COLON = "Haste:",
+    ARMOR_PEN_COLON = "Armor Penetration:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
 	BLOCK_COLON = BLOCK .. ":",
@@ -336,4 +337,13 @@ BCS["L"] = {
     ["^Equip: Increases your casting speed by (%d+)%%"] = "^Equip: Increases your casting speed by (%d+)%%",
     ["^Attack speed %+(%d+)%%"] = "^Attack speed %+(%d+)%%",
     ["^%+(%d+)%% Haste"] = "^%+(%d+)%% Haste",
+
+    ["^Equip: Your attacks ignore (%d+) of the target's armor"] = "^Equip: Your attacks ignore (%d+) of the target's armor",
+    ["^Set: Your attacks ignore (%d+) of the target's armor"] = "^Set: Your attacks ignore (%d+) of the target's armor",
+    ["^Ignore (%d+) of enemies' armor"] = "^Ignore (%d+) of enemies' armor",
+    ["^Current target's armor is reduced by (%d+)"] = "^Current target's armor is reduced by (%d+)",
+    ["Causes your attacks to ignore (%d+) of your target's Armor per level"] = "Causes your attacks to ignore (%d+) of your target's Armor per level",
+
+    ["One-Handed Maces"] = "One-Handed Maces",
+    ["Two-Handed Maces"] = "Two-Handed Maces",
 }
