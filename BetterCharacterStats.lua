@@ -222,7 +222,7 @@ end
 local function BCS_AddTooltip(statFrame, tooltipExtra)
 	statFrame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-		GameTooltip:SetText(this.tooltip)
+		GameTooltip:SetText(this.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, false)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
 		if tooltipExtra then
 			GameTooltip:AddLine(tooltipExtra)
@@ -232,6 +232,44 @@ local function BCS_AddTooltip(statFrame, tooltipExtra)
 	statFrame:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
+end
+
+local function CharacterDamageFrame_OnEnter()
+	-- Main hand weapon
+	GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+	GameTooltip:SetText(INVTYPE_WEAPONMAINHAND, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	GameTooltip:AddDoubleLine(ATTACK_SPEED_COLON, format("%.2f", this.attackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	GameTooltip:AddDoubleLine(DAMAGE_COLON, this.damage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	GameTooltip:AddDoubleLine(DAMAGE_PER_SECOND, format("%.1f", this.dps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	-- Check for offhand weapon
+	if this.offhandAttackSpeed then
+		GameTooltip:AddLine("\n")
+		GameTooltip:AddLine(INVTYPE_WEAPONOFFHAND, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+		GameTooltip:AddDoubleLine(ATTACK_SPEED_COLON, format("%.2f", this.offhandAttackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+		GameTooltip:AddDoubleLine(DAMAGE_COLON, this.offhandDamage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+		GameTooltip:AddDoubleLine(DAMAGE_PER_SECOND, format("%.1f", this.offhandDps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	end
+    if this.haste and this.haste > 0 then
+        GameTooltip:AddLine("\n")
+        GameTooltip:AddDoubleLine(L.HASTE_COLON, format("%d%%", this.haste), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+    end
+	GameTooltip:Show()
+end
+
+local function CharacterRangedDamageFrame_OnEnter()
+	if not this.damage then
+		return
+	end
+	GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+	GameTooltip:SetText(INVTYPE_RANGED, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	GameTooltip:AddDoubleLine(ATTACK_SPEED_COLON, format("%.2f", this.attackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	GameTooltip:AddDoubleLine(DAMAGE_COLON, this.damage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	GameTooltip:AddDoubleLine(DAMAGE_PER_SECOND, format("%.1f", this.dps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+    if this.haste and this.haste > 0 then
+        GameTooltip:AddLine("\n")
+        GameTooltip:AddDoubleLine(L.HASTE_COLON, format("%d%%", this.haste), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+    end
+    GameTooltip:Show()
 end
 
 local function BCS_AddDamageTooltip(damageText, statFrame, speed, offhandSpeed, ranged)
@@ -319,6 +357,8 @@ local function BCS_AddDamageTooltip(damageText, statFrame, speed, offhandSpeed, 
 	else
 		statFrame.offhandAttackSpeed = nil
 	end
+
+    statFrame.haste = BCS:GetHaste()
 
 	if ranged then
 		statFrame:SetScript("OnEnter", CharacterRangedDamageFrame_OnEnter)
@@ -860,7 +900,7 @@ function BCS:SetManaRegen(statFrame)
 
 	-- if not a mana user and not a druid set to N/A
 	local _,class = UnitClass("player")
-	if (UnitPowerType("player") ~= 0 and not(class=="DRUID"))then
+	if UnitPowerType("player") ~= 0 and class ~= "DRUID" then
 		text:SetText(NOT_APPLICABLE)
 		statFrame.tooltip = nil
 		return
@@ -880,6 +920,22 @@ function BCS:SetManaRegen(statFrame)
 	statFrame.tooltipSubtext = format(L.SPELL_MANA_REGEN_TOOLTIP_SUB, base, casting, mp5, mp2)
 
 	BCS_AddTooltip(statFrame)
+end
+
+function BCS:SetSpellHaste(statFrame)
+    local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+
+	label:SetText(L.HASTE_COLON)
+
+    local haste, spellOnly = BCS:GetHaste()
+    local total = haste + spellOnly
+    text:SetText(format("%d%%", total))
+
+    statFrame.tooltip = L.SPELL_HASTE_TOOLTIP
+    statFrame.tooltipSubtext = L.SPELL_HASTE_TOOLTIP_SUB
+
+    BCS_AddTooltip(statFrame)
 end
 
 function BCS:SetDodge(statFrame)
@@ -1121,7 +1177,7 @@ function BCS:UpdatePaperdollStats(prefix, index)
 		BCS:SetSpellCritChance(stat3)
 		BCS:SetHealing(stat4)
 		BCS:SetManaRegen(stat5)
-		stat6:Hide()
+		BCS:SetSpellHaste(stat6)
 	elseif (index == "PLAYERSTAT_SPELL_SCHOOLS") then
 		BCS:SetSpellPower(stat1, "Arcane")
 		BCS:SetSpellPower(stat2, "Fire")

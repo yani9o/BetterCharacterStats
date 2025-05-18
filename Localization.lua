@@ -232,6 +232,9 @@ BCS["L"] = {
 	MP5 Regen: %d
 	MP5 Regen (2s): %d]],
 
+    SPELL_HASTE_TOOLTIP = "Spell Haste",
+    SPELL_HASTE_TOOLTIP_SUB = "Reduces cast time or your spells.",
+
 	PLAYERSTAT_BASE_STATS = "Base Stats",
 	PLAYERSTAT_DEFENSES = "Defenses",
 	PLAYERSTAT_MELEE_COMBAT = "Melee",
@@ -247,6 +250,7 @@ BCS["L"] = {
 	SPELL_CRIT_COLON = "Crit Chance:",
 	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
+    HASTE_COLON = "Haste:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
 	BLOCK_COLON = BLOCK .. ":",
@@ -325,5 +329,11 @@ BCS["L"] = {
 	["^Stoneskin$"] = "^Stoneskin$",
 
 	["to all party members"] = "to all party members",
-    ["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)"
+    ["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)",
+
+    ["^Equip: Increases your attack and casting speed by (%d+)%%"] = "^Equip: Increases your attack and casting speed by (%d+)%%",
+    ["^Set: Increases your attack and casting speed by (%d+)%%"] = "^Set: Increases your attack and casting speed by (%d+)%%",
+    ["^Equip: Increases your casting speed by (%d+)%%"] = "^Equip: Increases your casting speed by (%d+)%%",
+    ["^Attack speed %+(%d+)%%"] = "^Attack speed %+(%d+)%%",
+    ["^%+(%d+)%% Haste"] = "^%+(%d+)%% Haste",
 }

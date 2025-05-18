@@ -87,6 +87,7 @@ local SetBonus = {
     spellPower = {},
     healingPower = {},
     mp5 = {},
+    haste = {},
 }
 
 function BCS:GetPlayerAura(searchText, auraType)
@@ -134,11 +135,11 @@ function BCS:GetHitRating(hitOnly)
         -- Gear
 		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				if eqItemLink then
-					BCS_Tooltip:ClearLines()
-					BCS_Tooltip:SetHyperlink(eqItemLink)
-				end
+				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+				-- if eqItemLink then
+				-- 	BCS_Tooltip:ClearLines()
+				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+				-- end
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -298,11 +299,11 @@ function BCS:GetSpellHitRating()
 		-- Gear
 		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				if eqItemLink then
-					BCS_Tooltip:ClearLines()
-					BCS_Tooltip:SetHyperlink(eqItemLink)
-				end
+				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+				-- if eqItemLink then
+				-- 	BCS_Tooltip:ClearLines()
+				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+				-- end
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -526,11 +527,11 @@ function BCS:GetRangedCritChance()
 		-- Gear
 		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				if eqItemLink then
-					BCS_Tooltip:ClearLines()
-					BCS_Tooltip:SetHyperlink(eqItemLink)
-				end
+				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+				-- if eqItemLink then
+				-- 	BCS_Tooltip:ClearLines()
+				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+				-- end
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -652,11 +653,11 @@ function BCS:GetSpellCritChance()
 		-- Gear
 		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				if eqItemLink then
-					BCS_Tooltip:ClearLines()
-					BCS_Tooltip:SetHyperlink(eqItemLink)
-				end
+				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+				-- if eqItemLink then
+				-- 	BCS_Tooltip:ClearLines()
+				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+				-- end
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1028,11 +1029,11 @@ function BCS:GetSpellCritFromClass(class)
             -- Gear 
 			for slot = 1, 19 do
 				if BCS_Tooltip:SetInventoryItem("player", slot) then
-					local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-					if eqItemLink then
-						BCS_Tooltip:ClearLines()
-						BCS_Tooltip:SetHyperlink(eqItemLink)
-					end
+					-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+					-- if eqItemLink then
+					-- 	BCS_Tooltip:ClearLines()
+					-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+					-- end
 					local setName = nil
 					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1179,11 +1180,11 @@ function BCS:GetSpellPower(school)
             -- Gear
 			for slot = 1, 19 do
 				if BCS_Tooltip:SetInventoryItem("player", slot) then
-					local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-					if eqItemLink then
-						BCS_Tooltip:ClearLines()
-						BCS_Tooltip:SetHyperlink(eqItemLink)
-					end
+					-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+					-- if eqItemLink then
+					-- 	BCS_Tooltip:ClearLines()
+					-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+					-- end
 					local setName
 					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1488,11 +1489,11 @@ function BCS:GetHealingPower()
         -- Gear
 		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				if eqItemLink then
-					BCS_Tooltip:ClearLines()
-					BCS_Tooltip:SetHyperlink(eqItemLink)
-				end
+				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+				-- if eqItemLink then
+				-- 	BCS_Tooltip:ClearLines()
+				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+				-- end
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1666,11 +1667,11 @@ function BCS:GetManaRegen()
         -- Gear
 		for slot = 1, 19 do
 			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				if eqItemLink then
-					BCS_Tooltip:ClearLines()
-					BCS_Tooltip:SetHyperlink(eqItemLink)
-				end
+				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+				-- if eqItemLink then
+				-- 	BCS_Tooltip:ClearLines()
+				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+				-- end
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1940,11 +1941,11 @@ function BCS:GetBlockValue()
 	-- Gear
 	for slot = 1, 19 do
 		if BCS_Tooltip:SetInventoryItem("player", slot) then
-			local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-			if eqItemLink then
-				BCS_Tooltip:ClearLines()
-				BCS_Tooltip:SetHyperlink(eqItemLink)
-			end
+			-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
+			-- if eqItemLink then
+			-- 	BCS_Tooltip:ClearLines()
+			-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
+			-- end
 			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
@@ -2017,4 +2018,58 @@ function BCS:GetBlockValue()
     end
 
 	return blockValue
+end
+
+function BCS:GetHaste()
+    if BCS.needScanGear then
+        BCScache["gear"].haste = 0
+        BCScache["gear"].spell_haste = 0
+        -- Gear
+        twipe(SetBonus.haste)
+        for slot = 1, 19 do
+            if BCS_Tooltip:SetInventoryItem("player", slot) then
+                local setName
+                for line = 1, BCS_Tooltip:NumLines() do
+                    local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+                    local text = left:GetText()
+                    if text then
+                        local _, _, value = strfind(text, L["^Equip: Increases your attack and casting speed by (%d+)%%"])
+                        if value then
+                            BCScache["gear"].haste = BCScache["gear"].haste + tonumber(value)
+                        end
+                        _, _, value = strfind(text, L["^Equip: Increases your casting speed by (%d+)%%"])
+                        if value then
+                            BCScache["gear"].spell_haste = BCScache["gear"].spell_haste + tonumber(value)
+                        end
+                        -- Sigil of Quickness (shoulder enchant)
+                        _, _, value = strfind(text, L["^%+(%d+)%% Haste"])
+                        if value then
+                            BCScache["gear"].haste = BCScache["gear"].haste + tonumber(value)
+                        end
+                        -- Arcanum of Rapidity (gives spell haste too on TWoW?)
+                        _, _, value = strfind(text, L["^Attack speed %+(%d+)%%"])
+                        if value then
+                            BCScache["gear"].haste = BCScache["gear"].haste + tonumber(value)
+                        end
+
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
+                        _, _, value = strfind(text, L["^Set: Increases your attack and casting speed by (%d+)%%"])
+                        if value and setName and not SetBonus.haste[setName] then
+                            SetBonus.haste[setName] = true
+                            BCScache["gear"].haste = BCScache["gear"].haste + tonumber(value)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    local _, race = UnitRace("player")
+    local haste = race == "NightElf" and 1 or 0
+    haste = haste + BCScache["gear"].haste
+
+    return haste, BCScache["gear"].spell_haste
 end
