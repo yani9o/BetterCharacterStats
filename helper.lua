@@ -1809,6 +1809,7 @@ function BCS:GetManaRegen()
 				local icon, stacks = UnitBuff("player", i)
 				if icon and stacks and icon == "Interface\\Icons\\Ability_Shaman_WaterShield" then
 					BCScache["auras"].casting = BCScache["auras"].casting + (tonumber(stacks) * waterShield)
+                    break
 				end
 			end
 		end
@@ -2022,7 +2023,38 @@ function BCS:GetBlockValue()
 	return blockValue
 end
 
+local vengefulStrikes
 function BCS:GetHaste()
+    if BCS.needScanTalents then
+        BCScache["talents"].spell_haste = 0
+        vengefulStrikes = nil
+        -- Talents
+        for tab = 1, GetNumTalentTabs() do
+            for talent = 1, GetNumTalents(tab) do
+                BCS_Tooltip:SetTalent(tab, talent)
+                for line = 1, BCS_Tooltip:NumLines() do
+                    local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+                    local text = left:GetText()
+                    if text then
+                        local _, _, _, _, rank = GetTalentInfo(tab, talent)
+                        -- Priest (Mental Strength)
+                        local _, _, value = strfind(text, "Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%")
+                        if value and rank > 0 then
+                            BCScache["talents"].spell_haste = BCScache["talents"].spell_haste + tonumber(value)
+                            break
+                        end
+                        -- Paladin (Vengeful Strikes)
+                        _, _, value = strfind(text, "Zeal increases your attack and casting speed by an additional (%d+)%% per stack")
+                        if value and rank > 0 then
+                            vengefulStrikes = tonumber(value)
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     if BCS.needScanGear then
         BCScache["gear"].haste = 0
         BCScache["gear"].spell_haste = 0
@@ -2069,11 +2101,64 @@ function BCS:GetHaste()
         end
     end
 
+    if BCS.needScanAuras then
+        BCScache["auras"].haste = 0
+        BCScache["auras"].spell_haste = 0
+        -- Buffs
+        -- Bloodlust (self buff)
+        local _, _, value, value2 = BCS:GetPlayerAura("^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%")
+        if value then
+            BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
+            -- BCScache["auras"].spell_haste = BCScache["auras"].spell_haste + tonumber(value2)
+        end
+        -- Bloodlust (proc for party members)
+        _, _, value = BCS:GetPlayerAura("^Increases attack and spell casting speed by (%d+)%%")
+        if value then
+            BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
+        end
+        -- Master Demonologist (imp)
+        _, _, value = BCS:GetPlayerAura("increases casting speed by (%d+)%%")
+        if value then
+            BCScache["auras"].spell_haste = BCScache["auras"].spell_haste + tonumber(value)
+        end
+        -- Master Demonologist (infernal)
+        _, _, value = BCS:GetPlayerAura("^Increases casting and attack speed by (%d+)%%")
+        if value then
+            BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
+        end
+        -- Chastise
+        _, _, value = BCS:GetPlayerAura("^Increases attack and casting speed by (%d+)%%")
+        if value then
+            BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
+        end
+        -- Arcane Power
+        _, _, value = BCS:GetPlayerAura("^Casting speed increased by (%d+)%%")
+        if value then
+            BCScache["auras"].spell_haste = BCScache["auras"].spell_haste + tonumber(value)
+        end
+        -- Zeal
+        _, _, value = BCS:GetPlayerAura("^Attack and casting speed increased by (%d+)%%")
+        if value then
+            value = tonumber(value)
+            if vengefulStrikes then
+                for i = 1, 32 do
+                    local icon, stacks = UnitBuff("player", i)
+                    if icon and stacks and icon == "Interface\\Icons\\Spell_Holy_CrusaderStrike" then
+                        value = value + (vengefulStrikes * stacks)
+                        break
+                    end
+                end
+            end
+            BCScache["auras"].haste = BCScache["auras"].haste + value
+        end
+    end
+
     local _, race = UnitRace("player")
     local haste = race == "NightElf" and 1 or 0
-    haste = haste + BCScache["gear"].haste
+    haste = haste + BCScache["gear"].haste + BCScache["auras"].haste
+    local spellHaste = BCScache["gear"].spell_haste + BCScache["auras"].spell_haste + BCScache["talents"].spell_haste
 
-    return haste, BCScache["gear"].spell_haste
+    return haste, spellHaste
 end
 
 local masterOfArms
