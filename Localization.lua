@@ -251,7 +251,7 @@ BCS["L"] = {
 	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
     HASTE_COLON = "Haste:",
-    ARMOR_PEN_COLON = "Armor Penetration:",
+    ARMOR_PEN_COLON = "Traget's armor reduction:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
 	BLOCK_COLON = BLOCK .. ":",
@@ -273,6 +273,7 @@ BCS["L"] = {
 	HIT_AFFLICTION = "Affliction spells: %.f%%",
 	HIT_SHADOW = "Shadow spells: %.f%%",
 	HIT_HOLY_DISC = "Holy and Discipline spells: %.f%%",
+    SPELL_PEN = "Target's resistances reduction: %d",
 
 	CRIT_MOONFIRE = "Moonfire: %.2f%%",
 	CRIT_REGROWTH = "Regrowth: %.2f%%",
@@ -320,6 +321,7 @@ BCS["L"] = {
     ["Restores (%d+) mana per 5 seconds."] = "Restores (%d+) mana per 5 seconds.",
 	["Allows (%d+)%% of mana regeneration while casting."] = "Allows (%d+)%% of mana regeneration while casting.",
 
+    -- Block value
 	["(%d+) Block"] = "(%d+) Block",
 	["Equip: Increases the block value of your shield by (%d+)."] = "Equip: Increases the block value of your shield by (%d+).",
 	["Block Value %+(%d+)"] = "Block Value %+(%d+)",
@@ -332,18 +334,32 @@ BCS["L"] = {
 	["to all party members"] = "to all party members",
     ["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)",
 
+    -- Haste
     ["^Equip: Increases your attack and casting speed by (%d+)%%"] = "^Equip: Increases your attack and casting speed by (%d+)%%",
     ["^Set: Increases your attack and casting speed by (%d+)%%"] = "^Set: Increases your attack and casting speed by (%d+)%%",
     ["^Equip: Increases your casting speed by (%d+)%%"] = "^Equip: Increases your casting speed by (%d+)%%",
     ["^Attack speed %+(%d+)%%"] = "^Attack speed %+(%d+)%%",
     ["^%+(%d+)%% Haste"] = "^%+(%d+)%% Haste",
+    ["Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%"] = "Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%",
+    ["Zeal increases your attack and casting speed by an additional (%d+)%% per stack"] = "Zeal increases your attack and casting speed by an additional (%d+)%% per stack",
+    ["^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%"] = "^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%",
+    ["^Increases attack and spell casting speed by (%d+)%%"] = "^Increases attack and spell casting speed by (%d+)%%",
+    ["increases casting speed by (%d+)%%"] = "increases casting speed by (%d+)%%",
+    ["^Increases casting and attack speed by (%d+)%%"] = "^Increases casting and attack speed by (%d+)%%",
+    ["^Increases attack and casting speed by (%d+)%%"] = "^Increases attack and casting speed by (%d+)%%",
+    ["^Casting speed increased by (%d+)%%"] = "^Casting speed increased by (%d+)%%",
+    ["^Attack and casting speed increased by (%d+)%%"] = "^Attack and casting speed increased by (%d+)%%",
 
+    -- Armor penetration
     ["^Equip: Your attacks ignore (%d+) of the target's armor"] = "^Equip: Your attacks ignore (%d+) of the target's armor",
     ["^Set: Your attacks ignore (%d+) of the target's armor"] = "^Set: Your attacks ignore (%d+) of the target's armor",
     ["^Ignore (%d+) of enemies' armor"] = "^Ignore (%d+) of enemies' armor",
     ["^Current target's armor is reduced by (%d+)"] = "^Current target's armor is reduced by (%d+)",
     ["Causes your attacks to ignore (%d+) of your target's Armor per level"] = "Causes your attacks to ignore (%d+) of your target's Armor per level",
-
     ["One-Handed Maces"] = "One-Handed Maces",
     ["Two-Handed Maces"] = "Two-Handed Maces",
+
+    -- Spell penetration
+    ["^Equip: Decreases the magical resistances of your spell targets by (%d+)"] = "^Equip: Decreases the magical resistances of your spell targets by (%d+)",
+    ["^Set: Decreases the magical resistances of your spell targets by (%d+)"] = "^Set: Decreases the magical resistances of your spell targets by (%d+)",
 }

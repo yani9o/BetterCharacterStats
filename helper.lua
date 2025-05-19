@@ -89,6 +89,7 @@ local SetBonus = {
     mp5 = {},
     haste = {},
     armor_pen = {},
+    spell_pen = {},
 }
 
 function BCS:GetPlayerAura(searchText, auraType)
@@ -2038,13 +2039,13 @@ function BCS:GetHaste()
                     if text then
                         local _, _, _, _, rank = GetTalentInfo(tab, talent)
                         -- Priest (Mental Strength)
-                        local _, _, value = strfind(text, "Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%")
+                        local _, _, value = strfind(text, L["Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%"])
                         if value and rank > 0 then
                             BCScache["talents"].spell_haste = BCScache["talents"].spell_haste + tonumber(value)
                             break
                         end
                         -- Paladin (Vengeful Strikes)
-                        _, _, value = strfind(text, "Zeal increases your attack and casting speed by an additional (%d+)%% per stack")
+                        _, _, value = strfind(text, L["Zeal increases your attack and casting speed by an additional (%d+)%% per stack"])
                         if value and rank > 0 then
                             vengefulStrikes = tonumber(value)
                             break
@@ -2106,38 +2107,38 @@ function BCS:GetHaste()
         BCScache["auras"].spell_haste = 0
         -- Buffs
         -- Bloodlust (self buff)
-        local _, _, value, value2 = BCS:GetPlayerAura("^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%")
+        local _, _, value, value2 = BCS:GetPlayerAura(L["^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%"])
         if value then
             BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
             -- BCScache["auras"].spell_haste = BCScache["auras"].spell_haste + tonumber(value2)
         end
         -- Bloodlust (proc for party members)
-        _, _, value = BCS:GetPlayerAura("^Increases attack and spell casting speed by (%d+)%%")
+        _, _, value = BCS:GetPlayerAura(L["^Increases attack and spell casting speed by (%d+)%%"])
         if value then
             BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
         end
         -- Master Demonologist (imp)
-        _, _, value = BCS:GetPlayerAura("increases casting speed by (%d+)%%")
+        _, _, value = BCS:GetPlayerAura(L["increases casting speed by (%d+)%%"])
         if value then
             BCScache["auras"].spell_haste = BCScache["auras"].spell_haste + tonumber(value)
         end
         -- Master Demonologist (infernal)
-        _, _, value = BCS:GetPlayerAura("^Increases casting and attack speed by (%d+)%%")
+        _, _, value = BCS:GetPlayerAura(L["^Increases casting and attack speed by (%d+)%%"])
         if value then
             BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
         end
         -- Chastise
-        _, _, value = BCS:GetPlayerAura("^Increases attack and casting speed by (%d+)%%")
+        _, _, value = BCS:GetPlayerAura(L["^Increases attack and casting speed by (%d+)%%"])
         if value then
             BCScache["auras"].haste = BCScache["auras"].haste + tonumber(value)
         end
         -- Arcane Power
-        _, _, value = BCS:GetPlayerAura("^Casting speed increased by (%d+)%%")
+        _, _, value = BCS:GetPlayerAura(L["^Casting speed increased by (%d+)%%"])
         if value then
             BCScache["auras"].spell_haste = BCScache["auras"].spell_haste + tonumber(value)
         end
         -- Zeal
-        _, _, value = BCS:GetPlayerAura("^Attack and casting speed increased by (%d+)%%")
+        _, _, value = BCS:GetPlayerAura(L["^Attack and casting speed increased by (%d+)%%"])
         if value then
             value = tonumber(value)
             if vengefulStrikes then
@@ -2245,4 +2246,39 @@ function BCS:GetArmorPen()
     end
 
     return BCScache["gear"].armor_pen + BCScache["auras"].armor_pen + BCScache["talents"].armor_pen, BCScache["talents"].armor_pen
+end
+
+function BCS:GetSpellPen()
+    if BCS.needScanGear then
+        BCScache["gear"].spell_pen = 0
+        twipe(SetBonus.spell_pen)
+        -- Gear
+        for slot = 1, 19 do
+            if BCS_Tooltip:SetInventoryItem("player", slot) then
+                local setName
+                for line = 1, BCS_Tooltip:NumLines() do
+                    local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+                    local text = left:GetText()
+                    if text then
+                        local _, _, value = strfind(text, L["^Equip: Decreases the magical resistances of your spell targets by (%d+)"])
+                        if value then
+                            BCScache["gear"].spell_pen = BCScache["gear"].spell_pen + tonumber(value)
+                        end
+
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
+                        _, _, value = strfind(text, L["^Set: Decreases the magical resistances of your spell targets by (%d+)"])
+                        if value and setName and not SetBonus.spell_pen[setName] then
+                            SetBonus.spell_pen[setName] = true
+                            BCScache["gear"].spell_pen = BCScache["gear"].spell_pen + tonumber(value)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return BCScache["gear"].spell_pen
 end

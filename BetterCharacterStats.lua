@@ -629,6 +629,7 @@ function BCS:SetHitRating(statFrame, ratingType)
 
 	elseif ratingType == "SPELL" then
 		local spell_hit, spell_hit_fire, spell_hit_frost, spell_hit_arcane, spell_hit_shadow, spell_hit_holy = BCS:GetSpellHitRating()
+        local spellPen = BCS:GetSpellPen()
 
 		text:SetText(spell_hit .. "%")
 
@@ -660,7 +661,9 @@ function BCS:SetHitRating(statFrame, ratingType)
 				if spell_hit_holy > 0 then
 					GameTooltip:AddLine(format(L.HIT_HOLY_DISC, spell_hit + spell_hit_holy))
 				end
-
+                if spellPen > 0 then
+                    GameTooltip:AddLine(format(L.SPELL_PEN, spellPen))
+                end
 				GameTooltip:Show()
 			end)
 
