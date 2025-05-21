@@ -362,4 +362,6 @@ BCS["L"] = {
     -- Spell penetration
     ["^Equip: Decreases the magical resistances of your spell targets by (%d+)"] = "^Equip: Decreases the magical resistances of your spell targets by (%d+)",
     ["^Set: Decreases the magical resistances of your spell targets by (%d+)"] = "^Set: Decreases the magical resistances of your spell targets by (%d+)",
+
+    ["^Equip: Improves your chance to hit with spells and attacks by (%d+)%%"] = "^Equip: Improves your chance to hit with spells and attacks by (%d+)%%",
 }

@@ -154,6 +154,10 @@ function BCS:GetHitRating(hitOnly)
 						if value then
 							BCScache["gear"].hit = BCScache["gear"].hit + tonumber(value)
 						end
+                        _, _, value = strfind(text, L["^Equip: Improves your chance to hit with spells and attacks by (%d+)%%"])
+                        if value then
+                            BCScache["gear"].hit = BCScache["gear"].hit + tonumber(value)
+                        end
 
 						_, _, value = strfind(text, setPattern)
 						if value then
@@ -318,6 +322,10 @@ function BCS:GetSpellHitRating()
 						if value then
 							BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
 						end
+                        _, _, value = strfind(text, L["^Equip: Improves your chance to hit with spells and attacks by (%d+)%%"])
+                        if value then
+                            BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
+                        end
                         -- Scythe of Elune
 						_, _, value = strfind(text, L["Improves your chance to hit and get a critical strike with spells by (%d+)%%"])
                         if value then
