@@ -136,12 +136,9 @@ function BCS:GetHitRating(hitOnly)
         twipe(SetBonus.hit)
         -- Gear
 		for slot = 1, 19 do
-			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				-- if eqItemLink then
-				-- 	BCS_Tooltip:ClearLines()
-				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-				-- end
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -158,11 +155,11 @@ function BCS:GetHitRating(hitOnly)
                         if value then
                             BCScache["gear"].hit = BCScache["gear"].hit + tonumber(value)
                         end
-
+                        -- Set Bonuses
 						_, _, value = strfind(text, setPattern)
-						if value then
-							setName = value
-						end
+                        if value then
+                            setName = value
+                        end
 						_, _, value = strfind(text, L["^Set: Improves your chance to hit by (%d)%%."])
 						if value and setName and not SetBonus.hit[setName] then
 							SetBonus.hit[setName] = true
@@ -304,12 +301,9 @@ function BCS:GetSpellHitRating()
         twipe(SetBonus.spellHit)
 		-- Gear
 		for slot = 1, 19 do
-			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				-- if eqItemLink then
-				-- 	BCS_Tooltip:ClearLines()
-				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-				-- end
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -331,11 +325,11 @@ function BCS:GetSpellHitRating()
                         if value then
 							BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
 						end
-
-						_, _, value = strfind(text, setPattern)
-						if value then
-							setName = value
-						end
+                        -- Set Bonuses
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
 						_, _, value = strfind(text, L["^Set: Improves your chance to hit with spells by (%d)%%."])
 						if value and setName and not SetBonus.spellHit[setName] then
 							SetBonus.spellHit[setName] = true
@@ -536,12 +530,9 @@ function BCS:GetRangedCritChance()
 		twipe(SetBonus.rangedCrit)
 		-- Gear
 		for slot = 1, 19 do
-			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				-- if eqItemLink then
-				-- 	BCS_Tooltip:ClearLines()
-				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-				-- end
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -559,11 +550,11 @@ function BCS:GetRangedCritChance()
 						if value then
 							BCScache["gear"].ranged_crit = BCScache["gear"].ranged_crit + tonumber(value)
 						end
-
-						_, _, value = strfind(text, setPattern)
-						if value then
-							setName = value
-						end
+                        -- Set Bonuses
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
 						_, _, value = strfind(text, L["^Set: Improves your chance to get a critical strike by (%d)%%."])
 						if value and setName and not SetBonus.rangedCrit[setName] then
 							SetBonus.rangedCrit[setName] = true
@@ -662,12 +653,9 @@ function BCS:GetSpellCritChance()
         twipe(SetBonus.spellCrit)
 		-- Gear
 		for slot = 1, 19 do
-			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				-- if eqItemLink then
-				-- 	BCS_Tooltip:ClearLines()
-				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-				-- end
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -676,23 +664,23 @@ function BCS:GetSpellCritChance()
 						if value then
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
+                        _, _, value = strfind(text, L["(%d)%% Spell Critical Strike"])
+                        if value then
+                            BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
+                        end
                         -- Scythe of Elune
 						_, _, value = strfind(text, L["Improves your chance to hit and get a critical strike with spells by (%d+)%%"])
                         if value then
                             BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
                         end
-
-						_, _, value = strfind(text, setPattern)
-						if value then
-							setName = value
-						end
+                        -- Set Bonuses
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
 						_, _, value = strfind(text, L["^Set: Improves your chance to get a critical strike with spells by (%d)%%."])
 						if value and setName and not SetBonus.spellCrit[setName] then
 							SetBonus.spellCrit[setName] = true
-							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
-						end
-						_, _, value = strfind(text, L["(%d)%% Spell Critical Strike"])
-						if value then
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
 					end
@@ -704,9 +692,9 @@ function BCS:GetSpellCritChance()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Wizard Oil"])
-					if found then
+					if strfind(text, L["^Brilliant Wizard Oil"]) then
 						BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + 1
+                        break
 					end
 				end
 			end
@@ -1038,21 +1026,18 @@ function BCS:GetSpellCritFromClass(class)
 			BCScache["gear"].priest_prayer = 0
             -- Gear 
 			for slot = 1, 19 do
-				if BCS_Tooltip:SetInventoryItem("player", slot) then
-					-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-					-- if eqItemLink then
-					-- 	BCS_Tooltip:ClearLines()
-					-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-					-- end
-					local setName = nil
+                local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+                if eqItemLink then
+                    BCS_Tooltip:SetHyperlink(eqItemLink)
+					local setName
 					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
-							local _, _, value = strfind(text, setPattern)
-							if value then
-								setName = value
-							end
-			                -- T1 set gives + 2% crit to holy and 25% to prayer of healing
+                            -- Set Bonuses
+                            local _, _, value = strfind(text, setPattern)
+                            if value then
+                                setName = value
+                            end
 							_, _, value = strfind(text, L["^Set: Improves your chance to get a critical strike with Holy spells by (%d)%%."])
 							if value and setName and not SetBonus.spellCritClass[setName] then
 								SetBonus.spellCritClass[setName] = true
@@ -1148,7 +1133,9 @@ function BCS:GetSpellPower(school)
             BCScache["gear"][key] = 0
             -- Gear
 			for slot = 1, 19 do
-				if BCS_Tooltip:SetInventoryItem("player", slot) then
+                local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+                if eqItemLink then
+                    BCS_Tooltip:SetHyperlink(eqItemLink)
 					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
@@ -1189,12 +1176,9 @@ function BCS:GetSpellPower(school)
 			BCScache["gear"].shadow = 0
             -- Gear
 			for slot = 1, 19 do
-				if BCS_Tooltip:SetInventoryItem("player", slot) then
-					-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-					-- if eqItemLink then
-					-- 	BCS_Tooltip:ClearLines()
-					-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-					-- end
+                local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+                if eqItemLink then
+                    BCS_Tooltip:SetHyperlink(eqItemLink)
 					local setName
 					for line = 1, BCS_Tooltip:NumLines() do
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1310,10 +1294,10 @@ function BCS:GetSpellPower(school)
 								BCScache["gear"].shadow = BCScache["gear"].shadow + tonumber(value)
 							end
 							-- Set Bonuses
-							_, _, value = strfind(text, setPattern)
-							if value then
-								setName = value
-							end
+                            _, _, value = strfind(text, setPattern)
+                            if value then
+                                setName = value
+                            end
 							_, _, value = strfind(text, L["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."])
 							if value and setName and not SetBonus.spellPower[setName] then
 								SetBonus.spellPower[setName] = true
@@ -1329,26 +1313,22 @@ function BCS:GetSpellPower(school)
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 					if text then
 						-- apparently gives healing too
-						local found = strfind(text, L["^Brilliant Wizard Oil"])
-						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
-							break
-						end
-						found = strfind(text, L["^Lesser Wizard Oil"])
-						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
-							break
-						end
-						found = strfind(text, L["^Minor Wizard Oil"])
-						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
-							break
-						end
-						found = strfind(text, L["^Wizard Oil"])
-						if found then
-							BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
-							break
-						end
+                        if strfind(text, L["^Brilliant Wizard Oil"]) then
+                            BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 36
+                            break
+                        end
+                        if strfind(text, L["^Lesser Wizard Oil"]) then
+                            BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 16
+                            break
+                        end
+                        if strfind(text, L["^Minor Wizard Oil"]) then
+                            BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 8
+                            break
+                        end
+                        if strfind(text, L["^Wizard Oil"]) then
+                            BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + 24
+                            break
+                        end
 					end
 				end
 			end
@@ -1498,12 +1478,9 @@ function BCS:GetHealingPower()
         twipe(SetBonus.healingPower)
         -- Gear
 		for slot = 1, 19 do
-			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				-- if eqItemLink then
-				-- 	BCS_Tooltip:ClearLines()
-				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-				-- end
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1533,14 +1510,11 @@ function BCS:GetHealingPower()
 						if value then
 							BCScache["gear"].healing = BCScache["gear"].healing + tonumber(value)
 						end
-						-- Enchanted Armor Kit (Leatherwotking) 
-						-- Arcanum of Focus (Head/Legs enchant)
-						-- already included in GetSpellPower
-
-						_, _, value = strfind(text, setPattern)
-						if value then
-							setName = value
-						end
+                        -- Set Bonuses
+                        _, _, value = strfind(text, setPattern)
+                        if value then
+                            setName = value
+                        end
 						_, _, value = strfind(text, L["^Set: Increases healing done by spells and effects by up to (%d+)%."])
 						if value and setName and not SetBonus.healingPower[setName] then
 							SetBonus.healingPower[setName] = true
@@ -1556,10 +1530,10 @@ function BCS:GetHealingPower()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Mana Oil"])
-					if found then
-						BCScache["gear"].healing = BCScache["gear"].healing + 25
-					end
+                    if strfind(text, L["^Brilliant Mana Oil"]) then
+                        BCScache["gear"].healing = BCScache["gear"].healing + 25
+                        break
+                    end
 				end
 			end
 		end
@@ -1676,12 +1650,9 @@ function BCS:GetManaRegen()
         twipe(SetBonus.mp5)
         -- Gear
 		for slot = 1, 19 do
-			if BCS_Tooltip:SetInventoryItem("player", slot) then
-				-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-				-- if eqItemLink then
-				-- 	BCS_Tooltip:ClearLines()
-				-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-				-- end
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
 				local setName
 				for line = 1, BCS_Tooltip:NumLines() do
 					local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
@@ -1706,11 +1677,11 @@ function BCS:GetManaRegen()
 						if value then
 							BCScache["gear"].casting = BCScache["gear"].casting + tonumber(value)
 						end
-
+                        -- Set Bonuses
 						_, _, value = strfind(text, setPattern)
-						if value then
-							setName = value
-						end
+                        if value then
+                            setName = value
+                        end
 						_, _, value = strfind(text, L["^Set: Allows (%d+)%% of your Mana regeneration to continue while casting."])
 						if value and setName and not SetBonus.mp5[setName] then
 							SetBonus.mp5[setName] = true
@@ -1731,18 +1702,18 @@ function BCS:GetManaRegen()
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
 				if text then
-					local found = strfind(text, L["^Brilliant Mana Oil"])
-					if found then
-						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 12
-					end
-					found = strfind(text, L["^Lesser Mana Oil"])
-					if found then
-						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 8
-					end
-					found = strfind(text, L["^Minor Mana Oil"])
-					if found then
-						BCScache["gear"].mp5 = BCScache["gear"].mp5 + 4
-					end
+                    if strfind(text, L["^Brilliant Mana Oil"]) then
+                        BCScache["gear"].mp5 = BCScache["gear"].mp5 + 12
+                        break
+                    end
+                    if strfind(text, L["^Lesser Mana Oil"]) then
+                        BCScache["gear"].mp5 = BCScache["gear"].mp5 + 8
+                        break
+                    end
+                    if strfind(text, L["^Minor Mana Oil"]) then
+                        BCScache["gear"].mp5 = BCScache["gear"].mp5 + 4
+                        break
+                    end
 				end
 			end
 		end
@@ -1951,12 +1922,9 @@ function BCS:GetBlockValue()
 	local mod = 0
 	-- Gear
 	for slot = 1, 19 do
-		if BCS_Tooltip:SetInventoryItem("player", slot) then
-			-- local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot), "(item:%d+:%d+:%d+:%d+)")
-			-- if eqItemLink then
-			-- 	BCS_Tooltip:ClearLines()
-			-- 	BCS_Tooltip:SetHyperlink(eqItemLink)
-			-- end
+        local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+        if eqItemLink then
+            BCS_Tooltip:SetHyperlink(eqItemLink)
 			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
 				local text = left:GetText()
@@ -2070,7 +2038,9 @@ function BCS:GetHaste()
         -- Gear
         twipe(SetBonus.haste)
         for slot = 1, 19 do
-            if BCS_Tooltip:SetInventoryItem("player", slot) then
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
                 local setName
                 for line = 1, BCS_Tooltip:NumLines() do
                     local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
@@ -2094,7 +2064,7 @@ function BCS:GetHaste()
                         if value then
                             BCScache["gear"].haste = BCScache["gear"].haste + tonumber(value)
                         end
-
+                        -- Set Bonuses
                         _, _, value = strfind(text, setPattern)
                         if value then
                             setName = value
@@ -2201,7 +2171,9 @@ function BCS:GetArmorPen()
         twipe(SetBonus.armor_pen)
         -- Gear
         for slot = 1, 19 do
-            if BCS_Tooltip:SetInventoryItem("player", slot) then
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
                 local setName
                 for line = 1, BCS_Tooltip:NumLines() do
                     local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
@@ -2211,7 +2183,7 @@ function BCS:GetArmorPen()
                         if value then
                             BCScache["gear"].armor_pen = BCScache["gear"].armor_pen + tonumber(value)
                         end
-
+                        -- Set Bonuses
                         _, _, value = strfind(text, setPattern)
                         if value then
                             setName = value
@@ -2262,7 +2234,9 @@ function BCS:GetSpellPen()
         twipe(SetBonus.spell_pen)
         -- Gear
         for slot = 1, 19 do
-            if BCS_Tooltip:SetInventoryItem("player", slot) then
+            local _, _, eqItemLink = strfind(GetInventoryItemLink("player", slot) or "", "(item:%d+:%d+:%d+:%d+)")
+			if eqItemLink then
+                BCS_Tooltip:SetHyperlink(eqItemLink)
                 local setName
                 for line = 1, BCS_Tooltip:NumLines() do
                     local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
@@ -2272,7 +2246,7 @@ function BCS:GetSpellPen()
                         if value then
                             BCScache["gear"].spell_pen = BCScache["gear"].spell_pen + tonumber(value)
                         end
-
+                        -- Set Bonuses
                         _, _, value = strfind(text, setPattern)
                         if value then
                             setName = value
