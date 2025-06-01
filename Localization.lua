@@ -174,83 +174,85 @@ BCS["L"] = {
 	["Increases the effects of your Inner Fire spell by (%d+)%%."] = "Increases the effects of your Inner Fire spell by (%d+)%%.",
 	["Improved Shadowform"] = "Improved Shadowform",
 	["Shadowform"] = "Shadowform",
-	
-	--defense
-	["DEFENSE_TOOLTIP"] = [[|cffffffffDefense Skill|r]],
-	["DEFENSE_TOOLTIP_SUB"] = [[Higher defense makes you harder to hit and makes monsters less likely to land a crushing blow.]],
 
-	["PLAYER_DODGE_TOOLTIP"] = [[|cffffffffDodge|r]],
-	["PLAYER_DODGE_TOOLTIP_SUB"] = [[Your chance to dodge enemy melee attacks.
+	-- defense
+	DEFENSE_TOOLTIP = [[|cffffffffDefense Skill|r]],
+	DEFENSE_TOOLTIP_SUB = [[Higher defense makes you harder to hit and makes monsters less likely to land a crushing blow.]],
+
+	PLAYER_DODGE_TOOLTIP = [[|cffffffffDodge|r]],
+	PLAYER_DODGE_TOOLTIP_SUB = [[Your chance to dodge enemy melee attacks.
 	Players can not dodge attacks from behind.]],
 
-	["PLAYER_PARRY_TOOLTIP"] = [[|cffffffffParry|r]],
-	["PLAYER_PARRY_TOOLTIP_SUB"] = [[Your chance to parry enemy melee attacks.
+	PLAYER_PARRY_TOOLTIP = [[|cffffffffParry|r]],
+	PLAYER_PARRY_TOOLTIP_SUB = [[Your chance to parry enemy melee attacks.
 	Players and monsters can not parry attacks from behind.]],
 
-	["PLAYER_BLOCK_TOOLTIP"] = [[|cffffffffBlock|r]],
-	["PLAYER_BLOCK_TOOLTIP_SUB"] = [[Your chance to block enemy physical attacks with a shield.
+	PLAYER_BLOCK_TOOLTIP = [[|cffffffffBlock|r]],
+	PLAYER_BLOCK_TOOLTIP_SUB = [[Your chance to block enemy physical attacks with a shield.
 	Players and monsters can not block attacks from behind.]],
 
-	["TOTAL_AVOIDANCE_TOOLTIP"] = [[|cffffffffAvoidance|r]],
-	["TOTAL_AVOIDANCE_TOOLTIP_SUB"] = [[Your total chance to avoid enemy physical attacks. Subtract 2.4 vs bosses.]],
+	TOTAL_AVOIDANCE_TOOLTIP = [[|cffffffffAvoidance|r]],
+	TOTAL_AVOIDANCE_TOOLTIP_SUB = [[Your total chance to avoid enemy physical attacks.]],
 
-	--melee
-	["MELEE_HIT_TOOLTIP"] = [[|cffffffffMelee Hit|r]],
-	["MELEE_HIT_TOOLTIP_SUB"] = [[Increases chance to hit with melee attacks.]],
-	["MELEE_CRIT_TOOLTIP"] = [[|cffffffffMelee Crit|r]],
-	["MELEE_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with melee attacks.]],
-	["MELEE_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffMelee Weapon Skill|r]],
-	["MELEE_WEAPON_SKILL_TOOLTIP_SUB"] = [[Higher weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
-	
+	-- melee
+	MELEE_HIT_TOOLTIP = [[|cffffffffMelee Hit|r]],
+	MELEE_HIT_TOOLTIP_SUB = [[Increases chance to hit with melee attacks.]],
+	MELEE_CRIT_TOOLTIP = [[|cffffffffMelee Crit|r]],
+	MELEE_CRIT_TOOLTIP_SUB = [[Your chance to land a critical strike with melee attacks.]],
+	MELEE_WEAPON_SKILL_TOOLTIP = [[|cffffffffMelee Weapon Skill|r]],
+	MELEE_WEAPON_SKILL_TOOLTIP_SUB = [[Higher weapon skill reduces your chance to miss and increases damage of your glancing blows, while using melee weapons.]],
 
 	--boss
-	["MELEE_MISS_VS_BOSS_TOOLTIP"] = [[|cffffffffChance To Miss Boss(lvl 63)|r]],
-	["MELEE_MISS_VS_BOSS_TOOLTIP_SUB"] = [[Melee attack miss chance due to mob being higher level than you.]],
-	["MELEE_DODGE_VS_BOSS_TOOLTIP"] = [[|cffffffffChance Boss(lvl 63) Dodges|r]],
-	["MELEE_DODGE_VS_BOSS_TOOLTIP_SUB"] = [[The formula is 5%% dodge chance + (your weapon skill - 315) * 0.1%%.]],
-	["MELEE_GLANCE_VS_BOSS_TOOLTIP"] = [[|cffffffffPercent Glancing Damage vs Boss(lvl 63)|r]],
-	["MELEE_GLANCE_VS_BOSS_TOOLTIP_SUB"] = [[Against lvl 63 Boss you have a 40%% chance to do a glancing blow that does reduced damage.  The amount of damage reduction is based on your weapon skill but the formula is too complicated to show here.]],
-	["MELEE_CRIT_CAP_VS_BOSS_TOOLTIP"] = [[|cffffffffCritical Chance Cap|r]],
-	["MELEE_CRIT_CAP_VS_BOSS_TOOLTIP_SUB"] = [[A critical hit can only happen if an attack is not already a miss, dodged, or glancing.  This means your crit cap is (100%% - miss chance%% - dodge chance%% - glance chance%%).  Any crit chance you have over your crit cap is wasted.]],
-	["MELEE_EFF_CRIT_VS_BOSS_TOOLTIP"] = [[|cffffffffEffective Critical Chance|r]],
-	["MELEE_EFF_CRIT_VS_BOSS_TOOLTIP_SUB"] = [[If you are under your crit cap, this will match your normal crit chance.	If you are over your crit cap, this will be your crit cap.]],
+	MELEE_MISS_VS_BOSS_TOOLTIP = [[|cffffffffChance To Miss Boss(lvl 63)|r]],
+	MELEE_MISS_VS_BOSS_TOOLTIP_SUB = [[Melee attack miss chance due to mob being higher level than you.]],
+	MELEE_DODGE_VS_BOSS_TOOLTIP = [[|cffffffffChance Boss(lvl 63) Dodges|r]],
+	MELEE_DODGE_VS_BOSS_TOOLTIP_SUB = [[The formula is 5%% dodge chance + (your weapon skill - 315) * 0.1%%.]],
+	MELEE_GLANCE_VS_BOSS_TOOLTIP = [[|cffffffffPercent Glancing Damage vs Boss(lvl 63)|r]],
+	MELEE_GLANCE_VS_BOSS_TOOLTIP_SUB = [[Against lvl 63 Boss you have a 40%% chance to do a glancing blow that does reduced damage.  The amount of damage reduction is based on your weapon skill but the formula is too complicated to show here.]],
+	MELEE_CRIT_CAP_VS_BOSS_TOOLTIP = [[|cffffffffCritical Chance Cap|r]],
+	MELEE_CRIT_CAP_VS_BOSS_TOOLTIP_SUB = [[A critical hit can only happen if an attack is not already a miss, dodged, or glancing.  This means your crit cap is (100%% - miss chance%% - dodge chance%% - glance chance%%).  Any crit chance you have over your crit cap is wasted.]],
+	MELEE_EFF_CRIT_VS_BOSS_TOOLTIP = [[|cffffffffEffective Critical Chance|r]],
+	MELEE_EFF_CRIT_VS_BOSS_TOOLTIP_SUB = [[If you are under your crit cap, this will match your normal crit chance.	If you are over your crit cap, this will be your crit cap.]],
 
-	--ranged
-	["RANGED_WEAPON_SKILL_TOOLTIP"] = [[|cffffffffRanged Weapon Skill|r]],
-	["RANGED_WEAPON_SKILL_TOOLTIP_SUB"] = [[Higher weapon skill reduces your chance to miss with a ranged weapon.]],
-	["RANGED_CRIT_TOOLTIP"] = [[|cffffffffRanged Crit|r]],
-	["RANGED_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with ranged weapons.]],
-	["RANGED_HIT_TOOLTIP"] = [[|cffffffffRanged Hit|r]],
-	["RANGED_HIT_TOOLTIP_SUB"] = [[Increases chance to hit with ranged weapons.]],
+	-- ranged
+	RANGED_WEAPON_SKILL_TOOLTIP = [[|cffffffffRanged Weapon Skill|r]],
+	RANGED_WEAPON_SKILL_TOOLTIP_SUB = [[Higher weapon skill reduces your chance to miss with a ranged weapon.]],
+	RANGED_CRIT_TOOLTIP = [[|cffffffffRanged Crit|r]],
+	RANGED_CRIT_TOOLTIP_SUB = [[Your chance to land a critical strike with ranged weapons.]],
+	RANGED_HIT_TOOLTIP = [[|cffffffffRanged Hit|r]],
+	RANGED_HIT_TOOLTIP_SUB = [[Increases chance to hit with ranged weapons.]],
 
-	--spells
-	["SPELL_HIT_TOOLTIP"] = [[|cffffffffSpell Hit|r]],
-	["SPELL_HIT_SECONDARY_TOOLTIP"] = [[|cffffffffSpell Hit (%d%%|cff20ff20+%d%% %s|r|cffffffff)|r]],
-	["SPELL_HIT_TOOLTIP_SUB"] = [[Increases chance to land a harmful spell.]],
+	-- spells
+	SPELL_HIT_TOOLTIP = [[|cffffffffSpell Hit|r]],
+	SPELL_HIT_SECONDARY_TOOLTIP = [[|cffffffffSpell Hit (%d%%|cff20ff20+%d%% %s|r|cffffffff)|r]],
+	SPELL_HIT_TOOLTIP_SUB = [[Increases chance to land a harmful spell.]],
 
-	["SPELL_CRIT_TOOLTIP"] = [[|cffffffffSpell Crit|r]],
-	["SPELL_CRIT_TOOLTIP_SUB"] = [[Your chance to land a critical strike with spells.]],
+	SPELL_CRIT_TOOLTIP = [[|cffffffffSpell Crit|r]],
+	SPELL_CRIT_TOOLTIP_SUB = [[Your chance to land a critical strike with spells.]],
 
-	["SPELL_POWER_TOOLTIP"] = [[|cffffffffSpell Power %d|r]],
-	["SPELL_POWER_TOOLTIP_SUB"] = [[Increases damage done by spells and effects.]],
-	["SPELL_POWER_SECONDARY_TOOLTIP"] = [[|cffffffffSpell Power %d (%d|cff20ff20+%d %s|r|cffffffff)|r]],
-	["SPELL_POWER_SECONDARY_TOOLTIP_SUB"] = [[Increases damage done by spells and effects.]],
+	SPELL_POWER_TOOLTIP = [[|cffffffffSpell Power %d|r]],
+	SPELL_POWER_TOOLTIP_SUB = [[Increases damage done by spells and effects.]],
+	SPELL_POWER_SECONDARY_TOOLTIP = [[|cffffffffSpell Power %d (%d|cff20ff20+%d %s|r|cffffffff)|r]],
+	SPELL_POWER_SECONDARY_TOOLTIP_SUB = [[Increases damage done by spells and effects.]],
 
-	["SPELL_SCHOOL_TOOLTIP"] = [[|cffffffff%s Spell Power %s|r]],
-	["SPELL_SCHOOL_SECONDARY_TOOLTIP"] = [[|cffffffff%s Spell Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
-	["SPELL_SCHOOL_TOOLTIP_SUB"] = [[Increases damage done by %s spells and effects.]],
+	SPELL_SCHOOL_TOOLTIP = [[|cffffffff%s Spell Power %s|r]],
+	SPELL_SCHOOL_SECONDARY_TOOLTIP = [[|cffffffff%s Spell Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
+	SPELL_SCHOOL_TOOLTIP_SUB = [[Increases damage done by %s spells and effects.]],
 
-	["SPELL_HEALING_POWER_TOOLTIP"] = [[|cffffffffHealing Power %d|r]],
-	["SPELL_HEALING_POWER_SECONDARY_TOOLTIP"] = [[|cffffffffHealing Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
-	["SPELL_HEALING_POWER_TOOLTIP_SUB"] = [[Increases healing done by spells and effects.]],
+	SPELL_HEALING_POWER_TOOLTIP = [[|cffffffffHealing Power %d|r]],
+	SPELL_HEALING_POWER_SECONDARY_TOOLTIP = [[|cffffffffHealing Power %d (%d|cff20ff20+%d|r|cffffffff)|r]],
+	SPELL_HEALING_POWER_TOOLTIP_SUB = [[Increases healing done by spells and effects.]],
 
-	["SPELL_MANA_REGEN_TOOLTIP"] = [[|cffffffffMana Regeneration: %d |cffffffff(%d)|r]],
-	["SPELL_MANA_REGEN_TOOLTIP_SUB"] = [[Mana regen when not casting and (while casting).
+	SPELL_MANA_REGEN_TOOLTIP = [[|cffffffffMana Regeneration: %d |cffffffff(%d)|r]],
+	SPELL_MANA_REGEN_TOOLTIP_SUB = [[Mana regen when not casting and (while casting).
 	Mana regenerates every 2 seconds and the amount is dependent on your total spirit and MP5.
 	Spirit Regen: %d
 	Regen while casting: %d%%
 	MP5 Regen: %d
 	MP5 Regen (2s): %d]],
+
+	SPELL_HASTE_TOOLTIP = "Spell Haste",
+	SPELL_HASTE_TOOLTIP_SUB = "Reduces cast time or your spells.",
 
 	PLAYERSTAT_BASE_STATS = "Base Stats",
 	PLAYERSTAT_DEFENSES = "Defenses",
@@ -274,6 +276,8 @@ BCS["L"] = {
 	SPELL_CRIT_COLON = "Crit Chance:",
 	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
+	HASTE_COLON = "Haste:",
+	ARMOR_PEN_COLON = "Traget's armor reduction:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
 	BLOCK_COLON = BLOCK .. ":",
@@ -285,7 +289,7 @@ BCS["L"] = {
 	SPELL_SCHOOL_HOLY = "Holy",
 	SPELL_SCHOOL_NATURE = "Nature",
 	SPELL_SCHOOL_SHADOW = "Shadow",
-	
+
 	BLOCK_VALUE = "Block Value: ",
 	IRONCLAD = "Healing power from Ironclad: %d",
 
@@ -295,6 +299,7 @@ BCS["L"] = {
 	HIT_AFFLICTION = "Affliction spells: %.f%%",
 	HIT_SHADOW = "Shadow spells: %.f%%",
 	HIT_HOLY_DISC = "Holy and Discipline spells: %.f%%",
+	SPELL_PEN = "Target's resistances reduction: %d",
 
 	CRIT_MOONFIRE = "Moonfire: %.2f%%",
 	CRIT_REGROWTH = "Regrowth: %.2f%%",
@@ -337,10 +342,13 @@ BCS["L"] = {
 	["Magical damage dealt by spells and abilities is increased by up to (%d+)"] = "Magical damage dealt by spells and abilities is increased by up to (%d+)",
 	["Increased damage done by magical spells and effects by (%d+)."] = "Increased damage done by magical spells and effects by (%d+).",
 	["Increases healing done by magical spells and effects by up to (%d+)."] = "Increases healing done by magical spells and effects by up to (%d+).",
+	["Improves your chance to hit and get a critical strike with spells by (%d+)%%"] = "Improves your chance to hit and get a critical strike with spells by (%d+)%%",
+	["Increases damage done by magical spells and effects by up to (%d+)"] = "Increases damage done by magical spells and effects by up to (%d+)",
 
 	["Restores (%d+) mana per 5 seconds."] = "Restores (%d+) mana per 5 seconds.",
 	["Allows (%d+)%% of mana regeneration while casting."] = "Allows (%d+)%% of mana regeneration while casting.",
 
+	-- Block value
 	["(%d+) Block"] = "(%d+) Block",
 	["Equip: Increases the block value of your shield by (%d+)."] = "Equip: Increases the block value of your shield by (%d+).",
 	["Block Value %+(%d+)"] = "Block Value %+(%d+)",
@@ -351,5 +359,36 @@ BCS["L"] = {
 	["^Stoneskin$"] = "^Stoneskin$",
 
 	["to all party members"] = "to all party members",
-    ["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)"
+	["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)",
+
+	-- Haste
+	["^Equip: Increases your attack and casting speed by (%d+)%%"] = "^Equip: Increases your attack and casting speed by (%d+)%%",
+	["^Set: Increases your attack and casting speed by (%d+)%%"] = "^Set: Increases your attack and casting speed by (%d+)%%",
+	["^Equip: Increases your casting speed by (%d+)%%"] = "^Equip: Increases your casting speed by (%d+)%%",
+	["^Attack speed %+(%d+)%%"] = "^Attack speed %+(%d+)%%",
+	["^%+(%d+)%% Haste"] = "^%+(%d+)%% Haste",
+	["Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%"] = "Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%",
+	["Zeal increases your attack and casting speed by an additional (%d+)%% per stack"] = "Zeal increases your attack and casting speed by an additional (%d+)%% per stack",
+	["^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%"] = "^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%",
+	["^Increases attack and spell casting speed by (%d+)%%"] = "^Increases attack and spell casting speed by (%d+)%%",
+	["increases casting speed by (%d+)%%"] = "increases casting speed by (%d+)%%",
+	["^Increases casting and attack speed by (%d+)%%"] = "^Increases casting and attack speed by (%d+)%%",
+	["^Increases attack and casting speed by (%d+)%%"] = "^Increases attack and casting speed by (%d+)%%",
+	["^Casting speed increased by (%d+)%%"] = "^Casting speed increased by (%d+)%%",
+	["^Attack and casting speed increased by (%d+)%%"] = "^Attack and casting speed increased by (%d+)%%",
+
+	-- Armor penetration
+	["^Equip: Your attacks ignore (%d+) of the target's armor"] = "^Equip: Your attacks ignore (%d+) of the target's armor",
+	["^Set: Your attacks ignore (%d+) of the target's armor"] = "^Set: Your attacks ignore (%d+) of the target's armor",
+	["^Ignore (%d+) of enemies' armor"] = "^Ignore (%d+) of enemies' armor",
+	["^Current target's armor is reduced by (%d+)"] = "^Current target's armor is reduced by (%d+)",
+	["Causes your attacks to ignore (%d+) of your target's Armor per level"] = "Causes your attacks to ignore (%d+) of your target's Armor per level",
+	["One-Handed Maces"] = "One-Handed Maces",
+	["Two-Handed Maces"] = "Two-Handed Maces",
+
+	-- Spell penetration
+	["^Equip: Decreases the magical resistances of your spell targets by (%d+)"] = "^Equip: Decreases the magical resistances of your spell targets by (%d+)",
+	["^Set: Decreases the magical resistances of your spell targets by (%d+)"] = "^Set: Decreases the magical resistances of your spell targets by (%d+)",
+
+	["^Equip: Improves your chance to hit with spells and attacks by (%d+)%%"] = "^Equip: Improves your chance to hit with spells and attacks by (%d+)%%",
 }
