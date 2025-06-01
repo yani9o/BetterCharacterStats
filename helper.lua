@@ -1224,7 +1224,7 @@ function BCS:GetSpellPower(school)
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							-- Generic bonus on most gear
-							local _, _, value = strfind(text, L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."])
+							local _, _, value = strfind(text, L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)%."])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
@@ -1413,7 +1413,7 @@ function BCS:GetSpellPower(school)
 			if spellPowerFromAura then
 				BCScache["auras"].only_damage = BCScache["auras"].only_damage + tonumber(spellPowerFromAura)
 			end
-			_, _, spellPowerFromAura = BCS:GetPlayerAura(L["Increases damage and healing done by magical spells and effects by up to (%d+)"])
+			_, _, spellPowerFromAura = BCS:GetPlayerAura(L["Increases damage and healing done by magical spells and effects by up to (%d+)%."])
 			if spellPowerFromAura then
 				BCScache["auras"].damage_and_healing = BCScache["auras"].damage_and_healing + tonumber(spellPowerFromAura)
 			end
