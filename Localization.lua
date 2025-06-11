@@ -13,9 +13,6 @@ BCS["L"] = {
 	["^Set: Improves your chance to get a critical strike by (%d)%%."] = "^Set: Improves your chance to get a critical strike by (%d)%%.",
 	["^Set: Restores (%d+) mana per 5 sec."] = "^Set: Restores (%d+) mana per 5 sec.",
 
-	-- scythe
-	["Equip: Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40.",
-
 	["Equip: Improves your chance to hit by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to hit by (%d)%%.",
 	["Equip: Improves your chance to get a critical strike with spells by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to get a critical strike with spells by (%d)%%.",
 	["Equip: Improves your chance to hit with spells by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Improves your chance to hit with spells by (%d)%%.",

@@ -341,11 +341,6 @@ function BCS:GetSpellHitRating()
 							SetBonus.spellHit[setName] = true
 							BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + tonumber(value)
 						end
-                        -- Scythe
-                        exists = strfind(text, L["Equip: Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40."])
-                        if exists then
-                            BCScache["gear"].spell_hit = BCScache["gear"].spell_hit + 2
-                        end
 					end
 				end
 			end
@@ -700,15 +695,10 @@ function BCS:GetSpellCritChance()
 							SetBonus.spellCrit[setName] = true
 							BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + tonumber(value)
 						end
-						end
-                        -- Scythe
-                        exists = strfind(text, L["Equip: Improves your chance to hit and get a critical strike with spells by 2%%. Increases damage done by magical spells and effects by up to 40."])
-                        if exists then
-                            BCScache["gear"].spell_crit = BCScache["gear"].spell_crit + 2
-                        end
 					end
 				end
 			end
+		end
 		if BCS_Tooltip:SetInventoryItem("player", 16) then
 			for line = 1, BCS_Tooltip:NumLines() do
 				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
