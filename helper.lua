@@ -8,6 +8,7 @@ local L = BCS["L"]
 local setPattern = "(.+) %(%d/%d%)"
 local strfind = strfind
 local tonumber = tonumber
+local _, playerClass = UnitClass("player")
 
 local function twipe(table)
     if type(table) ~= "table" then
@@ -472,28 +473,27 @@ end
 function BCS:GetRangedCritChance()
 	-- values from vmangos core
 	local crit = 0
-	local _, class = UnitClass("player")
 	local _, agility = UnitStat("player", 2)
 	local vallvl1 = 0
 	local vallvl60 = 0
 	local classrate = 0
 
-	if class == "MAGE" then
+	if playerClass == "MAGE" then
 		vallvl1 = 12.9
 		vallvl60 = 20
-	elseif class == "ROGUE" then
+	elseif playerClass == "ROGUE" then
 		vallvl1 = 2.2
 		vallvl60 = 29
-	elseif class == "HUNTER" then
+	elseif playerClass == "HUNTER" then
 		vallvl1 = 3.5
 		vallvl60 = 53
-	elseif class == "PRIEST" then
+	elseif playerClass == "PRIEST" then
 		vallvl1 = 11
 		vallvl60 = 20
-	elseif class == "WARLOCK" then
+	elseif playerClass == "WARLOCK" then
 		vallvl1 = 8.4
 		vallvl60 = 20
-	elseif class == "WARRIOR" then
+	elseif playerClass == "WARRIOR" then
 		vallvl1 = 3.9
 		vallvl60 = 20
 	else
@@ -623,11 +623,11 @@ function BCS:GetRangedCritChance()
 		end
 	end
 
-	if class == "MAGE" then
+	if playerClass == "MAGE" then
 		crit = crit + 3.2
-	elseif class == "PRIEST" then
+	elseif playerClass == "PRIEST" then
 		crit = crit + 3
-	elseif class == "WARLOCK" then
+	elseif playerClass == "WARLOCK" then
 		crit = crit + 2
 	end
 
@@ -639,21 +639,20 @@ end
 function BCS:GetSpellCritChance()
 	local spellCrit = 0;
 	local _, intellect = UnitStat("player", 4)
-	local _, class = UnitClass("player")
 
 	-- values from vmangos core 
 	local playerLevel = UnitLevel("player")
-	if class == "MAGE" then
+	if playerClass == "MAGE" then
 		spellCrit = 3.7 + intellect / (14.77 + .65 * playerLevel)
-	elseif class == "WARLOCK" then
+	elseif playerClass == "WARLOCK" then
 		spellCrit = 3.18 + intellect / (11.30 + .82 * playerLevel)
-	elseif class == "PRIEST" then
+	elseif playerClass == "PRIEST" then
 		spellCrit = 2.97 + intellect / (10.03 + .82 * playerLevel)
-	elseif class == "DRUID" then
+	elseif playerClass == "DRUID" then
 		spellCrit = 3.33 + intellect / (12.41 + .79 * playerLevel)
-	elseif class == "SHAMAN" then
+	elseif playerClass == "SHAMAN" then
 		spellCrit = 3.54 + intellect / (11.51 + .8 * playerLevel)
-	elseif class == "PALADIN" then
+	elseif playerClass == "PALADIN" then
 		spellCrit = 3.7 + intellect / (14.77 + .65 * playerLevel)
 	end
 
@@ -1205,7 +1204,7 @@ function BCS:GetSpellPower(school)
 						local text = getglobal(BCS_Prefix .. "TextLeft" .. line):GetText()
 						if text then
 							-- Generic bonus on most gear
-							local _, _, value = strfind(text, L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)."])
+							local _, _, value = strfind(text, L["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)%."])
 							if value then
 								BCScache["gear"].damage_and_healing = BCScache["gear"].damage_and_healing + tonumber(value)
 							end
@@ -1621,23 +1620,22 @@ end
 
 local waterShield = nil
 function BCS:GetManaRegen()
-	local _, class = UnitClass("player")
     local _, spirit = UnitStat("player", 5)
 	local base = 0
 
-	if class == "DRUID" then
+	if playerClass == "DRUID" then
 		base = (spirit / 5 + 15)
-	elseif class == "HUNTER" then
+	elseif playerClass == "HUNTER" then
 		base = (spirit / 5 + 15)
-	elseif class == "MAGE" then
+	elseif playerClass == "MAGE" then
 		base = (spirit / 4 + 12.5)
-	elseif class == "PALADIN" then
+	elseif playerClass == "PALADIN" then
 		base = (spirit / 5 + 15)
-	elseif class == "PRIEST" then
+	elseif playerClass == "PRIEST" then
 		base = (spirit / 4 + 12.5)
-	elseif class == "SHAMAN" then
+	elseif playerClass == "SHAMAN" then
 		base = (spirit / 5 + 17)
-	elseif class == "WARLOCK" then
+	elseif playerClass == "WARLOCK" then
 		base = (spirit / 5 + 15)
 	end
 

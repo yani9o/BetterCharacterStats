@@ -7,6 +7,7 @@ L = BCS.L
 -- Tree of Life aura bonus from other players, your own is calculated in GetHealingPower()
 local aura = .0
 local playerName = UnitName("player")
+local _, playerClass = UnitClass("player")
 
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
@@ -74,21 +75,9 @@ function BCS:OnLoad()
 	BCSFrame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
 	BCSFrame:RegisterEvent("CHAT_MSG_SKILL") -- gaining weapon skill
 	BCSFrame:RegisterEvent("CHAT_MSG_ADDON") -- needed to recieve aura bonuses from other people
-	BCS.needUpdate = nil
-    -- there is less space for player character model with this addon, zoom out and move it up slightly
+	BCS.needUpdate = false
+    -- there is less space for player character model with this addon, shorten it slightly
     CharacterModelFrame:SetHeight(CharacterModelFrame:GetHeight() - 19)
-end
-
-local function strsplit(delimiter, subject)
-	if not subject then
-		return nil
-	end
-	local delimiter, fields = delimiter or ":", {}
-	local pattern = string.format("([^%s]+)", delimiter)
-	string.gsub(subject, pattern, function(c)
-		fields[table.getn(fields) + 1] = c
-	end)
-	return unpack(fields)
 end
 
 -- Scan stuff depending on event, but make sure to scan everything when addon is loaded
@@ -108,21 +97,22 @@ function BCS:OnEvent()
         if (GetNumPartyMembers() + GetNumRaidMembers()) == 0 then
             return
         end
-		BCS.needScanAuras = true
-		local type, name, amount = strsplit(",", arg2)
+		local _, _, type, name, amount = strfind(arg2 or "", "(%u+),(%a+),?(%d*)")
         if name ~= playerName then
             amount = tonumber(amount)
             if amount then
                 --BCS:Print("got tree response amount="..amount)
                 if amount >= aura then
                     aura = amount
+                    BCS.needScanAuras = true
                     if PaperDollFrame:IsVisible() then
                         BCS:UpdateStats()
                     else
                         BCS.needUpdate = true
                     end
                 end
-            else
+            elseif playerClass == "DRUID" then
+                BCS.needScanAuras = true
                 local _, treebonus = BCS:GetHealingPower()
                 if treebonus then
                     SendAddonMessage("bcs", "TREE"..","..playerName..","..treebonus, "PARTY")
@@ -184,7 +174,7 @@ end
 
 function BCS:OnShow()
 	if BCS.needUpdate then
-		BCS.needUpdate = nil
+		BCS.needUpdate = false
 		BCS:UpdateStats()
 	end
 end
@@ -233,10 +223,6 @@ local function StatFrame_OnUpdate()
     end
 end
 
-local function StatFrame_OnLeave()
-    GameTooltip:Hide()
-end
-
 local function AddTooltip(statFrame, tooltipExtra)
     if statFrame.tooltip then
         statFrame:SetScript("OnEnter", function()
@@ -253,7 +239,6 @@ local function AddTooltip(statFrame, tooltipExtra)
         statFrame:SetScript("OnUpdate", nil)
         statFrame:SetScript("OnEnter", nil)
     end
-	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 end
 
 local function StatFrameMeleeDamage_OnEnter()
@@ -402,8 +387,6 @@ local function AddDamageTooltip(damageText, statFrame, speed, offhandSpeed, rang
 		statFrame:SetScript("OnEnter", StatFrameMeleeDamage_OnEnter)
 	end
 
-	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
-
     if statFrame.damage then
         statFrame:SetScript("OnUpdate", StatFrame_OnUpdate)
     else
@@ -426,7 +409,6 @@ function BCS:SetStat(statFrame, statIndex)
 		PaperDollStatTooltip("player", statIndexTable[statIndex])
 	end)
 
-	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 
 	label:SetText(TEXT(getglobal("SPELL_STAT" .. (statIndex - 1) .. "_NAME")) .. ":")
 	local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statIndex)
@@ -602,7 +584,6 @@ end
 function BCS:SetHitRating(statFrame, ratingType)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local _, class = UnitClass("player")
 	label:SetText(L.MELEE_HIT_RATING_COLON)
 
 	if ratingType == "MELEE" then
@@ -652,7 +633,7 @@ function BCS:SetHitRating(statFrame, ratingType)
 					GameTooltip:AddLine(format(L.HIT_ARCANE, spell_hit + spell_hit_arcane))
 				end
 				if spell_hit_shadow > 0 then
-					if class == "WARLOCK" then
+					if playerClass == "WARLOCK" then
 						GameTooltip:AddLine(format(L.HIT_AFFLICTION, spell_hit + spell_hit_shadow))
 					else
 						GameTooltip:AddLine(format(L.HIT_SHADOW, spell_hit + spell_hit_shadow))
@@ -666,11 +647,9 @@ function BCS:SetHitRating(statFrame, ratingType)
                 end
 				GameTooltip:Show()
 			end)
-
-			statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 		end
 	end
-	
+
 	if ratingType ~= "SPELL" then
 		AddTooltip(statFrame)
 	end
@@ -730,12 +709,11 @@ end
 function BCS:SetSpellCritChance(statFrame)
 	local text = getglobal(statFrame:GetName() .. "StatText")
 	local label = getglobal(statFrame:GetName() .. "Label")
-	local _, class = UnitClass("player")
 
 	label:SetText(L.SPELL_CRIT_COLON)
 	
 	local generic = BCS:GetSpellCritChance()
-	local spell1, spell2, spell3, spell4, spell5, spell6 = BCS:GetSpellCritFromClass(class)
+	local spell1, spell2, spell3, spell4, spell5, spell6 = BCS:GetSpellCritFromClass(playerClass)
 	local total1 = generic + spell1
 	local total2 = generic + spell2
 	local total3 = generic + spell3
@@ -753,11 +731,11 @@ function BCS:SetSpellCritChance(statFrame)
 	text:SetText(format("%.2f%%", generic))
 
 	-- warlock spells that can crit are all destruction so just add this to generic
-	if class == "WARLOCK" and spell1 > 0 then 
+	if playerClass == "WARLOCK" and spell1 > 0 then 
 		text:SetText(format("%.2f%%", generic + spell1))
 
 	-- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
-	elseif class == "PRIEST" and spell3 > 0 and spell2 > 0 then 
+	elseif playerClass == "PRIEST" and spell3 > 0 and spell2 > 0 then 
 		if spell2 < spell3 then 
 			text:SetText(format("%.2f%%", generic + spell2))
 		elseif spell2 >= spell3 then
@@ -773,7 +751,7 @@ function BCS:SetSpellCritChance(statFrame)
 		GameTooltip:SetText(this.tooltip)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
 
-		if class == "DRUID" then
+		if playerClass == "DRUID" then
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_MOONFIRE, total1))
 			end
@@ -781,7 +759,7 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_REGROWTH, total2))
 			end
 
-		elseif class == "PALADIN" then
+		elseif playerClass == "PALADIN" then
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_HOLYLIGHT, total1))
 			end
@@ -792,12 +770,12 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_HOLYSHOCK, total3))
 			end
 
-		elseif class == "WARLOCK" then
+		elseif playerClass == "WARLOCK" then
 			if spell2 > 0 and spell2 ~= spell1 then
 				GameTooltip:AddLine(format(L.CRIT_SEARING, total2))
 			end
 
-		elseif class == "PRIEST" then -- all healing spells are holy, change tooltip if player have both talents
+		elseif playerClass == "PRIEST" then -- all healing spells are holy, change tooltip if player have both talents
 			if spell1 > 0 then
 				if spell3 > 0 then
 					GameTooltip:AddLine(format(L.CRIT_HEALING, total1))
@@ -818,7 +796,7 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_PRAYER, total4 + spell1))
 			end
 
-		elseif class == "MAGE" then -- dont show specific spells if they have same chance as fire spells
+		elseif playerClass == "MAGE" then -- dont show specific spells if they have same chance as fire spells
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_ARCANE, total1))
 			end
@@ -838,7 +816,7 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_FROZEN, total6))
 			end
 
-		elseif class == "SHAMAN" then
+		elseif playerClass == "SHAMAN" then
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_LIGHTNINGBOLT, total1))
 			end
@@ -858,8 +836,6 @@ function BCS:SetSpellCritChance(statFrame)
 
 		GameTooltip:Show()
 	end)
-
-	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 end
 
 function BCS:SetRangedCritChance(statFrame)
@@ -936,8 +912,7 @@ function BCS:SetManaRegen(statFrame)
 	label:SetText(L.MANA_REGEN_COLON)
 
 	-- if not a mana user and not a druid set to N/A
-	local _,class = UnitClass("player")
-	if UnitPowerType("player") ~= 0 and class ~= "DRUID" then
+	if UnitPowerType("player") ~= 0 and playerClass ~= "DRUID" then
 		text:SetText(NOT_APPLICABLE)
 		statFrame.tooltip = nil
 		return
