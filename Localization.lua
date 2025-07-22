@@ -64,18 +64,18 @@ BCS["L"] = {
 	["Restores (%d+) mana every 1 sec."] = "Restores (%d+) mana every 1 sec.",
 	["(%d+)%% of your Mana regeneration continuing while casting."] = "(%d+)%% of your Mana regeneration continuing while casting.",
 	["(%d+)%% of your mana regeneration to continue while casting."] = "(%d+)%% of your mana regeneration to continue while casting.",
-	
+
 	-- Wizard Oils
 	["^Brilliant Wizard Oil"] = "^Brilliant Wizard Oil",
 	["^Lesser Wizard Oil"] = "^Lesser Wizard Oil",
 	["^Minor Wizard Oil"] = "^Minor Wizard Oil",
 	["^Wizard Oil"] = "^Wizard Oil",
-	
+
 	-- Mana Oils
 	["^Brilliant Mana Oil"] = "^Brilliant Mana Oil",
 	["^Lesser Mana Oil"] = "^Lesser Mana Oil",
 	["^Minor Mana Oil"] = "^Minor Mana Oil",
-	
+
 	-- snowflakes ZG enchants
 	["/Hit %+(%d+)"] = "/Hit %+(%d+)",
 	["/Spell Hit %+(%d+)"] = "/Spell Hit %+(%d+)",
@@ -88,7 +88,7 @@ BCS["L"] = {
 	["Equip: Increases healing done by spells and effects by up to (%d+)."] = "Equip: Increases healing done by spells and effects by up to (%d+).",
 
 	-- auras
-    ["Critical strike chance increased by (%d+)%%."] = "Critical strike chance increased by (%d+)%%.",
+	["Critical strike chance increased by (%d+)%%."] = "Critical strike chance increased by (%d+)%%.",
 	["Chance to hit increased by (%d)%%."] = "Chance to hit increased by (%d)%%.",
 	["Magical damage dealt is increased by up to (%d+)."] = "Magical damage dealt is increased by up to (%d+).",
 	["Healing done by magical spells is increased by up to (%d+)."] = "Healing done by magical spells is increased by up to (%d+).",
@@ -118,7 +118,7 @@ BCS["L"] = {
 	["Critical strike chance with spells and melee attacks increased by (%d+)%%."] = "Critical strike chance with spells and melee attacks increased by (%d+)%%.",
 	["Increases ranged and melee critical chance by (%d+)%%."] = "Increases ranged and melee critical chance by (%d+)%%.",
 	["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."] = "Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%.",
-	
+
 	-- druid
 	["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."] = "Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%.",
 	["Increases the critical effect chance of your Regrowth spell by (%d+)%%."] = "Increases the critical effect chance of your Regrowth spell by (%d+)%%.",
@@ -134,7 +134,7 @@ BCS["L"] = {
 	["Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%."] = "Increases the critical effect chance of your Holy Light and Flash of Light by (%d+)%%.",
 	["Improves your chance to get a critical strike with Holy Shock by (%d+)%%."] = "Improves your chance to get a critical strike with Holy Shock by (%d+)%%.",
 	["Increases your chance to hit with melee attacks and spells by (%d+)%%."] = "Increases your chance to hit with melee attacks and spells by (%d+)%%.",
-	
+
 	-- shaman
 	["Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Lightning Bolt and Chain Lightning spells by an additional (%d+)%%.",
 	["Increases the critical effect chance of your healing and lightning spells by (%d+)%%."] = "Increases the critical effect chance of your healing and lightning spells by (%d+)%%.",
@@ -146,7 +146,7 @@ BCS["L"] = {
 	["Increases the critical strike chance of your Destruction spells by (%d+)%%."] = "Increases the critical strike chance of your Destruction spells by (%d+)%%.",
 	["Increases the critical strike chance of your Searing Pain spell by (%d+)%%."] = "Increases the critical strike chance of your Searing Pain spell by (%d+)%%.",
 	["Reduces the chance for enemies to resist your Affliction spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Affliction spells by (%d+)%%.",
-	
+
 	-- mage
 	["Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%."] = "Increases the critical strike chance of your Arcane Explosion and Arcane Missiles spells by an additional (%d+)%%.",
 	["Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%."] = "Increases the critical strike chance of your Fire Blast and Scorch spells by (%d+)%%.",
@@ -155,7 +155,7 @@ BCS["L"] = {
 	["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."] = "Increases the critical strike chance of all your spells against frozen targets by (%d+)%%.",
 	["Increases your spell damage and critical srike chance by (%d+)%%."] = "Increases your spell damage and critical srike chance by (%d+)%%.",
 	["Increases critical strike chance from Fire damage spells by (%d+)%%."] = "Increases critical strike chance from Fire damage spells by (%d+)%%.",
-	
+
 	-- priest
 	["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%.",
 	["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."] = "Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%.",
@@ -232,8 +232,8 @@ BCS["L"] = {
 	MP5 Regen: %d
 	MP5 Regen (2s): %d]],
 
-    SPELL_HASTE_TOOLTIP = "Spell Haste",
-    SPELL_HASTE_TOOLTIP_SUB = "Reduces cast time or your spells.",
+	SPELL_HASTE_TOOLTIP = "Spell Haste",
+	SPELL_HASTE_TOOLTIP_SUB = "Reduces cast time or your spells.",
 
 	PLAYERSTAT_BASE_STATS = "Base Stats",
 	PLAYERSTAT_DEFENSES = "Defenses",
@@ -250,8 +250,8 @@ BCS["L"] = {
 	SPELL_CRIT_COLON = "Crit Chance:",
 	MANA_REGEN_COLON = "Regen:",
 	HEAL_POWER_COLON = "Healing:",
-    HASTE_COLON = "Haste:",
-    ARMOR_PEN_COLON = "Traget's armor reduction:",
+	HASTE_COLON = "Haste:",
+	ARMOR_PEN_COLON = "Traget's armor reduction:",
 	DODGE_COLON = DODGE .. ":",
 	PARRY_COLON = PARRY .. ":",
 	BLOCK_COLON = BLOCK .. ":",
@@ -273,7 +273,7 @@ BCS["L"] = {
 	HIT_AFFLICTION = "Affliction spells: %.f%%",
 	HIT_SHADOW = "Shadow spells: %.f%%",
 	HIT_HOLY_DISC = "Holy and Discipline spells: %.f%%",
-    SPELL_PEN = "Target's resistances reduction: %d",
+	SPELL_PEN = "Target's resistances reduction: %d",
 
 	CRIT_MOONFIRE = "Moonfire: %.2f%%",
 	CRIT_REGROWTH = "Regrowth: %.2f%%",
@@ -315,13 +315,13 @@ BCS["L"] = {
 	["Magical damage dealt by spells and abilities is increased by up to (%d+)"] = "Magical damage dealt by spells and abilities is increased by up to (%d+)",
 	["Increased damage done by magical spells and effects by (%d+)."] = "Increased damage done by magical spells and effects by (%d+).",
 	["Increases healing done by magical spells and effects by up to (%d+)."] = "Increases healing done by magical spells and effects by up to (%d+).",
-    ["Improves your chance to hit and get a critical strike with spells by (%d+)%%"] = "Improves your chance to hit and get a critical strike with spells by (%d+)%%",
-    ["Increases damage done by magical spells and effects by up to (%d+)"] = "Increases damage done by magical spells and effects by up to (%d+)",
+	["Improves your chance to hit and get a critical strike with spells by (%d+)%%"] = "Improves your chance to hit and get a critical strike with spells by (%d+)%%",
+	["Increases damage done by magical spells and effects by up to (%d+)"] = "Increases damage done by magical spells and effects by up to (%d+)",
 
-    ["Restores (%d+) mana per 5 seconds."] = "Restores (%d+) mana per 5 seconds.",
+	["Restores (%d+) mana per 5 seconds."] = "Restores (%d+) mana per 5 seconds.",
 	["Allows (%d+)%% of mana regeneration while casting."] = "Allows (%d+)%% of mana regeneration while casting.",
 
-    -- Block value
+	-- Block value
 	["(%d+) Block"] = "(%d+) Block",
 	["Equip: Increases the block value of your shield by (%d+)."] = "Equip: Increases the block value of your shield by (%d+).",
 	["Block Value %+(%d+)"] = "Block Value %+(%d+)",
@@ -332,36 +332,37 @@ BCS["L"] = {
 	["^Stoneskin$"] = "^Stoneskin$",
 
 	["to all party members"] = "to all party members",
-    ["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)",
+	["Healing Bonus increased by (%d+)"] = "Healing Bonus increased by (%d+)",
 
-    -- Haste
-    ["^Equip: Increases your attack and casting speed by (%d+)%%"] = "^Equip: Increases your attack and casting speed by (%d+)%%",
-    ["^Set: Increases your attack and casting speed by (%d+)%%"] = "^Set: Increases your attack and casting speed by (%d+)%%",
-    ["^Equip: Increases your casting speed by (%d+)%%"] = "^Equip: Increases your casting speed by (%d+)%%",
-    ["^Attack speed %+(%d+)%%"] = "^Attack speed %+(%d+)%%",
-    ["^%+(%d+)%% Haste"] = "^%+(%d+)%% Haste",
-    ["Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%"] = "Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%",
-    ["Zeal increases your attack and casting speed by an additional (%d+)%% per stack"] = "Zeal increases your attack and casting speed by an additional (%d+)%% per stack",
-    ["^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%"] = "^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%",
-    ["^Increases attack and spell casting speed by (%d+)%%"] = "^Increases attack and spell casting speed by (%d+)%%",
-    ["increases casting speed by (%d+)%%"] = "increases casting speed by (%d+)%%",
-    ["^Increases casting and attack speed by (%d+)%%"] = "^Increases casting and attack speed by (%d+)%%",
-    ["^Increases attack and casting speed by (%d+)%%"] = "^Increases attack and casting speed by (%d+)%%",
-    ["^Casting speed increased by (%d+)%%"] = "^Casting speed increased by (%d+)%%",
-    ["^Attack and casting speed increased by (%d+)%%"] = "^Attack and casting speed increased by (%d+)%%",
+	-- Haste
+	["^Equip: Increases your attack and casting speed by (%d+)%%"] = "^Equip: Increases your attack and casting speed by (%d+)%%",
+	["^Set: Increases your attack and casting speed by (%d+)%%"] = "^Set: Increases your attack and casting speed by (%d+)%%",
+	["^Equip: Increases your casting speed by (%d+)%%"] = "^Equip: Increases your casting speed by (%d+)%%",
+	["^Attack speed %+(%d+)%%"] = "^Attack speed %+(%d+)%%",
+	["^%+(%d+)%% Haste"] = "^%+(%d+)%% Haste",
+	["Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%"] = "Increases your total intellect by %d+%% and your spell casting speed by (%d+)%%",
+	["Zeal increases your attack and casting speed by an additional (%d+)%% per stack"] = "Zeal increases your attack and casting speed by an additional (%d+)%% per stack",
+	["^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%"] = "^Increases attack speed by (%d+)%% and spell casting speed by (%d+)%%",
+	["^Increases attack and spell casting speed by (%d+)%%"] = "^Increases attack and spell casting speed by (%d+)%%",
+	["increases casting speed by (%d+)%%"] = "increases casting speed by (%d+)%%",
+	["^Increases casting and attack speed by (%d+)%%"] = "^Increases casting and attack speed by (%d+)%%",
+	["^Increases attack and casting speed by (%d+)%%"] = "^Increases attack and casting speed by (%d+)%%",
+	["^Casting speed increased by (%d+)%%"] = "^Casting speed increased by (%d+)%%",
+	["^Attack and casting speed increased by (%d+)%%"] = "^Attack and casting speed increased by (%d+)%%",
+	["^Increases your attack and casting speed by (%d+)%%"] = "^Increases your attack and casting speed by (%d+)%%", -- spell:28145
 
-    -- Armor penetration
-    ["^Equip: Your attacks ignore (%d+) of the target's armor"] = "^Equip: Your attacks ignore (%d+) of the target's armor",
-    ["^Set: Your attacks ignore (%d+) of the target's armor"] = "^Set: Your attacks ignore (%d+) of the target's armor",
-    ["^Ignore (%d+) of enemies' armor"] = "^Ignore (%d+) of enemies' armor",
-    ["^Current target's armor is reduced by (%d+)"] = "^Current target's armor is reduced by (%d+)",
-    ["Causes your attacks to ignore (%d+) of your target's Armor per level"] = "Causes your attacks to ignore (%d+) of your target's Armor per level",
-    ["One-Handed Maces"] = "One-Handed Maces",
-    ["Two-Handed Maces"] = "Two-Handed Maces",
+	-- Armor penetration
+	["^Equip: Your attacks ignore (%d+) of the target's armor"] = "^Equip: Your attacks ignore (%d+) of the target's armor",
+	["^Set: Your attacks ignore (%d+) of the target's armor"] = "^Set: Your attacks ignore (%d+) of the target's armor",
+	["^Ignore (%d+) of enemies' armor"] = "^Ignore (%d+) of enemies' armor",
+	["^Current target's armor is reduced by (%d+)"] = "^Current target's armor is reduced by (%d+)",
+	["Causes your attacks to ignore (%d+) of your target's Armor per level"] = "Causes your attacks to ignore (%d+) of your target's Armor per level",
+	["One-Handed Maces"] = "One-Handed Maces",
+	["Two-Handed Maces"] = "Two-Handed Maces",
 
-    -- Spell penetration
-    ["^Equip: Decreases the magical resistances of your spell targets by (%d+)"] = "^Equip: Decreases the magical resistances of your spell targets by (%d+)",
-    ["^Set: Decreases the magical resistances of your spell targets by (%d+)"] = "^Set: Decreases the magical resistances of your spell targets by (%d+)",
+	-- Spell penetration
+	["^Equip: Decreases the magical resistances of your spell targets by (%d+)"] = "^Equip: Decreases the magical resistances of your spell targets by (%d+)",
+	["^Set: Decreases the magical resistances of your spell targets by (%d+)"] = "^Set: Decreases the magical resistances of your spell targets by (%d+)",
 
-    ["^Equip: Improves your chance to hit with spells and attacks by (%d+)%%"] = "^Equip: Improves your chance to hit with spells and attacks by (%d+)%%",
+	["^Equip: Improves your chance to hit with spells and attacks by (%d+)%%"] = "^Equip: Improves your chance to hit with spells and attacks by (%d+)%%",
 }
