@@ -64,18 +64,18 @@ BCS["L"] = {
 	["Restores (%d+) mana every 1 sec."] = "Restores (%d+) mana every 1 sec.",
 	["(%d+)%% of your Mana regeneration continuing while casting."] = "(%d+)%% of your Mana regeneration continuing while casting.",
 	["(%d+)%% of your mana regeneration to continue while casting."] = "(%d+)%% of your mana regeneration to continue while casting.",
-	
+
 	-- Wizard Oils
 	["^Brilliant Wizard Oil"] = "^Brilliant Wizard Oil",
 	["^Lesser Wizard Oil"] = "^Lesser Wizard Oil",
 	["^Minor Wizard Oil"] = "^Minor Wizard Oil",
 	["^Wizard Oil"] = "^Wizard Oil",
-	
+
 	-- Mana Oils
 	["^Brilliant Mana Oil"] = "^Brilliant Mana Oil",
 	["^Lesser Mana Oil"] = "^Lesser Mana Oil",
 	["^Minor Mana Oil"] = "^Minor Mana Oil",
-	
+
 	-- snowflakes ZG enchants
 	["/Hit %+(%d+)"] = "/Hit %+(%d+)",
 	["/Spell Hit %+(%d+)"] = "/Spell Hit %+(%d+)",
@@ -84,14 +84,11 @@ BCS["L"] = {
 	["^%+(%d+) Healing Spells"] = "^%+(%d+) Healing Spells",
 	["^%+(%d+) Spell Damage and Healing"] = "^%+(%d+) Spell Damage and Healing",
 
-	-- sapphiron shoulder enchants
-	["%+(%d+)%% Critical Strike"] = "%+(%d+)%% Critical Strike",
-	
-	["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases damage and healing done by magical spells and effects by up to (%d+)%.",
-	["Equip: Increases healing done by spells and effects by up to (%d+)."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases healing done by spells and effects by up to (%d+).",
+	["Equip: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = "Equip: Increases damage and healing done by magical spells and effects by up to (%d+)%.",
+	["Equip: Increases healing done by spells and effects by up to (%d+)."] = "Equip: Increases healing done by spells and effects by up to (%d+).",
 
 	-- auras
-    ["Critical strike chance increased by (%d+)%%."] = "Critical strike chance increased by (%d+)%%.",
+	["Critical strike chance increased by (%d+)%%."] = "Critical strike chance increased by (%d+)%%.",
 	["Chance to hit increased by (%d)%%."] = "Chance to hit increased by (%d)%%.",
 	["Magical damage dealt is increased by up to (%d+)."] = "Magical damage dealt is increased by up to (%d+).",
 	["Healing done by magical spells is increased by up to (%d+)."] = "Healing done by magical spells is increased by up to (%d+).",
@@ -120,7 +117,8 @@ BCS["L"] = {
 	["Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration."] = "Increases critical chance of spells by 10%%, melee and ranged by 5%% and grants 140 attack power. 120 minute duration.",
 	["Critical strike chance with spells and melee attacks increased by (%d+)%%."] = "Critical strike chance with spells and melee attacks increased by (%d+)%%.",
 	["Increases ranged and melee critical chance by (%d+)%%."] = "Increases ranged and melee critical chance by (%d+)%%.",
-	["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."] = ITEM_SPELL_TRIGGER_ONEQUIP .. " Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%.",
+	["Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%."] = "Equip: Increases the critical chance provided by Leader of the Pack and Moonkin Aura by (%d)%%.",
+
 	-- druid
 	["Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%."] = "Increases the damage and critical strike chance of your Moonfire spell by (%d+)%%.",
 	["Increases the critical effect chance of your Regrowth spell by (%d+)%%."] = "Increases the critical effect chance of your Regrowth spell by (%d+)%%.",
@@ -159,7 +157,7 @@ BCS["L"] = {
 	["Increases the critical strike chance of all your spells against frozen targets by (%d+)%%."] = "Increases the critical strike chance of all your spells against frozen targets by (%d+)%%.",
 	["Increases your spell damage and critical srike chance by (%d+)%%."] = "Increases your spell damage and critical srike chance by (%d+)%%.",
 	["Increases critical strike chance from Fire damage spells by (%d+)%%."] = "Increases critical strike chance from Fire damage spells by (%d+)%%.",
-	
+
 	-- priest
 	["Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%."] = "Reduces the chance for enemies to resist your Holy and Discipline spells by (%d+)%%.",
 	["Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%."] = "Increases the critical effect chance of your Holy and Discipline spells by (%d+)%%.",
@@ -373,6 +371,7 @@ BCS["L"] = {
 	["^Increases attack and casting speed by (%d+)%%"] = "^Increases attack and casting speed by (%d+)%%",
 	["^Casting speed increased by (%d+)%%"] = "^Casting speed increased by (%d+)%%",
 	["^Attack and casting speed increased by (%d+)%%"] = "^Attack and casting speed increased by (%d+)%%",
+	["^Increases your attack and casting speed by (%d+)%%"] = "^Increases your attack and casting speed by (%d+)%%", -- spell:28145
 
 	-- Armor penetration
 	["^Equip: Your attacks ignore (%d+) of the target's armor"] = "^Equip: Your attacks ignore (%d+) of the target's armor",
