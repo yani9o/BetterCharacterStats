@@ -1152,7 +1152,7 @@ function BCS:SetDodge(statFrame, leveldiff)
 	local label = _G[statFrame:GetName() .. "Label"]
 
 	label:SetText(L.DODGE_COLON)
-	text:SetText(format("%.2f%%", dodge))
+	text:SetText(format("%.2f%%", BCS:GetEffectiveDodgeChance(leveldiff)))
 
 	statFrame.tooltip = format(L.PLAYER_DODGE_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_DODGE_TOOLTIP_SUB)
@@ -1165,7 +1165,7 @@ function BCS:SetParry(statFrame, leveldiff)
 	local label = _G[statFrame:GetName() .. "Label"]
 
 	label:SetText(L.PARRY_COLON)
-	text:SetText(format("%.2f%%", parry))
+	text:SetText(format("%.2f%%", BCS:GetEffectiveParryChance(leveldiff)))
 
 	statFrame.tooltip = format(L.PLAYER_PARRY_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_PARRY_TOOLTIP_SUB)
