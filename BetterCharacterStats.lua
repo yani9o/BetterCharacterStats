@@ -1,5 +1,3 @@
-local _G = _G or getfenv(0)
-
 BCS = BCS or {}
 BCSConfig = BCSConfig or {}
 
@@ -11,7 +9,6 @@ local AceEvent = AceLibrary:HasInstance("AceEvent-2.0") and AceLibrary("AceEvent
 -- Tree of Life aura bonus from other players, your own is calculated in GetHealingPower()
 local aura = .0
 local playerName = UnitName("player")
-local _, playerClass = UnitClass("player")
 
 BCS.PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_BASE_STATS",
@@ -81,9 +78,21 @@ function BCS:OnLoad()
 	BCSFrame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
 	BCSFrame:RegisterEvent("CHAT_MSG_SKILL") -- gaining weapon skill
 	BCSFrame:RegisterEvent("CHAT_MSG_ADDON") -- needed to recieve aura bonuses from other people
-	BCS.needUpdate = false
-    -- there is less space for player character model with this addon, shorten it slightly
+	BCS.needUpdate = nil
+    -- there is less space for player character model with this addon, zoom out and move it up slightly
     CharacterModelFrame:SetHeight(CharacterModelFrame:GetHeight() - 19)
+end
+
+local function strsplit(delimiter, subject)
+	if not subject then
+		return nil
+	end
+	local delimiter, fields = delimiter or ":", {}
+	local pattern = string.format("([^%s]+)", delimiter)
+	string.gsub(subject, pattern, function(c)
+		fields[table.getn(fields) + 1] = c
+	end)
+	return unpack(fields)
 end
 
 -- Scan stuff depending on event, but make sure to scan everything when addon is loaded
@@ -103,22 +112,21 @@ function BCS:OnEvent()
         if (GetNumPartyMembers() + GetNumRaidMembers()) == 0 then
             return
         end
-		local _, _, type, name, amount = strfind(arg2 or "", "(%u+),(%a+),?(%d*)")
+		BCS.needScanAuras = true
+		local type, name, amount = strsplit(",", arg2)
         if name ~= playerName then
             amount = tonumber(amount)
             if amount then
                 --BCS:Print("got tree response amount="..amount)
                 if amount >= aura then
                     aura = amount
-                    BCS.needScanAuras = true
                     if PaperDollFrame:IsVisible() then
                         BCS:UpdateStats()
                     else
                         BCS.needUpdate = true
                     end
                 end
-            elseif playerClass == "DRUID" then
-                BCS.needScanAuras = true
+            else
                 local _, treebonus = BCS:GetHealingPower()
                 if treebonus then
                     SendAddonMessage("bcs", "TREE"..","..playerName..","..treebonus, "PARTY")
@@ -180,7 +188,7 @@ end
 
 function BCS:OnShow()
 	if BCS.needUpdate then
-		BCS.needUpdate = false
+		BCS.needUpdate = nil
 		BCS:UpdateStats()
 	end
 end
@@ -229,22 +237,27 @@ local function StatFrame_OnUpdate()
 	end
 end
 
+local function StatFrame_OnLeave()
+	GameTooltip:Hide()
+end
+
 local function AddTooltip(statFrame, tooltipExtra)
-    if statFrame.tooltip then
-        statFrame:SetScript("OnEnter", function()
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-            GameTooltip:SetText(this.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, false)
-            GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-            if tooltipExtra then
-                GameTooltip:AddLine(tooltipExtra)
-            end
-            GameTooltip:Show()
-        end)
-        statFrame:SetScript("OnUpdate", StatFrame_OnUpdate)
-    else
-        statFrame:SetScript("OnUpdate", nil)
-        statFrame:SetScript("OnEnter", nil)
-    end
+	if statFrame.tooltip then
+		statFrame:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+			GameTooltip:SetText(this.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, false)
+			GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+			if tooltipExtra then
+				GameTooltip:AddLine(tooltipExtra)
+			end
+			GameTooltip:Show()
+		end)
+		statFrame:SetScript("OnUpdate", StatFrame_OnUpdate)
+	else
+		statFrame:SetScript("OnUpdate", nil)
+		statFrame:SetScript("OnEnter", nil)
+	end
+	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 end
 
 local function StatFrameMeleeDamage_OnEnter()
@@ -393,6 +406,8 @@ local function AddDamageTooltip(damageText, statFrame, speed, offhandSpeed, rang
 		statFrame:SetScript("OnEnter", StatFrameMeleeDamage_OnEnter)
 	end
 
+	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
+
 	if statFrame.damage then
 		statFrame:SetScript("OnUpdate", StatFrame_OnUpdate)
 	else
@@ -401,8 +416,8 @@ local function AddDamageTooltip(damageText, statFrame, speed, offhandSpeed, rang
 end
 
 function BCS:SetStat(statFrame, statIndex)
-	local label = _G[statFrame:GetName() .. "Label"]
-	local text = _G[statFrame:GetName() .. "StatText"]
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local text = getglobal(statFrame:GetName() .. "StatText")
 	local statIndexTable = {
 		"STRENGTH",
 		"AGILITY",
@@ -415,12 +430,13 @@ function BCS:SetStat(statFrame, statIndex)
 		PaperDollStatTooltip("player", statIndexTable[statIndex])
 	end)
 
+	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 
-	label:SetText(_G["SPELL_STAT" .. (statIndex - 1) .. "_NAME"] .. ":")
+	label:SetText(TEXT(getglobal("SPELL_STAT" .. (statIndex - 1) .. "_NAME")) .. ":")
 	local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statIndex)
 
 	-- Set the tooltip text
-	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE .. _G["SPELL_STAT" .. (statIndex - 1) .. "_NAME"] .. " "
+	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE .. getglobal("SPELL_STAT" .. (statIndex - 1) .. "_NAME") .. " "
 
 	if ((posBuff == 0) and (negBuff == 0)) then
 		text:SetText(effectiveStat)
@@ -453,11 +469,11 @@ end
 
 function BCS:SetArmor(statFrame)
 	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor("player")
-	local label = _G[statFrame:GetName() .. "Label"]
-	local text = _G[statFrame:GetName() .. "StatText"]
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local text = getglobal(statFrame:GetName() .. "StatText")
 
 	PaperDollFormatStat(ARMOR, base, posBuff, negBuff, statFrame, text)
-	label:SetText(ARMOR_COLON)
+	label:SetText(TEXT(ARMOR_COLON))
 
 	local playerLevel = UnitLevel("player")
 	local armorReduction = effectiveArmor / ((85 * playerLevel) + 400)
@@ -567,18 +583,18 @@ function BCS:GetEffectiveDodgeChance(leveldiff)
 end
 
 function BCS:SetDamage(statFrame)
-	local damageText = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local damageText = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	local speed, offhandSpeed = UnitAttackSpeed("player")
 
 	AddDamageTooltip(damageText, statFrame, speed, offhandSpeed)
 
-	label:SetText(DAMAGE_COLON)
+	label:SetText(TEXT(DAMAGE_COLON))
 end
 
 function BCS:SetAttackSpeed(statFrame)
-	local damageText = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local damageText = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	local speed, offhandSpeed = UnitAttackSpeed("player")
 
 	speed = format("%.2f", speed)
@@ -594,13 +610,13 @@ function BCS:SetAttackSpeed(statFrame)
 
 	AddDamageTooltip(damageText, statFrame, speed, offhandSpeed)
 
-	label:SetText(SPEED .. ":")
+	label:SetText(TEXT(SPEED) .. ":")
 	damageText:SetText(text)
 end
 
 function BCS:SetAttackPower(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE .. MELEE_ATTACK_POWER .. " "
 	local base, posBuff, negBuff = UnitAttackPower("player")
 	local effectiveStat = base + posBuff + negBuff
@@ -631,7 +647,7 @@ function BCS:SetAttackPower(statFrame)
 		end
 	end
 
-	label:SetText(ATTACK_POWER_COLON)
+	label:SetText(TEXT(ATTACK_POWER_COLON))
 	PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, statFrame, text)
 	statFrame.tooltipSubtext = format(MELEE_ATTACK_POWER_TOOLTIP, max((base + posBuff + negBuff), 0) / ATTACK_POWER_MAGIC_NUMBER)
 
@@ -639,8 +655,8 @@ function BCS:SetAttackPower(statFrame)
 end
 
 function BCS:SetSpellPower(statFrame, school)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	local green = "|cff20ff20"
 
 	if school then
@@ -686,8 +702,9 @@ function BCS:SetSpellPower(statFrame, school)
 end
 
 function BCS:SetHitRating(statFrame, ratingType)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local _, class = UnitClass("player")
 	label:SetText(L.MELEE_HIT_RATING_COLON)
 
 	if ratingType == "MELEE" then
@@ -737,7 +754,7 @@ function BCS:SetHitRating(statFrame, ratingType)
 					GameTooltip:AddLine(format(L.HIT_ARCANE, spell_hit + spell_hit_arcane))
 				end
 				if spell_hit_shadow > 0 then
-					if playerClass == "WARLOCK" then
+					if class == "WARLOCK" then
 						GameTooltip:AddLine(format(L.HIT_AFFLICTION, spell_hit + spell_hit_shadow))
 					else
 						GameTooltip:AddLine(format(L.HIT_SHADOW, spell_hit + spell_hit_shadow))
@@ -751,6 +768,8 @@ function BCS:SetHitRating(statFrame, ratingType)
 				end
 				GameTooltip:Show()
 			end)
+
+			statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 		end
 	end
 
@@ -760,8 +779,8 @@ function BCS:SetHitRating(statFrame, ratingType)
 end
 
 function BCS:SetMeleeCritChance(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
 	label:SetText(L.MELEE_CRIT_COLON)
 	text:SetText(format("%.2f%%", BCS:GetCritChance()))
@@ -773,8 +792,8 @@ function BCS:SetMeleeCritChance(statFrame)
 end
 
 function BCS:SetWeaponSkill(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
 	label:SetText(L.WEAPON_SKILL_COLON)
 
@@ -791,8 +810,8 @@ function BCS:SetWeaponSkill(statFrame)
 end
 
 function BCS:SetRangedWeaponSkill(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
 	label:SetText(L.WEAPON_SKILL_COLON)
 
@@ -903,13 +922,14 @@ function BCS:SetEffectiveBossCrit(statFrame)
 end
 
 function BCS:SetSpellCritChance(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local _, class = UnitClass("player")
 
 	label:SetText(L.SPELL_CRIT_COLON)
 
 	local generic = BCS:GetSpellCritChance()
-	local spell1, spell2, spell3, spell4, spell5, spell6 = BCS:GetSpellCritFromClass(playerClass)
+	local spell1, spell2, spell3, spell4, spell5, spell6 = BCS:GetSpellCritFromClass(class)
 	local total1 = generic + spell1
 	local total2 = generic + spell2
 	local total3 = generic + spell3
@@ -917,21 +937,33 @@ function BCS:SetSpellCritChance(statFrame)
 	local total5 = generic + spell5
 	local total6 = generic + spell6
 
-	if total1 > 100 then total1 = 100 end
-	if total2 > 100 then total2 = 100 end
-	if total3 > 100 then total3 = 100 end
-	if total4 > 100 then total4 = 100 end
-	if total5 > 100 then total5 = 100 end
-	if total6 > 100 then total6 = 100 end
+	if total1 > 100 then
+		total1 = 100
+	end
+	if total2 > 100 then
+		total2 = 100
+	end
+	if total3 > 100 then
+		total3 = 100
+	end
+	if total4 > 100 then
+		total4 = 100
+	end
+	if total5 > 100 then
+		total5 = 100
+	end
+	if total6 > 100 then
+		total6 = 100
+	end
 
 	text:SetText(format("%.2f%%", generic))
 
 	-- warlock spells that can crit are all destruction so just add this to generic
-	if playerClass == "WARLOCK" and spell1 > 0 then
+	if class == "WARLOCK" and spell1 > 0 then
 		text:SetText(format("%.2f%%", generic + spell1))
 
-	-- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
-	elseif playerClass == "PRIEST" and spell3 > 0 and spell2 > 0 then
+		-- if priest have both talents add lowest to generic cos there will be no more spells left that can crit
+	elseif class == "PRIEST" and spell3 > 0 and spell2 > 0 then
 		if spell2 < spell3 then
 			text:SetText(format("%.2f%%", generic + spell2))
 		elseif spell2 >= spell3 then
@@ -947,7 +979,7 @@ function BCS:SetSpellCritChance(statFrame)
 		GameTooltip:SetText(this.tooltip)
 		GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
 
-		if playerClass == "DRUID" then
+		if class == "DRUID" then
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_MOONFIRE, total1))
 			end
@@ -955,7 +987,7 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_REGROWTH, total2))
 			end
 
-		elseif playerClass == "PALADIN" then
+		elseif class == "PALADIN" then
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_HOLYLIGHT, total1))
 			end
@@ -966,12 +998,13 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_HOLYSHOCK, total3))
 			end
 
-		elseif playerClass == "WARLOCK" then
+		elseif class == "WARLOCK" then
 			if spell2 > 0 and spell2 ~= spell1 then
 				GameTooltip:AddLine(format(L.CRIT_SEARING, total2))
 			end
 
-		elseif playerClass == "PRIEST" then -- all healing spells are holy, change tooltip if player have both talents
+		elseif class == "PRIEST" then
+			-- all healing spells are holy, change tooltip if player have both talents
 			if spell1 > 0 then
 				if spell3 > 0 then
 					GameTooltip:AddLine(format(L.CRIT_HEALING, total1))
@@ -993,7 +1026,8 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_PRAYER, total4 + spell1))
 			end
 
-		elseif playerClass == "MAGE" then -- dont show specific spells if they have same chance as fire spells
+		elseif class == "MAGE" then
+			-- dont show specific spells if they have same chance as fire spells
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_ARCANE, total1))
 			end
@@ -1013,7 +1047,7 @@ function BCS:SetSpellCritChance(statFrame)
 				GameTooltip:AddLine(format(L.CRIT_FROZEN, total6))
 			end
 
-		elseif playerClass == "SHAMAN" then
+		elseif class == "SHAMAN" then
 			if spell1 > 0 then
 				GameTooltip:AddLine(format(L.CRIT_LIGHTNINGBOLT, total1))
 			end
@@ -1033,11 +1067,13 @@ function BCS:SetSpellCritChance(statFrame)
 
 		GameTooltip:Show()
 	end)
+
+	statFrame:SetScript("OnLeave", StatFrame_OnLeave)
 end
 
 function BCS:SetRangedCritChance(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
 	label:SetText(L.RANGED_CRIT_COLON)
 
@@ -1072,8 +1108,8 @@ function BCS:SetRangedCritChance(statFrame)
 end
 
 function BCS:SetHealing(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	local damageAndHealing = BCS:GetSpellPower()
 	local healingOnly, treebonus, ironclad = BCS:GetHealingPower()
 	local total = damageAndHealing + healingOnly
@@ -1103,13 +1139,14 @@ function BCS:SetHealing(statFrame)
 end
 
 function BCS:SetManaRegen(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
 	label:SetText(L.MANA_REGEN_COLON)
 
 	-- if not a mana user and not a druid set to N/A
-	if UnitPowerType("player") ~= 0 and playerClass ~= "DRUID" then
+	local _, class = UnitClass("player")
+	if UnitPowerType("player") ~= 0 and class ~= "DRUID" then
 		text:SetText(NOT_APPLICABLE)
 		statFrame.tooltip = nil
 		return
@@ -1132,8 +1169,8 @@ function BCS:SetManaRegen(statFrame)
 end
 
 function BCS:SetSpellHaste(statFrame)
-    local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
 	label:SetText(L.HASTE_COLON)
 
@@ -1148,11 +1185,12 @@ function BCS:SetSpellHaste(statFrame)
 end
 
 function BCS:SetDodge(statFrame, leveldiff)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local dodge = BCS:GetEffectiveDodgeChance(leveldiff)
 
 	label:SetText(L.DODGE_COLON)
-	text:SetText(format("%.2f%%", BCS:GetEffectiveDodgeChance(leveldiff)))
+	text:SetText(format("%.2f%%", dodge))
 
 	statFrame.tooltip = format(L.PLAYER_DODGE_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_DODGE_TOOLTIP_SUB)
@@ -1161,11 +1199,12 @@ function BCS:SetDodge(statFrame, leveldiff)
 end
 
 function BCS:SetParry(statFrame, leveldiff)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local parry = BCS:GetEffectiveParryChance(leveldiff)
 
 	label:SetText(L.PARRY_COLON)
-	text:SetText(format("%.2f%%", BCS:GetEffectiveParryChance(leveldiff)))
+	text:SetText(format("%.2f%%", parry))
 
 	statFrame.tooltip = format(L.PLAYER_PARRY_TOOLTIP)
 	statFrame.tooltipSubtext = format(L.PLAYER_PARRY_TOOLTIP_SUB)
@@ -1174,8 +1213,8 @@ function BCS:SetParry(statFrame, leveldiff)
 end
 
 function BCS:SetBlock(statFrame, leveldiff)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	local blockChance = BCS:GetEffectiveBlockChance(leveldiff)
 	local tooltipExtra
 
@@ -1193,9 +1232,8 @@ function BCS:SetBlock(statFrame, leveldiff)
 end
 
 function BCS:SetTotalAvoidance(statFrame, leveldiff)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
-
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 	-- apply skill modifier
 	local base, mod = UnitDefense("player")
 	local skillDiff = (base + mod) - ((300) + (leveldiff * 5))
@@ -1222,12 +1260,12 @@ end
 
 function BCS:SetDefense(statFrame)
 	local base, modifier = UnitDefense("player")
-	local label = _G[statFrame:GetName() .. "Label"]
-	local text = _G[statFrame:GetName() .. "StatText"]
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local text = getglobal(statFrame:GetName() .. "StatText")
 	local posBuff = 0
 	local negBuff = 0
 
-	label:SetText(DEFENSE_COLON)
+	label:SetText(TEXT(DEFENSE_COLON))
 
 	if (modifier > 0) then
 		posBuff = modifier
@@ -1243,10 +1281,10 @@ function BCS:SetDefense(statFrame)
 end
 
 function BCS:SetRangedDamage(statFrame)
-	local label = _G[statFrame:GetName() .. "Label"]
-	local damageText = _G[statFrame:GetName() .. "StatText"]
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local damageText = getglobal(statFrame:GetName() .. "StatText")
 
-	label:SetText(DAMAGE_COLON)
+	label:SetText(TEXT(DAMAGE_COLON))
 
 	-- If no ranged attack then set to n/a
 	if UnitHasRelicSlot("player") or not GetInventoryItemLink("player", 18) then
@@ -1259,10 +1297,10 @@ function BCS:SetRangedDamage(statFrame)
 end
 
 function BCS:SetRangedAttackSpeed(statFrame)
-	local label = _G[statFrame:GetName() .. "Label"]
-	local damageText = _G[statFrame:GetName() .. "StatText"]
+	local label = getglobal(statFrame:GetName() .. "Label")
+	local damageText = getglobal(statFrame:GetName() .. "StatText")
 
-	label:SetText(SPEED .. ":")
+	label:SetText(TEXT(SPEED) .. ":")
 
 	-- If no ranged attack then set to n/a
 	if UnitHasRelicSlot("player") or not GetInventoryItemLink("player", 18) then
@@ -1277,10 +1315,10 @@ function BCS:SetRangedAttackSpeed(statFrame)
 end
 
 function BCS:SetRangedAttackPower(statFrame)
-	local text = _G[statFrame:GetName() .. "StatText"]
-	local label = _G[statFrame:GetName() .. "Label"]
+	local text = getglobal(statFrame:GetName() .. "StatText")
+	local label = getglobal(statFrame:GetName() .. "Label")
 
-	label:SetText(ATTACK_POWER_COLON)
+	label:SetText(TEXT(ATTACK_POWER_COLON))
 
 	-- If no ranged attack then set to n/a
 	if UnitHasRelicSlot("player") or not GetInventoryItemLink("player", 18) then
@@ -1328,7 +1366,7 @@ function BCS:SetRangedAttackPower(statFrame)
 		end
 	end
 
-	label:SetText(ATTACK_POWER_COLON)
+	label:SetText(TEXT(ATTACK_POWER_COLON))
 
 	PaperDollFormatStat(RANGED_ATTACK_POWER, base, posBuff, negBuff, statFrame, text)
 	statFrame.tooltipSubtext = format(RANGED_ATTACK_POWER_TOOLTIP, max((base + posBuff + negBuff), 0) / ATTACK_POWER_MAGIC_NUMBER)
@@ -1337,12 +1375,12 @@ function BCS:SetRangedAttackPower(statFrame)
 end
 
 function BCS:UpdatePaperdollStats(prefix, index)
-	local stat1 = _G[prefix .. 1]
-	local stat2 = _G[prefix .. 2]
-	local stat3 = _G[prefix .. 3]
-	local stat4 = _G[prefix .. 4]
-	local stat5 = _G[prefix .. 5]
-	local stat6 = _G[prefix .. 6]
+	local stat1 = getglobal(prefix .. 1)
+	local stat2 = getglobal(prefix .. 2)
+	local stat3 = getglobal(prefix .. 3)
+	local stat4 = getglobal(prefix .. 4)
+	local stat5 = getglobal(prefix .. 5)
+	local stat6 = getglobal(prefix .. 6)
 
 	stat1:SetScript("OnEnter", nil)
 	stat2:SetScript("OnEnter", nil)
@@ -1429,7 +1467,7 @@ local function PlayerStatFrameLeftDropDown_OnClick()
 	BCS.needScanAuras = true
 	BCS.needScanSkills = true
 
-	UIDropDownMenu_SetSelectedValue(_G[this.owner], this.value)
+	UIDropDownMenu_SetSelectedValue(getglobal(this.owner), this.value)
 	IndexLeft = this.value
 	BCSConfig["DropdownLeft"] = IndexLeft
 	BCS:UpdatePaperdollStats("PlayerStatFrameLeft", this.value)
@@ -1446,7 +1484,7 @@ local function PlayerStatFrameRightDropDown_OnClick()
 	BCS.needScanAuras = true
 	BCS.needScanSkills = true
 
-	UIDropDownMenu_SetSelectedValue(_G[this.owner], this.value)
+	UIDropDownMenu_SetSelectedValue(getglobal(this.owner), this.value)
 	IndexRight = this.value
 	BCSConfig["DropdownRight"] = IndexRight
 	BCS:UpdatePaperdollStats("PlayerStatFrameRight", this.value)
@@ -1487,7 +1525,7 @@ end
 
 function PlayerStatFrameLeftDropDown_OnLoad()
 	RaiseFrameLevel(this)
-	RaiseFrameLevel(_G[this:GetName() .. "Button"])
+	RaiseFrameLevel(getglobal(this:GetName() .. "Button"))
 	UIDropDownMenu_Initialize(this, PlayerStatFrameLeftDropDown_Initialize)
 	UIDropDownMenu_SetWidth(99, this)
 	UIDropDownMenu_JustifyText("LEFT")
@@ -1495,7 +1533,7 @@ end
 
 function PlayerStatFrameRightDropDown_OnLoad()
 	RaiseFrameLevel(this)
-	RaiseFrameLevel(_G[this:GetName() .. "Button"])
+	RaiseFrameLevel(getglobal(this:GetName() .. "Button"))
 	UIDropDownMenu_Initialize(this, PlayerStatFrameRightDropDown_Initialize)
 	UIDropDownMenu_SetWidth(99, this)
 	UIDropDownMenu_JustifyText("LEFT")
